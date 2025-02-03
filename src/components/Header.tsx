@@ -8,11 +8,11 @@ const INITIAL_WALLET_BALANCE = 200;
 
 export const Header = () => {
   const [walletBalance, setWalletBalance] = useState(INITIAL_WALLET_BALANCE);
+
   return (
-    <div>
-      {/* Header */}
-      <div className="flex justify-between items-center px-8 pt-8">
-        <h1 className="text-4xl font-bold text-white mb-2">
+    <>
+      <div className="flex justify-between items-center px-8 py-4 border-b border-gray-700/50 fixed top-0 left-0 w-full z-50 bg-black/90 backdrop-blur-md">
+        <h1 className="text-lg md:text-2xl lg:text-4xl font-bold text-white">
           <span className="verse-ai-gradient">verseAI</span> Trading Agent alpha
         </h1>
         <div>
@@ -23,6 +23,6 @@ export const Header = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

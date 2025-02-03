@@ -3,13 +3,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { Plus } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
-import { Agent, initialAgents } from "../constant/DefaultAGent";
-import { CryptoTicker } from "../components/CryptoTicker";
+import LiveCoinWatchWidget from "../components/CryptoTicker";
 import { Button } from "../components/ui/button";
 import { SolanaIcon } from "../components/SolanaIcon";
 import { TradingCard } from "../components/TradingCard";
 import { CreateAgentModal } from "../components/CreateAgentModal";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Agent, initialAgents } from "@/constant/DefaultAgent";
 
 const SOLANA_PRICE = 228;
 const INITIAL_WALLET_BALANCE = 200;
@@ -283,18 +283,18 @@ export default function Dashboard() {
     <div className="min-h-screen bg-black p-8">
       {/* Crypto Ticker */}
       <div className="mb-8">
-        <CryptoTicker />
+        <LiveCoinWatchWidget />
       </div>
       <Toaster position="bottom-right" />
       {/* Header */}
-      <div className="mb-8 flex justify-between items-center">
+      <div className="mb-8 md:flex justify-between items-center">
         <div>
-          <p className="text-gray-400">
+          <p className="text-gray-400 mb-4 md:mb-0">
             Monitoring {agents.filter((agent) => agent.isActive).length} active
             autonomous trading agents
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="md:flex items-center gap-4">
           <Tabs
             value={riskFilterState}
             onValueChange={(value) => setRiskFilter(value as RiskFilter)}

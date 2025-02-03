@@ -8,6 +8,9 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "*.{js,ts,jsx,tsx,mdx}"
   ],
+  safelist: [
+    "responsive-text", // Pastikan class kustom tetap dikenali Tailwind
+  ],
   theme: {
   	extend: {
   		colors: {

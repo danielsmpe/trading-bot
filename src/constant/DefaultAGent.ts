@@ -1,3 +1,9 @@
+export interface SecurityCheck {
+  id: number;
+  check: string;
+  status: boolean;
+}
+
 export interface Agent {
     agentId: string;
     agentName: string;
@@ -17,11 +23,15 @@ export interface Agent {
     riskLevel: "Low Risk" | "High Risk" | "Trending 24h";
     stopLoss: number;
     alerts: string[];
-    stopReason?: string; // Added stopReason
+    stopReason?: string;
     stoppedAt?: number;
+    createDate?:string,
+    pairList?:string,
+    rank?:number
+    checks?: SecurityCheck[];
   }
   
-  export const initialAgents: Agent[] = [
+export const initialAgents: Agent[] = [
     {
       agentId: "DNA-1",
       agentName: "Agent DNA-1",
@@ -35,6 +45,16 @@ export interface Agent {
       stopLoss: 5,
       alerts: [],
       stoppedAt: undefined,
+      createDate:"2024-02-03T12:00:00Z",
+      pairList:"NEW",
+      rank:200,
+      checks: [
+        { id: 1, check: "Mint Authority Disabled", status: true },
+        { id: 2, check: "Freeze Authority Disabled", status: true },
+        { id: 3, check: "Avoid Scam Tokens", status: false },
+        { id: 4, check: "Website Handles Available", status: true },
+      ],
+      
     },
     {
       agentId: "FINE-7",
@@ -49,6 +69,15 @@ export interface Agent {
       stopLoss: 10,
       alerts: [],
       stoppedAt: undefined,
+      createDate:"2024-04-03T12:00:00Z",
+      pairList:"NEW",
+      rank:200,
+      checks:[
+        { id: 1, check: "Mint Authority Disabled", status: true },
+        { id: 2, check: "Freeze Authority Disabled", status: true },
+        { id: 3, check: "Avoid Scam Tokens", status: false },
+        { id: 4, check: "Website Handles Available", status: true },
+      ],      
     },
     {
       agentId: "POU-3",
@@ -63,6 +92,15 @@ export interface Agent {
       stopLoss: 7,
       alerts: [],
       stoppedAt: undefined,
+      createDate:"2024-02-08T12:00:00Z",
+      pairList:"TOP 24H",
+      rank:200,
+      checks: [
+        { id: 1, check: "Mint Authority Disabled", status: true },
+        { id: 2, check: "Freeze Authority Disabled", status: true },
+        { id: 3, check: "Avoid Scam Tokens", status: false },
+        { id: 4, check: "Website Handles Available", status: true },
+      ],  
     },
     {
       agentId: "WAW-2",
@@ -77,6 +115,15 @@ export interface Agent {
       stopLoss: 5,
       alerts: [],
       stoppedAt: undefined,
+      createDate:"2024-12-03T12:00:00Z",
+      pairList:"TOP 24H",
+      rank:200,
+      checks:[
+        { id: 1, check: "Mint Authority Disabled", status: true },
+        { id: 2, check: "Freeze Authority Disabled", status: true },
+        { id: 3, check: "Avoid Scam Tokens", status: false },
+        { id: 4, check: "Website Handles Available", status: true },
+      ],
     },
     {
       agentId: "H2W-9",
@@ -91,6 +138,15 @@ export interface Agent {
       stopLoss: 15,
       alerts: [],
       stoppedAt: undefined,
+      createDate:"2024-02-03T12:00:00Z",
+      pairList:"TOP 24H",
+      rank:200,
+      checks:[
+        { id: 1, check: "Mint Authority Disabled", status: true },
+        { id: 2, check: "Freeze Authority Disabled", status: true },
+        { id: 3, check: "Avoid Scam Tokens", status: false },
+        { id: 4, check: "Website Handles Available", status: true },
+      ],
     },
     {
       agentId: "HMU-2",
@@ -105,5 +161,18 @@ export interface Agent {
       stopLoss: 8,
       alerts: [],
       stoppedAt: undefined,
+      createDate:"2024-02-06T12:00:00Z",
+      pairList:"TOP 24H",
+      rank:200,
+      checks:[
+        { id: 1, check: "Mint Authority Disabled", status: true },
+        { id: 2, check: "Freeze Authority Disabled", status: true },
+        { id: 3, check: "Avoid Scam Tokens", status: false },
+        { id: 4, check: "Website Handles Available", status: true },
+      ],
     },
   ];
+
+export const getAgentById = (agentId: string) => {
+    return initialAgents.find(agent => agent.agentId === agentId);
+  };
