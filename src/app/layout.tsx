@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import type React from "react";
 import { Header } from "../components/Header";
+import AppWalletProvider from "@/components/AppWalletProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,8 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-black`}>
-        <Header />
-        <div className="pt-16">{children}</div>
+        <AppWalletProvider>
+          <Header />
+          <div className="pt-16">{children}</div>
+        </AppWalletProvider>
       </body>
     </html>
   );

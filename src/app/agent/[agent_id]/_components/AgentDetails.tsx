@@ -1,11 +1,7 @@
 import { SolanaIcon } from "@/components/SolanaIcon";
 import { InfoWithTooltip } from "@/components/Tooltip";
 import { Agent, SecurityCheck } from "@/constant/DefaultAgent";
-import {
-  CheckCircle,
-  LucideMessageCircleQuestion,
-  XCircle,
-} from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 import React from "react";
 
 const convertHoldingPercentage = (riskFactor: string) => {

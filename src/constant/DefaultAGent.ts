@@ -1,3 +1,5 @@
+import agents from "../../public/data/initialAgents.json"
+
 export interface SecurityCheck {
   id: number;
   check: string;
@@ -53,8 +55,7 @@ export const initialAgents: Agent[] = [
         { id: 2, check: "Freeze Authority Disabled", status: true },
         { id: 3, check: "Avoid Scam Tokens", status: false },
         { id: 4, check: "Website Handles Available", status: true },
-      ],
-      
+      ], 
     },
     {
       agentId: "FINE-7",
@@ -174,5 +175,5 @@ export const initialAgents: Agent[] = [
   ];
 
 export const getAgentById = (agentId: string) => {
-    return initialAgents.find(agent => agent.agentId === agentId);
+    return agents.find(agent => agent.agentId === agentId);
   };

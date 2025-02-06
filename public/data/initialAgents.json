@@ -1,0 +1,173 @@
+[
+  {
+    "agentId": "DNA-1",
+    "agentName": "Agent DNA-1",
+    "pnlPercentage": 12.5,
+    "invested": {
+      "sol": 10,
+      "usd": 2280
+    },
+    "currentWorth": {
+      "sol": 11.25,
+      "usd": 2565
+    },
+    "checks": [
+      {
+        "id": 1,
+        "check": "Mint Authority Disabled",
+        "status": true
+      },
+      {
+        "id": 2,
+        "check": "Freeze Authority Disabled",
+        "status": true
+      },
+      {
+        "id": 3,
+        "check": "Avoid Scam Tokens",
+        "status": true
+      },
+      {
+        "id": 4,
+        "check": "Website Handles Available",
+        "status": true
+      }
+    ],
+    "made": 1.25,
+    "isActive": false,
+    "isStopped": true,
+    "riskLevel": "Low Risk",
+    "alerts": [],
+    "stoppedAt": null,
+    "createDate": "2024-02-03T12:00:00Z",
+    "pairList": "NEW",
+    "rank": 200,
+    "minChange5m": 0,
+    "minLiquidity": 100,
+    "minHolders": 150,
+    "balance": 0.001,
+    "amount": 0.09,
+    "takeProfit": 80,
+    "stopLoss": 10,
+    "trailingTakeProfit": false,
+    "trailingTakeProfitValue": 20,
+    "trailingStopLoss": false,
+    "trailingStopLossValue": 0
+  },
+  {
+    "agentId": "FINE-7",
+    "agentName": "Agent FINE-7",
+    "pnlPercentage": 28.3,
+    "invested": {
+      "sol": 50,
+      "usd": 11400
+    },
+    "currentWorth": {
+      "sol": 64.15,
+      "usd": 14626.2
+    },
+    "made": 14.15,
+    "isActive": false,
+    "isStopped": false,
+    "riskLevel": "High Risk",
+    "alerts": [],
+    "stoppedAt": null,
+    "createDate": "2024-04-03T12:00:00Z",
+    "pairList": "NEW",
+    "rank": 200,
+    "profitTrigger": 20,
+    "profitTrail": 2,
+    "lossTrigger": 40,
+    "lossTrail": "OFF",
+    "minChange5m": 0,
+    "minLiquidity": 100,
+    "minHolders": 150,
+    "checks": [
+      {
+        "id": 1,
+        "check": "Mint Authority Disabled",
+        "status": true
+      },
+      {
+        "id": 2,
+        "check": "Freeze Authority Disabled",
+        "status": true
+      },
+      {
+        "id": 3,
+        "check": "Avoid Scam Tokens",
+        "status": false
+      },
+      {
+        "id": 4,
+        "check": "Website Handles Available",
+        "status": true
+      }
+    ],
+    "balance": 0.001,
+    "amount": 0.05,
+    "takeProfit": 80,
+    "stopLoss": 10,
+    "trailingTakeProfit": false,
+    "trailingTakeProfitValue": 20,
+    "trailingStopLoss": false,
+    "trailingStopLossValue": 0
+  },
+  {
+    "agentId": "POU-3",
+    "agentName": "Agent POU-3",
+    "pnlPercentage": -5.2,
+    "invested": {
+      "sol": 20,
+      "usd": 4560
+    },
+    "currentWorth": {
+      "sol": 18.96,
+      "usd": 4322.88
+    },
+    "made": -1.04,
+    "isActive": false,
+    "isStopped": false,
+    "riskLevel": "Trending 24h",
+    "stopLoss": 7,
+    "alerts": [],
+    "stoppedAt": null,
+    "createDate": "2024-02-08T12:00:00Z",
+    "pairList": "TOP 24H",
+    "rank": 200,
+    "profitTrigger": 20,
+    "profitTrail": 2,
+    "lossTrigger": 40,
+    "lossTrail": "OFF",
+    "minChange5m": 0,
+    "minLiquidity": 100,
+    "minHolders": 150,
+    "checks": [
+      {
+        "id": 1,
+        "check": "Mint Authority Disabled",
+        "status": true
+      },
+      {
+        "id": 2,
+        "check": "Freeze Authority Disabled",
+        "status": true
+      },
+      {
+        "id": 3,
+        "check": "Avoid Scam Tokens",
+        "status": false
+      },
+      {
+        "id": 4,
+        "check": "Website Handles Available",
+        "status": true
+      }
+    ],
+    "balance": 0.001,
+    "trailingTakeProfit": false,
+    "trailingTakeProfitValue": 20,
+    "trailingStopLoss": false,
+    "trailingStopLossValue": 0
+  }
+]

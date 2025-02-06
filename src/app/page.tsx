@@ -9,7 +9,8 @@ import { SolanaIcon } from "../components/SolanaIcon";
 import { TradingCard } from "../components/TradingCard";
 import { CreateAgentModal } from "../components/CreateAgentModal";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Agent, initialAgents } from "@/constant/DefaultAgent";
+import { Agent } from "@/constant/DefaultAgent";
+import initialAgents from "../../public/data/initialAgents.json";
 
 const SOLANA_PRICE = 228;
 const INITIAL_WALLET_BALANCE = 200;
@@ -76,7 +77,7 @@ function simulateMarketMovement(agent: Agent): Agent {
 type RiskFilter = "All" | "Low Risk" | "High Risk" | "Trending 24h";
 
 export default function Dashboard() {
-  const [agents, setAgents] = useState<Agent[]>(initialAgents);
+  const [agents, setAgents] = useState<any[]>(initialAgents);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [walletBalance, setWalletBalance] = useState(INITIAL_WALLET_BALANCE);
   const [agentsToNotify, setAgentsToNotify] = useState<Agent[]>([]);
