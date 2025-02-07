@@ -1,0 +1,78 @@
+[
+    {
+      "userId": "USER-1",
+      "walletAddress": "0xABCDEF1234567890abcdef1234567890abcdef12",
+      "agents": [
+        {
+          "agentId": "DNA-1",
+          "agentName": "Agent DNA-1",
+          "isActive": true,
+          "isStopped": false,
+          "balance": 0.001,
+          "takeProfit": 80,
+          "stopLoss": 10,
+          "trailingTakeProfit": false,
+          "trailingTakeProfitValue": 20,
+          "trailingStopLoss": false,
+          "trailingStopLossValue": 0,
+          "coinAddress": "0xSomeCoinAddressForDNA1",
+          "pnlPercentage": 28.3,
+          "invested": {
+            "sol": 50,
+            "usd": 11400
+          },
+          "currentWorth": {
+            "sol": 64.15,
+            "usd": 14626.2
+          },
+          "alerts": [],
+          "riskLevel": "Low Risk"
+        },
+        {
+          "agentId": "FINE-7",
+          "agentName": "Agent FINE-7",
+          "isActive": false,
+          "isStopped": false,
+          "balance": 0.001,
+          "takeProfit": 80,
+          "stopLoss": 10,
+          "trailingTakeProfit": false,
+          "trailingTakeProfitValue": 20,
+          "trailingStopLoss": false,
+          "trailingStopLossValue": 0,
+          "coinAddress": "0xSomeCoinAddressForFINE7",
+          "pnlPercentage": 28.3,
+          "invested": {
+            "sol": 50,
+            "usd": 11400
+          },
+          "currentWorth": {
+            "sol": 64.15,
+            "usd": 14626.2
+          },
+          "alerts": [],
+          "riskLevel": "High Risk"
+        }
+      ]
+    },
+    {
+      "userId": "USER-2",
+      "walletAddress": "0x9876543210abcdef1234567890abcdef12345678",
+      "agents": [
+        {
+          "agentId": "DNA-1",
+          "isActive": true,
+          "isStopped": false,
+          "balance": 0.002,
+          "takeProfit": 75,
+          "stopLoss": 15,
+          "trailingTakeProfit": true,
+          "trailingTakeProfitValue": 25,
+          "trailingStopLoss": false,
+          "trailingStopLossValue": 0,
+          "coinAddress": "0xSomeCoinAddressForDNA1"
+        }
+      ]
+    }
+  ]
+  

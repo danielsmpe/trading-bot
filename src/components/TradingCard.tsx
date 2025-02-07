@@ -34,6 +34,7 @@ interface TradingCardProps {
   onResume: () => void;
   onStop: () => void;
   alerts: string[];
+  defaultAgent: boolean;
 }
 
 export function TradingCard({
@@ -51,6 +52,7 @@ export function TradingCard({
   onResume,
   onStop,
   alerts,
+  defaultAgent,
 }: TradingCardProps) {
   const router = useRouter();
   const isProfit = pnlPercentage >= 0;
@@ -192,7 +194,7 @@ export function TradingCard({
 
         {/* Action Buttons */}
         <div className="mt-2 flex gap-2">
-          {!isStopped && status !== "waiting" && (
+          {!isStopped && status !== "waiting" && !defaultAgent && (
             <Button
               variant="outline"
               className={`flex-1 bg-transparent ${
@@ -215,18 +217,28 @@ export function TradingCard({
               )}
             </Button>
           )}
-          <Button
-            onClick={handleViewAgent}
-            variant="outline"
-            className={`flex-1 bg-transparent ${
-              isActive
-                ? "border-[#60d6a2]/20 text-[#60d6a2] hover:bg-[#60d6a2]/10 hover:border-[#60d6a2]/40"
-                : "border-gray-500/20 text-gray-400 hover:bg-gray-500/10 hover:border-gray-500/40 hover:text-gray-300"
-            }`}
-          >
-            <Eye className="w-4 h-4 mr-2" />
-            View Trades
-          </Button>
+          {defaultAgent ? (
+            <Button
+              variant="outline"
+              className="flex-1 bg-transparent border-gray-500/20 text-gray-400 hover:bg-gray-500/10 hover:border-gray-500/40 hover:text-gray-300 transition-colors"
+              onClick={() => router.push(`/agent/${agentId}`)} // Perbaikan di sini
+            >
+              Activate
+            </Button>
+          ) : (
+            <Button
+              onClick={handleViewAgent}
+              variant="outline"
+              className={`flex-1 bg-transparent ${
+                isActive
+                  ? "border-[#60d6a2]/20 text-[#60d6a2] hover:bg-[#60d6a2]/10 hover:border-[#60d6a2]/40"
+                  : "border-gray-500/20 text-gray-400 hover:bg-gray-500/10 hover:border-gray-500/40 hover:text-gray-300"
+              }`}
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              View Trades
+            </Button>
+          )}
         </div>
       </div>
     </div>

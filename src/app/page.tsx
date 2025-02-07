@@ -9,11 +9,17 @@ import { SolanaIcon } from "../components/SolanaIcon";
 import { TradingCard } from "../components/TradingCard";
 import { CreateAgentModal } from "../components/CreateAgentModal";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Agent } from "@/constant/DefaultAgent";
+import { Agent, getAgentsByUserId } from "@/constant/DefaultAgent";
 import initialAgents from "../../public/data/initialAgents.json";
 
-const SOLANA_PRICE = 228;
-const INITIAL_WALLET_BALANCE = 200;
+type User = {
+  userId: string;
+  walletAddress: string;
+  agents: Agent[];
+};
+
+type RiskFilter = "All" | "Low Risk" | "High Risk" | "Trending 24h";
+type AgentFilter = "All Agents" | "Activated" | "Deactivated";
 
 function simulateMarketMovement(agent: Agent): Agent {
   if (!agent.isActive) return agent;
@@ -74,10 +80,22 @@ function simulateMarketMovement(agent: Agent): Agent {
   };
 }
 
-type RiskFilter = "All" | "Low Risk" | "High Risk" | "Trending 24h";
+const SOLANA_PRICE = 228;
+const INITIAL_WALLET_BALANCE = 200;
+
+const ActiveAgents = getAgentsByUserId("USER-1") || [];
+const allAgents = [
+  ...initialAgents.filter(
+    (agent) =>
+      !ActiveAgents.some((activeAgent) => activeAgent.agentId === agent.agentId)
+  ),
+  ...ActiveAgents,
+];
 
 export default function Dashboard() {
-  const [agents, setAgents] = useState<any[]>(initialAgents);
+  const [agentFilterState, setAgentFilterState] =
+    useState<AgentFilter>("All Agents");
+  const [agents, setAgents] = useState<any[]>(allAgents);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [walletBalance, setWalletBalance] = useState(INITIAL_WALLET_BALANCE);
   const [agentsToNotify, setAgentsToNotify] = useState<Agent[]>([]);
@@ -86,6 +104,21 @@ export default function Dashboard() {
   const setRiskFilter = useCallback((value: RiskFilter) => {
     setRiskFilterState(value);
   }, []);
+
+  const setAgentsFilter = useCallback((value: AgentFilter) => {
+    setAgentFilterState(value);
+  }, []);
+
+  useEffect(() => {
+    const filteredAgents = allAgents.filter((agent) => {
+      if (agentFilterState === "All Agents") return true;
+      if (agentFilterState === "Activated") return agent.isActive;
+      if (agentFilterState === "Deactivated") return !agent.isActive;
+      return true;
+    });
+
+    setAgents(filteredAgents);
+  }, [agentFilterState]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -297,11 +330,11 @@ export default function Dashboard() {
         </div>
         <div className="md:flex items-center gap-4">
           <Tabs
-            value={riskFilterState}
-            onValueChange={(value) => setRiskFilter(value as RiskFilter)}
+            value={agentFilterState}
+            onValueChange={(value) => setAgentsFilter(value as AgentFilter)}
           >
             <TabsList className="bg-black border border-gray-800">
-              {["All", "Low Risk", "High Risk", "Trending 24h"].map((tab) => (
+              {["All Agents", "Activated", "Deactivated"].map((tab) => (
                 <TabsTrigger
                   key={tab}
                   value={tab}
@@ -319,6 +352,24 @@ export default function Dashboard() {
             <Plus className="mr-2 h-4 w-4" /> Create Agent
           </Button>
         </div>
+      </div>
+      <div className="mb-4">
+        <Tabs
+          value={riskFilterState}
+          onValueChange={(value) => setRiskFilter(value as RiskFilter)}
+        >
+          <TabsList className="bg-black border border-gray-800">
+            {["All", "Low Risk", "High Risk", "Trending 24h"].map((tab) => (
+              <TabsTrigger
+                key={tab}
+                value={tab}
+                className="data-[state=active]:bg-[#60d6a2] data-[state=active]:text-black transition-all duration-200 ease-in-out"
+              >
+                {tab}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
       </div>
 
       {/* Stats Overview */}

@@ -35,7 +35,7 @@
     ],
     "made": 1.25,
     "isActive": false,
-    "isStopped": true,
+    "isStopped": false,
     "riskLevel": "Low Risk",
     "alerts": [],
     "stoppedAt": null,
@@ -75,13 +75,6 @@
     "createDate": "2024-04-03T12:00:00Z",
     "pairList": "NEW",
     "rank": 200,
-    "profitTrigger": 20,
-    "profitTrail": 2,
-    "lossTrigger": 40,
-    "lossTrail": "OFF",
-    "minChange5m": 0,
-    "minLiquidity": 100,
-    "minHolders": 150,
     "checks": [
       {
         "id": 1,
@@ -126,22 +119,12 @@
       "usd": 4322.88
     },
     "made": -1.04,
-    "isActive": false,
-    "isStopped": false,
     "riskLevel": "Trending 24h",
-    "stopLoss": 7,
     "alerts": [],
     "stoppedAt": null,
     "createDate": "2024-02-08T12:00:00Z",
     "pairList": "TOP 24H",
     "rank": 200,
-    "profitTrigger": 20,
-    "profitTrail": 2,
-    "lossTrigger": 40,
-    "lossTrail": "OFF",
-    "minChange5m": 0,
-    "minLiquidity": 100,
-    "minHolders": 150,
     "checks": [
       {
         "id": 1,
@@ -166,8 +149,13 @@
     ],
     "balance": 0.001,
     "trailingTakeProfit": false,
-    "trailingTakeProfitValue": 20,
+    "trailingTakeProfitValue": 10,
     "trailingStopLoss": false,
-    "trailingStopLossValue": 0
+    "trailingStopLossValue": 5,
+    "defaultAgent": true,
+    "isActive": false,
+    "amount": 0.05,
+    "takeProfit": 80,
+    "stopLoss": 40
   }
 ]

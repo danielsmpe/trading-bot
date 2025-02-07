@@ -1,4 +1,6 @@
 import agents from "../../public/data/initialAgents.json"
+import users from "../../public/data/users.json"
+
 
 export interface SecurityCheck {
   id: number;
@@ -177,3 +179,29 @@ export const initialAgents: Agent[] = [
 export const getAgentById = (agentId: string) => {
     return agents.find(agent => agent.agentId === agentId);
   };
+
+export const getAgentsById = (agentId: string) => {
+    for (let user of users) {
+      const agent = user.agents.find(agent => agent.agentId === agentId);
+      if (agent) {
+        return agent;
+      }
+    }
+    return null;
+};
+
+export const getAgentsByUserId = (userId: string) => {
+  // Cari user berdasarkan userId
+  const user = users.find(user => user.userId === userId);
+
+  // Jika user ditemukan, ambil seluruh data agen yang dimiliki oleh user
+  if (user) {
+    return user.agents; // Mengembalikan seluruh data agen
+  }
+
+  // Jika user tidak ditemukan, kembalikan null
+  return null;
+};
+
+
+
