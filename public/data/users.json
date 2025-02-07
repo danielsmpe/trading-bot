@@ -31,7 +31,7 @@
         {
           "agentId": "FINE-7",
           "agentName": "Agent FINE-7",
-          "isActive": false,
+          "isActive": true,
           "isStopped": false,
           "balance": 0.001,
           "takeProfit": 80,
