@@ -36,6 +36,7 @@ interface TradingCardProps {
   alerts: string[];
   defaultAgent: boolean;
 }
+const ENV = process.env.ENV;
 
 export function TradingCard({
   agentId,
@@ -95,7 +96,11 @@ export function TradingCard({
   };
 
   const handleViewAgent = () => {
-    router.push(`/agent/${agentId}`);
+    if (ENV === "dev") {
+      router.push(`/agent/${agentId}`);
+    } else {
+      router.push(`demo/${agentId}`);
+    }
   };
 
   return (
@@ -221,7 +226,7 @@ export function TradingCard({
             <Button
               variant="outline"
               className="flex-1 bg-transparent border-gray-500/20 text-gray-400 hover:bg-gray-500/10 hover:border-gray-500/40 hover:text-gray-300 transition-colors"
-              onClick={() => router.push(`/agent/${agentId}`)} // Perbaikan di sini
+              onClick={handleViewAgent}
             >
               Activate
             </Button>

@@ -3,7 +3,8 @@ import { useSocket } from "@/hooks/use-socket";
 import { useEffect } from "react";
 
 export default function SwapComponent() {
-  const { isConnected } = useSocket("0x123456");
+  const { isConnected, tradeData } = useSocket("0x123456789abcdef");
+  console.log(tradeData);
 
   useEffect(() => {
     if (isConnected) {
@@ -15,7 +16,7 @@ export default function SwapComponent() {
 
   return (
     <div>
-      {isConnected ? "Connected to Socket.IO" : "Waiting for connection..."}
+      <div></div>
     </div>
   );
 }

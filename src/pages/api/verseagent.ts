@@ -3,14 +3,22 @@ import fs from "fs";
 import path from "path";
 
 const agentsFilePath = path.join(process.cwd(), "public/data/users.json");
+const env = process.env.ENV
+console.log(env)
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "PUT") {
     return res.status(405).json({ message: "Method Not Allowed" });
   }
-
   const { agentId, updates } = req.body;
-  const userIdToFind = "USER-1";
+
+  let userIdToFind
+  if (env === "dev") {
+    userIdToFind = "USER-2";
+  } else {
+    userIdToFind = "USER-1";
+  }
+  
 
   if (!agentId || typeof updates !== "object") {
     return res.status(400).json({ message: "Invalid request. agentId and updates object are required." });

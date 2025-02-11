@@ -3,14 +3,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { Plus } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
-import LiveCoinWatchWidget from "../components/CryptoTicker";
-import { Button } from "../components/ui/button";
-import { SolanaIcon } from "../components/SolanaIcon";
-import { TradingCard } from "../components/TradingCard";
-import { CreateAgentModal } from "../components/CreateAgentModal";
+import LiveCoinWatchWidget from "../../components/CryptoTicker";
+import { Button } from "../../components/ui/button";
+import { SolanaIcon } from "../../components/SolanaIcon";
+import { TradingCard } from "../../components/TradingCard";
+import { CreateAgentModal } from "../../components/CreateAgentModal";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Agent, getAgentsByUserId } from "@/constant/DefaultAgent";
-import initialAgents from "../../public/data/initialAgents.json";
+import initialAgents from "../../../public/data/initialAgents.json";
 import { updateAgent } from "@/hooks/user-agent";
 
 type User = {
@@ -83,9 +83,9 @@ function simulateMarketMovement(agent: Agent): Agent {
   };
 }
 
-const INITIAL_WALLET_BALANCE = 200;
+const INITIAL_WALLET_BALANCE = 500;
 
-const ActiveAgents = getAgentsByUserId("USER-1") || [];
+const ActiveAgents = getAgentsByUserId("USER-2") || [];
 const allAgents = [
   ...initialAgents.filter(
     (agent) =>
@@ -109,9 +109,7 @@ export default function Dashboard() {
   const setAgentsFilter = useCallback((value: AgentFilter) => {
     setAgentFilterState(value);
   }, []);
-
-  const storedSolPrice = localStorage.getItem("solana_price");
-  const solPrice = storedSolPrice ? parseFloat(storedSolPrice) : 233;
+  const solPrice = 233;
 
   useEffect(() => {
     const filteredAgents = allAgents.filter((agent) => {
