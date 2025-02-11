@@ -11,17 +11,21 @@ import { CreateAgentModal } from "../components/CreateAgentModal";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Agent, getAgentsByUserId } from "@/constant/DefaultAgent";
 import initialAgents from "../../public/data/initialAgents.json";
+import { updateAgent } from "@/hooks/user-agent";
+import useSolanaPrice from "@/hooks/use-solanaprice";
 
 type User = {
   userId: string;
   walletAddress: string;
   agents: Agent[];
 };
-
 type RiskFilter = "All" | "Low Risk" | "High Risk" | "Trending 24h";
 type AgentFilter = "All Agents" | "Activated" | "Deactivated";
 
 function simulateMarketMovement(agent: Agent): Agent {
+  const storedSolPrice = localStorage.getItem("solana_price");
+  const solPrice = storedSolPrice ? parseFloat(storedSolPrice) : 233;
+
   if (!agent.isActive) return agent;
 
   let pnlChange: number;
@@ -47,7 +51,7 @@ function simulateMarketMovement(agent: Agent): Agent {
   const newMade = (agent.invested.sol * newPnlPercentage) / 100;
   const newCurrentWorth = {
     sol: agent.invested.sol + newMade,
-    usd: (agent.invested.sol + newMade) * SOLANA_PRICE,
+    usd: (agent.invested.sol + newMade) * solPrice,
   };
 
   // Check if stop loss is triggered
@@ -80,7 +84,6 @@ function simulateMarketMovement(agent: Agent): Agent {
   };
 }
 
-const SOLANA_PRICE = 228;
 const INITIAL_WALLET_BALANCE = 200;
 
 const ActiveAgents = getAgentsByUserId("USER-1") || [];
@@ -100,7 +103,6 @@ export default function Dashboard() {
   const [walletBalance, setWalletBalance] = useState(INITIAL_WALLET_BALANCE);
   const [agentsToNotify, setAgentsToNotify] = useState<Agent[]>([]);
   const [riskFilterState, setRiskFilterState] = useState<RiskFilter>("All");
-
   const setRiskFilter = useCallback((value: RiskFilter) => {
     setRiskFilterState(value);
   }, []);
@@ -108,6 +110,9 @@ export default function Dashboard() {
   const setAgentsFilter = useCallback((value: AgentFilter) => {
     setAgentFilterState(value);
   }, []);
+
+  const storedSolPrice = localStorage.getItem("solana_price");
+  const solPrice = storedSolPrice ? parseFloat(storedSolPrice) : 233;
 
   useEffect(() => {
     const filteredAgents = allAgents.filter((agent) => {
@@ -165,7 +170,7 @@ export default function Dashboard() {
   }, [agentsToNotify]);
 
   const resumeAgent = useCallback(
-    (index: number) => {
+    async (index: number) => {
       setAgents((prevAgents) =>
         prevAgents.map((agent, i) =>
           i === index
@@ -177,12 +182,17 @@ export default function Dashboard() {
         ...prev,
         { ...agents[index], status: "active" },
       ]);
+
+      const Agent = agents[index];
+      await updateAgent(Agent.agentId, {
+        isActive: true,
+      });
     },
     [agents]
   );
 
   const stopAgent = useCallback(
-    (index: number) => {
+    async (index: number) => {
       setAgents((prevAgents) =>
         prevAgents.map((agent, i) =>
           i === index
@@ -198,6 +208,7 @@ export default function Dashboard() {
             : agent
         )
       );
+
       setAgentsToNotify((prev) => [
         ...prev,
         { ...agents[index], status: "stopped", stopReason: "manually" },
@@ -205,6 +216,9 @@ export default function Dashboard() {
 
       // Add the current worth of the agent back to the wallet
       const stoppedAgent = agents[index];
+      await updateAgent(stoppedAgent.agentId, {
+        isActive: false,
+      });
       setWalletBalance((prev) => prev + stoppedAgent.currentWorth.sol);
     },
     [agents]
@@ -229,11 +243,11 @@ export default function Dashboard() {
         pnlPercentage: 0,
         invested: {
           sol: investmentAmount,
-          usd: investmentAmount * SOLANA_PRICE,
+          usd: investmentAmount * solPrice,
         },
         currentWorth: {
           sol: investmentAmount,
-          usd: investmentAmount * SOLANA_PRICE,
+          usd: investmentAmount * solPrice,
         },
         made: 0,
         isActive: false,
@@ -286,7 +300,7 @@ export default function Dashboard() {
   );
 
   const activePnlSol = activeTotalWorth - activeTotalInvested;
-  const activePnlUsd = activePnlSol * SOLANA_PRICE;
+  const activePnlUsd = activePnlSol * solPrice;
   const isActivePnlPositive = activePnlSol >= 0;
 
   const totalPnlSol =
@@ -294,7 +308,7 @@ export default function Dashboard() {
     stoppedTotalWorth -
     (activeTotalInvested +
       stoppedAgents.reduce((acc, agent) => acc + agent.invested.sol, 0));
-  const totalPnlUsd = totalPnlSol * SOLANA_PRICE;
+  const totalPnlUsd = totalPnlSol * solPrice;
   const isTotalPnlPositive = totalPnlSol >= 0;
 
   const sortedAgents = [...filteredAgents].sort((a, b) => {
@@ -389,7 +403,7 @@ export default function Dashboard() {
             </p>
           </div>
           <p className="text-gray-400">
-            ${(activeTotalInvested * SOLANA_PRICE).toFixed(2)}
+            ${(activeTotalInvested * solPrice).toFixed(2)}
           </p>
         </div>
         <div className="bg-gradient-to-br from-[#003300] to-black p-4 rounded-xl">
@@ -401,7 +415,7 @@ export default function Dashboard() {
             </p>
           </div>
           <p className="text-gray-400">
-            ${(activeTotalWorth * SOLANA_PRICE).toFixed(2)}
+            ${(activeTotalWorth * solPrice).toFixed(2)}
           </p>
         </div>
         <div

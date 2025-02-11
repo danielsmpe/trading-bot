@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
 
-const agentsFilePath = path.join(process.cwd(), "public/data/initialAgents.json");
+const agentsFilePath = path.join(process.cwd(), "public/data/users.json");
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "PUT") {
@@ -10,6 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const { agentId, updates } = req.body;
+  const userIdToFind = "USER-1";
 
   if (!agentId || typeof updates !== "object") {
     return res.status(400).json({ message: "Invalid request. agentId and updates object are required." });
@@ -24,18 +25,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ message: "Failed to read agents data" });
   }
 
-  const agentIndex = agentsData.findIndex((agent: any) => agent.agentId === agentId);
+  // Cari user dengan ID "USER-1"
+  const user = agentsData.find((u: any) => u.userId === userIdToFind);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
 
+  // Cari agent berdasarkan agentId
+  const agentIndex = user.agents.findIndex((agent: any) => agent.agentId === agentId);
   if (agentIndex === -1) {
     return res.status(404).json({ message: "Agent not found" });
   }
 
-  // Update fields dynamically
-  agentsData[agentIndex] = { ...agentsData[agentIndex], ...updates };
+  // Update agent
+  user.agents[agentIndex] = { ...user.agents[agentIndex], ...updates };
 
   try {
-    fs.writeFileSync(agentsFilePath, JSON.stringify(agentsData, null, 2));
-    return res.status(200).json({ message: "Agent updated successfully", agent: agentsData[agentIndex] });
+    fs.writeFileSync(agentsFilePath, JSON.stringify(agentsData, null, 2), "utf8");
+    return res.status(200).json({ message: "Agent updated successfully", agent: user.agents[agentIndex] });
   } catch (error) {
     console.error("❌ Error writing to agents file:", error);
     return res.status(500).json({ message: "Failed to update agents data" });

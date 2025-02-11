@@ -139,7 +139,7 @@
       {
         "id": 3,
         "check": "Avoid Scam Tokens",
-        "status": false
+        "status": true
       },
       {
         "id": 4,

@@ -1,24 +1,23 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { getAgentById, initialAgents } from "@/constant/DefaultAgent";
+import { getAgentsById, getAgentsByUserId } from "@/constant/DefaultAgent";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import AgentDetails from "./_components/AgentDetails";
 import { TradingHistory } from "./_components/TradingHistory";
-import { useWallet, useConnection } from "@solana/wallet-adapter-react";
-import axios from "axios";
-import { tree } from "next/dist/build/templates/app-page";
 import { updateAgent } from "@/hooks/user-agent";
+import SwapComponent from "@/components/SwapComponent";
 
 const AgentPage = ({ params }: { params: { agent_id: string } }) => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("VerseAgent Details");
   const tabs = ["VerseAgent Details", "Trading History", "FAQ"];
-  const agent = getAgentById(params.agent_id);
+  const agent = getAgentsById(params.agent_id);
   const [loading, setIsLoading] = useState(false);
   const quickAmounts = [0.01, 0.1, 0.5, 1];
+  const initialAgents = getAgentsByUserId("USER-1") || [];
 
   const [formData, setFormData] = useState({
     amount: 0.05,
@@ -45,7 +44,6 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
     );
     if (agent) {
       const updatedStatus = !agent.isActive;
-
       const result = await updateAgent(params.agent_id, {
         isActive: updatedStatus,
         ...formData, // Send all updated form data at once
@@ -288,6 +286,7 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
               {agent?.isActive ? "Deactivate" : "Activate Now"}
             </Button>
           </div>
+          <SwapComponent />
         </div>
       </div>
     </div>

@@ -1,78 +1,185 @@
 [
-    {
-      "userId": "USER-1",
-      "walletAddress": "0xABCDEF1234567890abcdef1234567890abcdef12",
-      "agents": [
-        {
-          "agentId": "DNA-1",
-          "agentName": "Agent DNA-1",
-          "isActive": true,
-          "isStopped": false,
-          "balance": 0.001,
-          "takeProfit": 80,
-          "stopLoss": 10,
-          "trailingTakeProfit": false,
-          "trailingTakeProfitValue": 20,
-          "trailingStopLoss": false,
-          "trailingStopLossValue": 0,
-          "coinAddress": "0xSomeCoinAddressForDNA1",
-          "pnlPercentage": 28.3,
-          "invested": {
-            "sol": 50,
-            "usd": 11400
-          },
-          "currentWorth": {
-            "sol": 64.15,
-            "usd": 14626.2
-          },
-          "alerts": [],
-          "riskLevel": "Low Risk"
+  {
+    "userId": "USER-1",
+    "walletAddress": "0xABCDEF1234567890abcdef1234567890abcdef12",
+    "agents": [
+      {
+        "agentId": "DNA-1",
+        "agentName": "Agent DNA-1",
+        "isActive": true,
+        "isStopped": false,
+        "balance": 0.001,
+        "takeProfit": 20,
+        "stopLoss": 40,
+        "trailingTakeProfit": false,
+        "trailingTakeProfitValue": 10,
+        "trailingStopLoss": false,
+        "trailingStopLossValue": 5,
+        "pnlPercentage": 28.3,
+        "invested": {
+          "sol": 50,
+          "usd": 11400
         },
-        {
-          "agentId": "FINE-7",
-          "agentName": "Agent FINE-7",
-          "isActive": true,
-          "isStopped": false,
-          "balance": 0.001,
-          "takeProfit": 80,
-          "stopLoss": 10,
-          "trailingTakeProfit": false,
-          "trailingTakeProfitValue": 20,
-          "trailingStopLoss": false,
-          "trailingStopLossValue": 0,
-          "coinAddress": "0xSomeCoinAddressForFINE7",
-          "pnlPercentage": 28.3,
-          "invested": {
-            "sol": 50,
-            "usd": 11400
-          },
-          "currentWorth": {
-            "sol": 64.15,
-            "usd": 14626.2
-          },
-          "alerts": [],
-          "riskLevel": "High Risk"
-        }
-      ]
-    },
-    {
-      "userId": "USER-2",
-      "walletAddress": "0x9876543210abcdef1234567890abcdef12345678",
-      "agents": [
-        {
-          "agentId": "DNA-1",
-          "isActive": true,
-          "isStopped": false,
-          "balance": 0.002,
-          "takeProfit": 75,
-          "stopLoss": 15,
-          "trailingTakeProfit": true,
-          "trailingTakeProfitValue": 25,
-          "trailingStopLoss": false,
-          "trailingStopLossValue": 0,
+        "currentWorth": {
+          "sol": 64.15,
+          "usd": 14626.2
+        },
+        "alerts": [],
+        "riskLevel": "Low Risk",
+        "status": {
+          "holding": false,
           "coinAddress": "0xSomeCoinAddressForDNA1"
-        }
-      ]
-    }
-  ]
-  
+        },
+        "amount": 0.05,
+        "checks": [
+          {
+            "id": 1,
+            "check": "Mint Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 2,
+            "check": "Freeze Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 3,
+            "check": "Avoid Scam Tokens",
+            "status": true
+          },
+          {
+            "id": 4,
+            "check": "Website Handles Available",
+            "status": true
+          }
+        ],
+        "createDate": "2024-02-03T12:00:00Z",
+        "pairList": "NEW",
+        "rank": 200
+      },
+      {
+        "agentId": "FINE-7",
+        "agentName": "Agent FINE-7",
+        "isActive": false,
+        "isStopped": false,
+        "balance": 0.001,
+        "takeProfit": 20,
+        "stopLoss": 40,
+        "trailingTakeProfit": false,
+        "trailingTakeProfitValue": 10,
+        "trailingStopLoss": false,
+        "trailingStopLossValue": 5,
+        "coinAddress": "0xSomeCoinAddressForFINE7",
+        "pnlPercentage": 28.3,
+        "invested": {
+          "sol": 50,
+          "usd": 11400
+        },
+        "currentWorth": {
+          "sol": 64.15,
+          "usd": 14626.2
+        },
+        "alerts": [],
+        "riskLevel": "High Risk",
+        "status": {
+          "holding": false,
+          "coinAddress": "0xSomeCoinAddressForDNA1"
+        },
+        "amount": 0.05,
+        "checks": [
+          {
+            "id": 1,
+            "check": "Mint Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 2,
+            "check": "Freeze Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 3,
+            "check": "Avoid Scam Tokens",
+            "status": false
+          },
+          {
+            "id": 4,
+            "check": "Website Handles Available",
+            "status": true
+          }
+        ]
+      },
+      {
+        "agentId": "POU-3",
+        "agentName": "Agent POU-3",
+        "isActive": false,
+        "isStopped": false,
+        "balance": 0.001,
+        "takeProfit": 20,
+        "stopLoss": 40,
+        "trailingTakeProfit": false,
+        "trailingTakeProfitValue": 10,
+        "trailingStopLoss": false,
+        "trailingStopLossValue": 5,
+        "coinAddress": "0xSomeCoinAddressForFINE7",
+        "pnlPercentage": 28.3,
+        "invested": {
+          "sol": 20,
+          "usd": 4560
+        },
+        "currentWorth": {
+          "sol": 18.96,
+          "usd": 4322.88
+        },
+        "alerts": [],
+        "riskLevel": "High Risk",
+        "status": {
+          "holding": false,
+          "coinAddress": "0xSomeCoinAddressForDNA1"
+        },
+        "amount": 0.05,
+        "checks": [
+          {
+            "id": 1,
+            "check": "Mint Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 2,
+            "check": "Freeze Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 3,
+            "check": "Avoid Scam Tokens",
+            "status": true
+          },
+          {
+            "id": 4,
+            "check": "Website Handles Available",
+            "status": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "userId": "USER-2",
+    "walletAddress": "0x9876543210abcdef1234567890abcdef12345678",
+    "agents": [
+      {
+        "agentId": "DNA-1",
+        "isActive": true,
+        "isStopped": false,
+        "balance": 0.002,
+        "takeProfit": 75,
+        "stopLoss": 15,
+        "trailingTakeProfit": true,
+        "trailingTakeProfitValue": 25,
+        "trailingStopLoss": false,
+        "trailingStopLossValue": 0,
+        "coinAddress": "0xSomeCoinAddressForDNA1"
+      }
+    ]
+  }
+]
