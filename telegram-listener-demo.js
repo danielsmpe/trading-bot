@@ -264,7 +264,7 @@ async function startListening() {
       // **Cek High Risk Trade dulu**
       if (chatId === "2447330760") {
         console.log("🔎 Checking High Risk Trade...");
-        tradeData = await handleLowRiskTrade("BUY", text);
+        tradeData = await handleHighRiskTrade("BUY", text);
       }
 
       // **Jika tidak lolos High Risk, cek Low Risk**

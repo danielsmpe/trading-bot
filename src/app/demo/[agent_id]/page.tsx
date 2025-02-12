@@ -9,11 +9,12 @@ import { updateAgent } from "@/hooks/user-agent";
 import SwapComponent from "@/components/SwapComponent";
 import AgentDetails from "./_components/AgentDetails";
 import { TradingHistory } from "./_components/TradingHistory";
+import TradingSimulator from "./_components/TradingSimulator";
 
 const AgentPage = ({ params }: { params: { agent_id: string } }) => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("VerseAgent Details");
-  const tabs = ["VerseAgent Details", "Trading History", "FAQ"];
+  const tabs = ["VerseAgent Details", "Trade Overview", "FAQ"];
   const agent = getAgentsById(params.agent_id);
   const [loading, setIsLoading] = useState(false);
   const quickAmounts = [0.01, 0.1, 0.5, 1];
@@ -89,12 +90,12 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
             </div>
           </div>
           {activeTab === "VerseAgent Details" && <AgentDetails agent={agent} />}
-          {activeTab === "Trading History" && <TradingHistory agent={agent} />}
+          {activeTab === "Trade Overview" && <TradingHistory agent={agent} />}
           {activeTab === "FAQ" && <p>FAQ Content</p>}
         </div>
 
         {/* Right */}
-        <div className="mt-6 py-6 p-4 lg:mr-8 bg-gradient-to-br bg-gray-400/10 bg-opacity-0 rounded-2xl">
+        <div className="mt-6 py-6 p-4 lg:mr-8 bg-gradient-to-br bg-gray-400/10 bg-opacity-0 rounded-2xl max-h-[720px] h-full">
           <div>
             <h4 className="lg:text-xl font-bold">Activate Verseagent</h4>
             <p className="text-gray-400 text-sm">
@@ -186,7 +187,6 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
               </div>
 
               {/* Trailing Input */}
-
               {formData.trailingTakeProfit && (
                 <div className="flex items-center bg-gray-400 bg-opacity-10 px-4 py-2 mt-2 rounded-lg">
                   <input
@@ -286,7 +286,7 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
               {agent?.isActive ? "Deactivate" : "Activate Now"}
             </Button>
           </div>
-          <SwapComponent />
+          {/* <SwapComponent /> */}
         </div>
       </div>
     </div>

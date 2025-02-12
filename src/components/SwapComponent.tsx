@@ -3,8 +3,7 @@ import { useSocket } from "@/hooks/use-socket";
 import { useEffect } from "react";
 
 export default function SwapComponent() {
-  const { isConnected, tradeData } = useSocket("0x123456789abcdef");
-  console.log(tradeData);
+  const { isConnected } = useSocket("0x123456789abcdef");
 
   useEffect(() => {
     if (isConnected) {

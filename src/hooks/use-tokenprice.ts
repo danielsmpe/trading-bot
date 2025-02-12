@@ -1,7 +1,31 @@
 import axios from "axios";
+import Moralis from 'moralis';
 import { useCallback, useEffect, useState } from "react";
 
 const RPC_URL = process.env.NEXT_PUBLIC_HELIUS_RPC || "https://mainnet.helius-rpc.com/";
+
+export const usePrice = async () => {
+  try {
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching Solana price:', error);
+    return undefined;
+  }
+};
+
+export const useCoinPrice = async (address:string) => {
+  try {
+    const response = await fetch(`https://api.coingecko.com/api/v3/simple/token_price/solana?contract_addresses=${address}&vs_currencies=usd`);
+    const data = await response.json();
+
+    return data[address]?.usd 
+  } catch (error) {
+    console.error('Error fetching Solana price:', error);
+    return undefined;
+  }
+};
 
 export const useBalance = (address: string) => {
     const [balance, setBalance] = useState<number | null>(null);
@@ -43,3 +67,21 @@ export const useBalance = (address: string) => {
   
     return { balance, loading, error, fetchBalance };
   };
+
+export const usetokenPrice = async (address:string) => {
+  try {
+    await Moralis.start({
+      apiKey: process.env.NEXT_PUBLIC_MORALIS
+    });
+
+    const response = await Moralis.SolApi.token.getTokenPrice({
+      network: "mainnet",
+      address: address
+    });
+
+    return response.raw;
+  } catch (error) {
+    console.error('Error fetching token price:', error);
+    return undefined;
+  }
+};
