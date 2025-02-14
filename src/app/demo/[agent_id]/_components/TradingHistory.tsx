@@ -1,57 +1,87 @@
 import { SolanaIcon } from "@/components/SolanaIcon";
 import React, { useEffect, useState } from "react";
 import TradingSimulator, { calculatePriceLevel } from "./TradingSimulator";
-import CoinChart from "./PriceChart";
 import { useTradingSimulator } from "@/hooks/use-tradeSimulator";
-import { useSocket } from "@/hooks/use-socket";
-
-const SOLANA_PRICE_DEFAULT = 228;
+import { usePriceSocket, useTradeSocket } from "@/hooks/use-socket";
+import { updateAgent } from "@/hooks/user-agent";
 
 export const TradingHistory = (verseagent: any) => {
   const [price, setPrice] = useState<number | null>(null);
-  const [solPrice, setSolPrice] = useState<number>(SOLANA_PRICE_DEFAULT);
+  const [hasBought, setHasBought] = useState(false);
+  const [presymbol, setPreSymbol] = useState("");
+  const [solPrice, setSolPrice] = useState<number>(220);
   const { portfolio, tradeHistory, buyToken } = useTradingSimulator(price ?? 0);
-  const symbol = "DOGEUSDT";
+  const { tradeData } = useTradeSocket();
+  const { price: priceData, symbol: priceSymbol } = usePriceSocket(
+    tradeData?.tokenAddress || ""
+  );
+  const symbol = `${presymbol}USDT`;
   const agent = verseagent.agent;
+  const HistoryTrade = agent?.tradeHistory || [];
+  const [activePnlSol, setActivePnlSol] = useState(0);
+  const [totalPnlSol, setTotalPnlSol] = useState(0);
+
   const activeTotalInvested = agent?.invested.sol || 0;
   const activeTotalWorth = agent?.currentWorth.sol || 0;
-  const stoppedTotalWorth = agent?.stoppedWorth?.sol || 0;
 
-  const activePnlSol = activeTotalWorth - activeTotalInvested;
-  const isActivePnlPositive = activePnlSol >= 0;
+  // Ambil total investasi awal
+  const totalInvested = agent?.invested.sol || 0;
 
-  const totalPnlSol =
-    activeTotalWorth + stoppedTotalWorth - activeTotalInvested;
-  const totalPnlUsd = totalPnlSol * solPrice;
-  const isTotalPnlPositive = totalPnlSol >= 0;
-
-  // const { tradeData } = useSocket("0x123456789abcdef");
+  // Hitung Total P&L dari semua trade
+  const totalPnlFromTrades = agent.tradeHistory
+    ? agent.tradeHistory.reduce((acc: any, trade: any) => {
+        // P&L per trade = (Harga Saat Ini - Harga Masuk) * Jumlah
+        const tradePnl =
+          (price ?? trade.entryPrice - trade.entryPrice) * trade.amount;
+        return acc + tradePnl;
+      }, 0)
+    : 0;
 
   useEffect(() => {
-    const fetchPrices = async () => {
-      try {
-        const res = await fetch(
-          `https://min-api.cryptocompare.com/data/pricemulti?fsyms=DOGE,SOL&tsyms=USD`
-        );
-        const json = await res.json();
+    if (price !== null) {
+      setActivePnlSol(totalPnlFromTrades);
+      setTotalPnlSol(totalPnlFromTrades);
+    }
+  }, [price, agent]);
 
-        if (json.DOGE?.USD) setPrice(Number(json.DOGE.USD));
-        if (json.SOL?.USD) setSolPrice(Number(json.SOL.USD));
-      } catch (error) {
-        console.error("Error fetching prices:", error);
+  useEffect(() => {
+    const handleToggleAgent = async () => {
+      if (tradeHistory && agent) {
+        await updateAgent(agent.agentId, {
+          ...(tradeHistory.length > 0 ? { tradeHistory } : {}), // Kirim tradeHistory hanya jika ada isinya
+        });
       }
     };
 
-    fetchPrices();
-    const interval = setInterval(fetchPrices, 2000);
-    return () => clearInterval(interval);
-  }, []);
+    handleToggleAgent();
+  }, [tradeHistory, agent, agent.agentId]);
+
+  useEffect(() => {
+    if (tradeData?.tokenAddress && priceData !== null) {
+      setPrice(priceData);
+      setPreSymbol(priceSymbol || "");
+    }
+  }, [tradeData, priceData]);
+
+  useEffect(() => {
+    if (tradeData && price !== null && !hasBought) {
+      buyToken(
+        presymbol,
+        agent.amount,
+        price,
+        calculatePriceLevel(price, 0.1, "SL"),
+        calculatePriceLevel(price, 0.1, "TP")
+      );
+      console.log(`✅ Auto-buy executed for 100 ${presymbol} at $${price}`);
+      setHasBought(true);
+    }
+  }, [tradeData, price, hasBought]);
 
   return (
     <div>
       <div
         className={`bg-gradient-to-br ${
-          isActivePnlPositive ? "from-[#003300]" : "from-[#330000]"
+          activePnlSol >= 0 ? "from-[#003300]" : "from-[#330000]"
         } to-black p-4 rounded-xl`}
       >
         <p className="text-gray-400">Total P&L</p>
@@ -63,58 +93,34 @@ export const TradingHistory = (verseagent: any) => {
           <div className="flex items-end">
             <p
               className={`${
-                isTotalPnlPositive ? "text-green-400" : "text-red-500"
+                totalPnlSol >= 0 ? "text-green-400" : "text-red-500"
               }`}
             >
-              {isTotalPnlPositive ? "+" : ""}
-              {totalPnlSol.toFixed(2)}%
+              {totalPnlSol >= 0 ? "+" : ""}
+              {((totalPnlSol / (totalInvested || 1)) * 100).toFixed(2)}%
             </p>
             <p
               className={`text-sm ${
-                isActivePnlPositive ? "text-[#60d6a2]" : "text-red-500"
+                activePnlSol >= 0 ? "text-[#60d6a2]" : "text-red-500"
               }`}
             >
-              ${totalPnlUsd.toFixed(2)}
+              ${totalPnlSol.toFixed(2)}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="mb-6">
-        <button
-          className="bg-blue-600 px-4 py-2 rounded-md hover:bg-blue-700 transition w-full"
-          onClick={() => {
-            if (price !== null) {
-              buyToken(
-                symbol,
-                100,
-                price,
-                calculatePriceLevel(price, 0.1, "SL"),
-                calculatePriceLevel(price, 0.1, "TP")
-              );
-            }
-          }}
-          disabled={price === null}
-        >
-          {price !== null ? `Buy 100 ${symbol}` : "Waiting for price..."}
-        </button>
-      </div>
-
       {Object.keys(portfolio).length > 0 && (
         <div>
-          <p className="text-responsive font-semibold">Curent Trade</p>
-          <div
-            className={`bg-gradient-to-br mt-4 ${
-              isActivePnlPositive ? "from-[#003300]" : "from-[#330000]"
-            } to-black p-4 rounded-xl`}
-          >
+          <p className="text-responsive font-semibold">Active Trade</p>
+          <div className="mt-2">
             <TradingSimulator
               price={price}
-              symbol={symbol}
+              symbol={presymbol}
               portfolio={portfolio ?? {}}
               tradeHistory={tradeHistory ?? []}
             />
-            <CoinChart setPrice={setPrice} symbol={symbol} />
+            {/* <CoinChart setPrice={setPrice} symbol={symbol} /> */}
           </div>
         </div>
       )}
@@ -127,13 +133,13 @@ export const TradingHistory = (verseagent: any) => {
               <tr className="border-b border-gray-600">
                 <th className="py-2 px-4 text-left">Token Details</th>
                 <th className="py-2 px-4 text-left">Trade Type</th>
-                <th className="py-2 px-4 text-left">Amount (SOL)</th>
+                <th className="py-2 px-4 text-left">Amount</th>
                 <th className="py-2 px-4 text-left">P&L</th>
               </tr>
             </thead>
             <tbody>
-              {tradeHistory.length > 0 ? (
-                tradeHistory.map((trade, index) => (
+              {HistoryTrade.length > 0 ? (
+                HistoryTrade.map((trade: any, index: number) => (
                   <tr key={index} className="border-b border-gray-700">
                     <td className="py-2 px-4">{trade.token}</td>
                     <td
@@ -149,14 +155,13 @@ export const TradingHistory = (verseagent: any) => {
                       {trade.amount.toFixed(2)}
 
                       <span className="text-xs flex">
-                        ( <SolanaIcon className="w-3 h-3 mt-0.5" />
+                        {/* ( <SolanaIcon className="w-3 h-3 mt-0.5" /> */}${" "}
                         {solPrice
                           ? (
                               (trade.amount * trade.entryPrice) /
                               solPrice
                             ).toFixed(4)
                           : "-"}
-                        )
                       </span>
                     </td>
 
@@ -169,7 +174,7 @@ export const TradingHistory = (verseagent: any) => {
                     >
                       {trade.tradeType === "sell"
                         ? trade.pnl !== undefined
-                          ? `$ ${trade.pnl.toFixed(3)}`
+                          ? `$ ${trade.pnl.toFixed(8)}`
                           : "-"
                         : "-"}
                     </td>

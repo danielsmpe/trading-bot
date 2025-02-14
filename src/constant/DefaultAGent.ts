@@ -1,6 +1,6 @@
 import agents from "../../public/data/initialAgents.json"
 import users from "../../public/data/users.json"
-
+require("dotenv").config();
 
 export interface SecurityCheck {
   id: number;
@@ -188,6 +188,15 @@ export const getAgentsById = (agentId: string) => {
       }
     }
     return null;
+};
+
+export const getAgentByUserAndAgentId = (agentId: string) => {
+  const user = users.find(user => user.userId === "USER-2");
+  if (user) {
+      return user.agents.find(agent => agent.agentId === agentId) || null;
+  }
+
+  return null;
 };
 
 export const getAgentsByUserId = (userId: string) => {

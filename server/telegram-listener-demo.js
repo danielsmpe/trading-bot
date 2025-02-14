@@ -1,13 +1,39 @@
 require("dotenv").config();
-const { validators } = require("tailwind-merge");
 const { TelegramClient } = require("telegram");
 const { StringSession } = require("telegram/sessions");
+const { Server } = require("socket.io");
+
+const io = new Server(3001, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
+console.log("🚀 Socket.IO server running on port 3001");
+
+io.on("connection", (socket) => {
+  console.log(`🔗 Client connected: ${socket.id}`);
+
+  // Simpan wallet ke dalam socket
+  socket.on("register", (wallet) => {
+    console.log(`📝 Client registered: ${wallet}`);
+    socket.data.wallet = wallet;
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`❌ Client disconnected: ${socket.id}`);
+  });
+});
+
 
 const apiId = parseInt(process.env.TELEGRAM_API_ID || "", 10);
 const apiHash = process.env.TELEGRAM_API_HASH || "";
 const stringSession = process.env.TELEGRAM_STRING_SESSION || "";
 
 const CHANNEL_USERNAME = "@versetest";
+const ENV = process.env.ENV
+const USER = ENV === "dev" ? "USER-2" : "USER-1"
 
 // Helper function
 function extractTokenAddress(text) {
@@ -211,7 +237,6 @@ async function startListening() {
   await client.start();
   console.log("✅ Telegram Client Connected & Listening...");
 
-  // Dapatkan informasi channel
   const channel = await client.getEntity(CHANNEL_USERNAME);
   const channelId = channel.id.toString();
   console.log(`📡 Listening for messages from: ${CHANNEL_USERNAME} (ID: ${channelId})`);
@@ -221,8 +246,8 @@ async function startListening() {
       const message = update.message;
       const text = message?.message;
       const chatId = message?.peerId?.channelId?.toString();
-      const topicId = message?.replyTo?.replyToMsgId
-      const allowedChannelIds = ["12345678", "87654321","2447330760"]; 
+      const topicId = message?.replyTo?.replyToMsgId;
+      const allowedChannelIds = ["12345678", "87654321", "2447330760"];
 
       if (!allowedChannelIds.includes(chatId)) {
         console.log(`🚫 Message ignored (from Chat ID: ${chatId})`);
@@ -231,24 +256,39 @@ async function startListening() {
 
       console.log("\n📩 [NEW MESSAGE]");
       console.log("🔹 Chat ID:", chatId || "Unknown");
-      // console.log("💬 Message:", text);
       console.log("─────────────────────────────────");
 
-      if (chatId === "2202241417") {
+      let tradeData = null;
+
+      // **Cek High Risk Trade dulu**
+      if (chatId === "2447330760") {
+        console.log("🔎 Checking High Risk Trade...");
+        tradeData = await handleHighRiskTrade("BUY", text);
+      }
+
+      // **Jika tidak lolos High Risk, cek Low Risk**
+      if (!tradeData && chatId === "2202241417") {
         const targetTopicId = "2386593";
         if (topicId !== targetTopicId) {
-            console.log(`🚫 Message ignored (from Topic ID: ${topicId})`);
-            await handleLowRiskTrade("BUY", text);
-            return;
+          console.log(`🚫 Message ignored (from Topic ID: ${topicId})`);
+          return;
         }
+
+        console.log("🔎 Checking Low Risk Trade...");
+        tradeData = await handleLowRiskTrade("BUY", text);
       }
-      if (chatId === "2447330760") {
-        console.log("kepanggil ")
-        await handleLowRiskTrade("BUY", text);
+
+      // **Jika tradeData valid, kirim ke FE lewat Socket.io**
+      if (tradeData) {
+        console.log("📤 Sending trade data to client...");
+        io.emit("trade", tradeData);
+      } else {
+        console.log("❌ No valid trade. Not sending to client.");
       }
     }
   });
 }
+
 
 async function handleHighRiskTrade(type, message) {
   console.log(`🔄 Validating ${type} Order...`);
@@ -256,10 +296,11 @@ async function handleHighRiskTrade(type, message) {
   const tokenAddress = extractTokenAddress(message);
   if (!tokenAddress) {
     console.log("❌ Token address not found!");
-    return;
+    return null;
   }
 
   const tradeData = extractHighRiskTradeData(message);
+  console.log(tradeData)
 
   if (
     !isValidPrice(tradeData.price) ||
@@ -268,100 +309,79 @@ async function handleHighRiskTrade(type, message) {
     !isValidTop10(tradeData.top10Percentage)
   ) {
     console.log("❌ Message does not meet filter criteria. Trade not executed.");
-    return;
+    return null;
   }
 
-  const allagents = require("./public/data/users.json");
-  const agents = allagents.find(user => user.userId === "USER-1").agents;
+  const allagents = require("../public/data/users.json");
+  const agents = allagents.find(user => user.userId === USER).agents;
+
   
   let validAgent = agents.find(agent => 
     agent.isActive === true && agent.riskLevel === 'High Risk'
   );
   
-  const amount = validAgent ? validAgent.balance : 0;
-
   if (!validAgent) {
     console.log("🚫 No valid agent found. Trade not executed.");
-    return;
+    return null;
   }
 
   console.log(`✅ Trade validated by ${validAgent.agentName}`);
   
-  const command = `/${type.toLowerCase()} ${tokenAddress} ${amount}`;
-  await sendTradeCommand(command).then((response) => {
-    console.log("📩 Response from bot:", response);
-  });;
+  return {
+    type,
+    tokenAddress,
+    amount: validAgent.balance,
+    riskLevel: "High Risk",
+    agent: validAgent.agentName
+  };
 }
+
 
 async function handleLowRiskTrade(type, message) {
   console.log(`🔄 Validating ${type} Order...`);
   
-  // Extract token address from message
   const tokenAddress = extractTokenAddress(message);
   if (!tokenAddress) {
     console.log("❌ Token address not found!");
-    return;
+    return null;
   }
 
-  // Extract trade data from message
   const tradeData = extractLowRiskTradeData(message);
-  const validate = shouldBuy(tradeData)
+  const validate = shouldBuy(tradeData);
 
   if (!validate) {
     console.log("❌ No Buy Signal.");
-    return; 
+    return null;
   }
 
-  const allagents = require("./public/data/users.json");
-  const agents = allagents.find(user => user.userId === "USER-1").agents;
+  const allagents = require("../public/data/users.json");
+  const agents = allagents.find(user => user.userId === USER).agents;
   
   let validAgent = agents.find(agent => 
     agent.isActive === true && agent.riskLevel === 'Low Risk'
   );
   
-  const amount = validAgent ? validAgent.balance : 0;
-  const status = validAgent ? validAgent.status.holding : false;
-
   if (!validAgent) {
     console.log("🚫 No valid agent found. Trade not executed.");
-    return;
+    return null;
   }
 
-  if (status) {
+  if (validAgent.status.holding) {
     console.log("🚫 Agent Still holding Coin");
-    return;
+    return null;
   }
 
   console.log(`✅ Trade validated by ${validAgent.agentName}`);
   
-  const command = `/${type.toLowerCase()} ${tokenAddress} ${amount}`;
-  await sendTradeCommand(command).then((response) => {
-    console.log("📩 Response from bot:", response);
-  });;
+  return {
+    type,
+    tokenAddress,
+    amount: validAgent.balance,
+    riskLevel: "Low Risk",
+    agent: validAgent.agentName
+  };
 }
 
-async function sendTradeCommand(command) {
-  console.log(`💹 Sending trade command: ${command}`);
-
-  const client = new TelegramClient(new StringSession(stringSession), apiId, apiHash, {
-    connectionRetries: 5,
-  });
-
-  await client.start();
-  await client.sendMessage("GMGN_sol02_bot", { message: command });
-
-  return new Promise(async (resolve) => {
-    setTimeout(async () => {
-      const messages = await client.getMessages("GMGN_sol02_bot", { limit: 5 });
-
-      if (messages.length > 0) {
-        resolve(messages[0].message);
-      } else {
-        resolve("No response received.");
-      }
-    }, 2000);
-  });
-}
 
 // Start listener
 startListening().catch(console.error);

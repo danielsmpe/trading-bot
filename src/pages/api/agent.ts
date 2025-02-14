@@ -1,49 +1,75 @@
-import { TelegramClient } from "telegram";
-import { StringSession } from "telegram/sessions";
+import { NextApiRequest, NextApiResponse } from "next";
+import fs from "fs";
+import path from "path";
 
-const apiId = parseInt(process.env.TELEGRAM_API_ID || "", 10);
-const apiHash = process.env.TELEGRAM_API_HASH || "";
-const stringSession = process.env.TELEGRAM_STRING_SESSION|| ""; // HARUS hasil login sebelumnya
+const agentsFilePath = path.join(process.cwd(), "public/data/users.json");
+const env = process.env.ENV;
 
-const GMGN_BOT_USERNAME = "GMGN_sol02_bot";
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== "PUT") {
+    return res.status(405).json({ message: "Method Not Allowed" });
+  }
+  
+  const { newAgent } = req.body;
 
-async function initializeTelegramClient() {
-  const client = new TelegramClient(new StringSession(stringSession), apiId, apiHash, {
-    connectionRetries: 5,
-  });
-
-  if (!stringSession) {
-    console.error("❌ ERROR: Session String tidak ada! Harus login dulu sekali.");
-    return null;
+  if (!newAgent || typeof newAgent !== "object") {
+    return res.status(400).json({ message: "Invalid request. newAgent object is required." });
   }
 
-  await client.connect();
-  console.log("✅ Telegram Client Connected");
-  return client;
-}
+  let userIdToFind = env === "dev" ? "USER-2" : "USER-1";
 
-export default async function handler(req:any, res:any) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+  let usersData;
+  try {
+    const data = fs.readFileSync(agentsFilePath, "utf8");
+    usersData = JSON.parse(data);
+  } catch (error) {
+    console.error("❌ Error reading users data:", error);
+    return res.status(500).json({ message: "Failed to read users data" });
   }
 
-  const { command } = req.body; 
-
-  if (!command) {
-    return res.status(400).json({ error: "Command is required" });
+  // Cari user dengan ID yang sesuai
+  const user = usersData.find((u: any) => u.userId === userIdToFind);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
   }
+
+  // Pastikan newAgent punya nilai default jika ada yang kosong
+  const defaultAgent = {
+    agentId: "UNKNOWN-ID",
+    agentName: "Unnamed Agent",
+    isActive: false,
+    isStopped: false,
+    balance: 0,
+    takeProfit: 0,
+    stopLoss: 0,
+    trailingTakeProfit: false,
+    trailingTakeProfitValue: 0,
+    trailingStopLoss: false,
+    trailingStopLossValue: 0,
+    pnlPercentage: 0,
+    invested: { sol: 0, usd: 0 },
+    currentWorth: { sol: 0, usd: 0 },
+    alerts: [],
+    riskLevel: "Unknown",
+    status: { holding: false, coinAddress: "" },
+    amount: 0,
+    checks: [],
+    createDate: new Date().toISOString(),
+    pairList: "NONE",
+    rank: 0,
+    tradeHistory: []
+  };
+
+  const agentToAdd = { ...defaultAgent, ...newAgent };
+
+  // Tambahkan agen baru ke dalam array agents
+  user.agents.push(agentToAdd);
 
   try {
-    const client = await initializeTelegramClient();
-    if (!client) {
-      return res.status(500).json({ error: "Telegram client failed to initialize" });
-    }
-
-    await client.sendMessage(GMGN_BOT_USERNAME, { message: command });
-
-    return res.status(200).json({ success: true, message: `Command sent: ${command}` });
+    fs.writeFileSync(agentsFilePath, JSON.stringify(usersData, null, 2), "utf8");
+    return res.status(201).json({ message: "Agent created successfully", agent: agentToAdd });
   } catch (error) {
-    console.error("❌ ERROR:", error);
-    return res.status(500).json({ error: "Failed to send message to GMGN Sniper Bot" });
+    console.error("❌ Error writing to agents file:", error);
+    return res.status(500).json({ message: "Failed to update agents data" });
   }
 }

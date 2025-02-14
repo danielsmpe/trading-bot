@@ -1,6 +1,13 @@
 import axios from "axios";
 import Moralis from 'moralis';
 import { useCallback, useEffect, useState } from "react";
+import { io } from "socket.io-client";
+
+const priceSocket = io("/api/socket", {
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 3000,
+});
 
 const RPC_URL = process.env.NEXT_PUBLIC_HELIUS_RPC || "https://mainnet.helius-rpc.com/";
 
@@ -78,10 +85,11 @@ export const usetokenPrice = async (address:string) => {
       network: "mainnet",
       address: address
     });
+    console.log("response",response)
 
     return response.raw;
   } catch (error) {
     console.error('Error fetching token price:', error);
     return undefined;
   }
-};
+}

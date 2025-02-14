@@ -1,27 +1,29 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { getAgentsById, getAgentsByUserId } from "@/constant/DefaultAgent";
+import {
+  getAgentByUserAndAgentId,
+  getAgentsById,
+  getAgentsByUserId,
+} from "@/constant/DefaultAgent";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { updateAgent } from "@/hooks/user-agent";
-import SwapComponent from "@/components/SwapComponent";
 import AgentDetails from "./_components/AgentDetails";
 import { TradingHistory } from "./_components/TradingHistory";
-import TradingSimulator from "./_components/TradingSimulator";
 
 const AgentPage = ({ params }: { params: { agent_id: string } }) => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("VerseAgent Details");
   const tabs = ["VerseAgent Details", "Trade Overview", "FAQ"];
-  const agent = getAgentsById(params.agent_id);
+  const agent = getAgentByUserAndAgentId(params.agent_id);
   const [loading, setIsLoading] = useState(false);
   const quickAmounts = [0.01, 0.1, 0.5, 1];
   const initialAgents = getAgentsByUserId("USER-1") || [];
 
   const [formData, setFormData] = useState({
-    amount: 0.05,
+    amount: agent?.amount || 0.05,
     takeProfit: 20,
     trailingTakeProfit: false,
     trailingTakeProfitValue: 10,
@@ -59,7 +61,7 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
   return (
     <div className="p-6 xl:px-56 bg-black min-h-screen text-white pt-16">
       <Button
-        onClick={() => router.push("/")}
+        onClick={() => router.push("/demo")}
         className="text-gray-400 hover:bg-green-400/10 hover:border-gray-500/40 hover:text-green-400  bg-gray-800 rounded-2xl"
       >
         <ArrowLeft className="h-5 w-5" /> Back

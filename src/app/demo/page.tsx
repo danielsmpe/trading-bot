@@ -11,7 +11,7 @@ import { CreateAgentModal } from "../../components/CreateAgentModal";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Agent, getAgentsByUserId } from "@/constant/DefaultAgent";
 import initialAgents from "../../../public/data/initialAgents.json";
-import { updateAgent } from "@/hooks/user-agent";
+import { createAgent, updateAgent } from "@/hooks/user-agent";
 
 type User = {
   userId: string;
@@ -222,7 +222,7 @@ export default function Dashboard() {
   );
 
   const handleCreateAgent = useCallback(
-    (newAgent: any) => {
+    async (newAgent: any) => {
       const investmentAmount = newAgent.minLiquidity;
       if (walletBalance < investmentAmount) {
         toast.error(
@@ -237,6 +237,7 @@ export default function Dashboard() {
 
       const agent: Agent = {
         ...newAgent,
+        agentId: newAgent.agentName,
         pnlPercentage: 0,
         invested: {
           sol: investmentAmount,
@@ -247,33 +248,73 @@ export default function Dashboard() {
           usd: investmentAmount * solPrice,
         },
         made: 0,
-        isActive: false,
+        isActive: true,
         isStopped: false,
-        status: "waiting",
+        status: {
+          holding: false,
+          coinAddress: "0xSomeCoinAddressForDNA1",
+        },
         alerts: [],
       };
+
+      // **Optimistic UI Update**: Tambahkan agent ke state sebelum request API
       setAgents((prevAgents) => [agent, ...prevAgents]);
       setWalletBalance((prev) => prev - investmentAmount);
 
-      // Simulate agent activation after 15-30 seconds
-      const activationTime = Math.floor(
-        Math.random() * (30000 - 15000 + 1) + 15000
-      );
-      setTimeout(() => {
-        setAgents((prevAgents) =>
-          prevAgents.map((a) =>
-            a.agentName === agent.agentName
-              ? { ...a, isActive: true, status: "active" }
-              : a
-          )
+      try {
+        const response = await createAgent(agent);
+
+        if (response.error) {
+          toast.error("Failed to create agent. Please try again.", {
+            position: "bottom-right",
+            duration: 5000,
+          });
+
+          // **Rollback UI Update** jika gagal
+          setAgents((prevAgents) =>
+            prevAgents.filter((a) => a.agentName !== agent.agentName)
+          );
+          setWalletBalance((prev) => prev + investmentAmount);
+          return;
+        }
+
+        toast.success("Agent created successfully!", {
+          position: "bottom-right",
+          duration: 5000,
+        });
+
+        // Simulate agent activation after 15-30 seconds
+        const activationTime = Math.floor(
+          Math.random() * (30000 - 15000 + 1) + 15000
         );
-        setAgentsToNotify((prev) => [
-          ...prev,
-          { ...agent, isActive: true, status: "active" },
-        ]);
-      }, activationTime);
+        setTimeout(() => {
+          setAgents((prevAgents) =>
+            prevAgents.map((a) =>
+              a.agentName === agent.agentName
+                ? { ...a, isActive: true, status: "active" }
+                : a
+            )
+          );
+          setAgentsToNotify((prev) => [
+            ...prev,
+            { ...agent, isActive: true, status: "active" },
+          ]);
+        }, activationTime);
+      } catch (error) {
+        console.error("❌ Error creating agent:", error);
+        toast.error("Something went wrong. Please try again.", {
+          position: "bottom-right",
+          duration: 5000,
+        });
+
+        // **Rollback UI Update** jika ada error
+        setAgents((prevAgents) =>
+          prevAgents.filter((a) => a.agentName !== agent.agentName)
+        );
+        setWalletBalance((prev) => prev + investmentAmount);
+      }
     },
-    [walletBalance]
+    [walletBalance, solPrice]
   );
 
   const filteredAgents = agents.filter((agent) =>
