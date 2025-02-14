@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export type TradeType = "buy" | "sell";
 
 export type Trade = {
   id: string;
   token: string;
+  tokenAddress: string;
   entryPrice: number;
   amount: number;
   stopLoss: number;
@@ -13,89 +16,129 @@ export type Trade = {
   tradeType?: TradeType;
   exitPrice?: number;
   pnl?: number;
+  createdAt: string;
 };
 
-export const useTradingSimulator = (price: number) => {
-  const [balance, setBalance] = useState(500);
-  const [portfolio, setPortfolio] = useState<{ [token: string]: Trade[] }>({});
-  const [tradeHistory, setTradeHistory] = useState<Trade[]>([]);
-
-  // Fungsi untuk membeli token (BUY)
-  const buyToken = (
+interface TradingState {
+  balance: number;
+  portfolio: { [token: string]: Trade[] };
+  tradeHistory: Trade[];
+  buyToken: (
     token: string,
+    tokenAddress: string,
     amount: number,
     entryPrice: number,
     stopLoss: number,
     takeProfit: number
-  ) => {
-    if (!entryPrice) return alert("Invalid token");
-    if (balance < amount) return alert("Insufficient balance");
+  ) => void;
+  updatePortfolio: (price: number) => void;
+}
 
-    const trade: Trade = {
-      id: crypto.randomUUID(),
-      token,
-      entryPrice,
-      amount,
-      stopLoss,
-      takeProfit,
-      status: "holding",
-      tradeType: "buy", // Tambahkan tradeType saat buy
-    };
+export const useTradingStore = create<TradingState>()(
+  persist(
+    (set, get) => ({
+      balance: 500,
+      portfolio: {},
+      tradeHistory: [], // 🆕 Tidak di-persist
 
-    setBalance((prev) => prev - amount);
-    setPortfolio((prev) => ({
-      ...prev,
-      [token]: [...(prev[token] || []), trade],
-    }));
+      buyToken: (token, tokenAddress, amount, entryPrice, stopLoss, takeProfit) => {
+        const { balance, portfolio, tradeHistory } = get();
 
-    // ⬇️ Tambahkan ke history sebagai "BUY"
-    setTradeHistory((prev) => [...prev, trade]);
-  };
+        if (!entryPrice) return alert("Invalid token");
+        if (balance < amount) return alert("Insufficient balance");
 
-  // Memeriksa harga untuk menutup trade jika menyentuh SL atau TP (SELL)
-  useEffect(() => {
-    if (!price) return;
+        const newTrade: Trade = {
+          id: crypto.randomUUID(),
+          token,
+          tokenAddress,
+          entryPrice,
+          amount,
+          stopLoss,
+          takeProfit,
+          status: "holding",
+          tradeType: "buy",
+          createdAt: new Date().toISOString(), // 🆕 Tambah timestamp
+        };
 
-    setPortfolio((prev) => {
-      const updatedPortfolio: { [token: string]: Trade[] } = {};
-      const closedTrades: Trade[] = [];
+        set({
+          balance: balance - amount,
+          portfolio: {
+            ...portfolio,
+            [token]: [...(portfolio[token] || []), newTrade],
+          },
+          tradeHistory: [...tradeHistory, newTrade], // 🆕 Trade history tetap di state, tapi tidak persist
+        });
+      },
 
-      Object.keys(prev).forEach((token) => {
-        updatedPortfolio[token] = prev[token]
-          .map((trade) => {
+      updatePortfolio: (price) => {
+        const { portfolio, tradeHistory, balance } = get();
+        const updatedPortfolio: { [token: string]: Trade[] } = {};
+        const closedTrades: Trade[] = [];
+        let newBalance = balance;
+
+        Object.keys(portfolio).forEach((token) => {
+          const filteredTrades = portfolio[token].filter((trade) => {
             if (trade.status === "holding") {
               if (price <= trade.stopLoss || price >= trade.takeProfit) {
                 const exitPrice = price;
                 const pnl = (exitPrice - trade.entryPrice) * trade.amount;
+                newBalance += trade.amount * (exitPrice / trade.entryPrice);
 
                 closedTrades.push({
                   ...trade,
                   exitPrice,
                   pnl,
                   status: "closed",
-                  tradeType: "sell", // Tambahkan tradeType saat sell
+                  tradeType: "sell",
+                  createdAt: new Date().toISOString(), // 🆕 Tambahkan timestamp ke closed trade
                 });
 
-                setBalance((prevBalance) => prevBalance + trade.amount * (exitPrice / trade.entryPrice));
-
-                return null; // Hapus trade yang sudah closed
+                return false; // ❌ Hapus trade dari portfolio
               }
             }
-            return trade;
-          })
-          .filter((trade): trade is Trade => trade !== null); // Hapus trade yang sudah closed
-      });
+            return true; // ✅ Tetap simpan trade yang masih holding
+          });
 
-      // ⬇️ Tambahkan trade yang di-close ke history sebagai "SELL"
-      if (closedTrades.length > 0) {
-        setTradeHistory((prev) => [...prev, ...closedTrades]);
+          if (filteredTrades.length > 0) {
+            updatedPortfolio[token] = filteredTrades;
+          }
+        });
+
+        set({
+          portfolio: updatedPortfolio, // ✅ Hanya trade aktif yang tersimpan
+          tradeHistory: [...tradeHistory, ...closedTrades], // ✅ Simpan history closed trade
+          balance: newBalance, // ✅ Update saldo setelah auto-sell
+        });
+      },
+    }),
+    {
+      name: "trading-storage",
+      partialize: (state) => ({
+        balance: state.balance,
+        portfolio: state.portfolio, // 🆕 tradeHistory tidak disimpan
+      }),
+    }
+  )
+);
+
+export const useTradingSimulator = (price: number) => {
+  const { balance, portfolio, tradeHistory, buyToken, updatePortfolio } = useTradingStore();
+  const prevPriceRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (price !== null && Object.keys(portfolio).length > 0) {
+      // Cek apakah harga benar-benar berubah (hindari infinite loop)
+      if (prevPriceRef.current !== price) {
+        prevPriceRef.current = price; // Update harga sebelumnya
+        updatePortfolio(price);
       }
-
-      return updatedPortfolio;
-    });
+    }
   }, [price]);
+  
+
+  useEffect(() => {
+    console.log("✅ Portfolio Loaded:", portfolio);
+  }, [portfolio]);
 
   return { balance, portfolio, tradeHistory, buyToken };
 };
-
-

@@ -3,15 +3,14 @@
 import { Button } from "@/components/ui/button";
 import {
   getAgentByUserAndAgentId,
-  getAgentsById,
   getAgentsByUserId,
 } from "@/constant/DefaultAgent";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { updateAgent } from "@/hooks/user-agent";
-import AgentDetails from "./_components/AgentDetails";
-import { TradingHistory } from "./_components/TradingHistory";
+import AgentDetails from "./_Components/AgentDetails";
+import { TradingOverview } from "./_Components/TradingOverview";
 
 const AgentPage = ({ params }: { params: { agent_id: string } }) => {
   const router = useRouter();
@@ -92,7 +91,7 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
             </div>
           </div>
           {activeTab === "VerseAgent Details" && <AgentDetails agent={agent} />}
-          {activeTab === "Trade Overview" && <TradingHistory agent={agent} />}
+          {activeTab === "Trade Overview" && <TradingOverview agent={agent} />}
           {activeTab === "FAQ" && <p>FAQ Content</p>}
         </div>
 

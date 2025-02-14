@@ -219,7 +219,8 @@
         ],
         "createDate": "2024-02-03T12:00:00Z",
         "pairList": "NEW",
-        "rank": 200
+        "rank": 200,
+        "tradeHistory": []
       },
       {
         "agentId": "FINE-7",
@@ -276,16 +277,7 @@
         "pairList": "NEW",
         "rank": 200,
         "tradeHistory": [
-          {
-            "id": "61fd7315-22cf-4f59-b3bf-3dcd55f8d2b0",
-            "token": "BOME",
-            "entryPrice": 0.002222159,
-            "amount": 0.1,
-            "stopLoss": 0.00222,
-            "takeProfit": 0.002224,
-            "status": "holding",
-            "tradeType": "buy"
-          }
+        
         ]
       },
       {
@@ -339,59 +331,6 @@
             "status": true
           }
         ]
-      },
-      {
-        "agentId": "afsaf",
-        "agentName": "afsaf",
-        "isActive": false,
-        "isStopped": false,
-        "balance": 0,
-        "takeProfit": 0,
-        "stopLoss": 20,
-        "trailingTakeProfit": false,
-        "trailingTakeProfitValue": 0,
-        "trailingStopLoss": false,
-        "trailingStopLossValue": 0,
-        "pnlPercentage": 0,
-        "invested": {
-          "sol": 200,
-          "usd": 46600
-        },
-        "currentWorth": {
-          "sol": 200,
-          "usd": 46600
-        },
-        "alerts": [],
-        "riskLevel": "High Risk",
-        "status": {
-          "holding": false,
-          "coinAddress": "0xSomeCoinAddressForDNA1"
-        },
-        "amount": 0,
-        "checks": [],
-        "createDate": "2025-02-13T10:02:22.096Z",
-        "pairList": "NONE",
-        "rank": 0,
-        "tradeHistory": [
-          {
-            "id": "6ed61b5e-c318-4592-8ab2-cf224174ce4c",
-            "token": "BOME",
-            "entryPrice": 0.002215911,
-            "amount": 0,
-            "stopLoss": 0.002214,
-            "takeProfit": 0.002218,
-            "status": "holding",
-            "tradeType": "buy"
-          }
-        ],
-        "minLiquidity": 200,
-        "auditChecks": {
-          "mintAuthDisabled": true,
-          "freezeAuthDisabled": true,
-          "websiteSocialAvailable": true,
-          "avoidScamToken": true
-        },
-        "made": 0
       }
     ]
   }

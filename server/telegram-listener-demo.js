@@ -247,7 +247,7 @@ async function startListening() {
       const text = message?.message;
       const chatId = message?.peerId?.channelId?.toString();
       const topicId = message?.replyTo?.replyToMsgId;
-      const allowedChannelIds = ["12345678", "87654321", "2447330760"];
+      const allowedChannelIds = ["2202241417", "87654321", "2447330760"];
 
       if (!allowedChannelIds.includes(chatId)) {
         console.log(`🚫 Message ignored (from Chat ID: ${chatId})`);

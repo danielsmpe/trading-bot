@@ -1,11 +1,5 @@
-import { Trade } from "@/hooks/use-tradeSimulator";
-
-interface TradingSimulatorProps {
-  price: number | null;
-  symbol: string;
-  portfolio: { [token: string]: Trade[] };
-  tradeHistory: Trade[];
-}
+import { useTradingStore } from "@/hooks/use-tradeSimulator";
+import { useEffect, useState } from "react";
 
 export function calculatePriceLevel(
   price: number,
@@ -14,25 +8,26 @@ export function calculatePriceLevel(
   decimals: number = 6
 ) {
   const changeAmount = (price * percentage) / 100;
-
   let result = type === "TP" ? price + changeAmount : price - changeAmount;
-
   return parseFloat(result.toFixed(decimals));
 }
 
-const TradingSimulator: React.FC<TradingSimulatorProps> = ({
-  price,
-  symbol,
-  portfolio,
-}) => {
+const TradingSimulator: React.FC<{ price: number | null }> = ({ price }) => {
+  const { portfolio } = useTradingStore();
+  const [renderKey, setRenderKey] = useState(0);
+
+  useEffect(() => {
+    setRenderKey((prev) => prev + 1);
+  }, [price]);
+
   return (
-    <div className=" text-white rounded-lg shadow-lg">
-      {/* Open Trades */}
-      <div className="mb-4">
-        {portfolio[symbol] ? (
-          <div className="mb-4 p-4 bg-gray-800 rounded-lg">
+    <div className="text-white rounded-lg shadow-lg">
+      {/* 🔄 Loop semua token yang ada di portfolio */}
+      {Object.keys(portfolio).length > 0 ? (
+        Object.keys(portfolio).map((symbol) => (
+          <div key={symbol} className="mb-4 p-4 bg-gray-800 rounded-lg">
             <h4 className="font-semibold text-yellow-400">{symbol}</h4>
-            <p className="text-sm text-gray-400">
+            <p key={renderKey} className="text-sm text-gray-400">
               Current Price: {price !== null ? `$${price.toFixed(6)}` : "N/A"}
             </p>
             <table className="w-full mt-2 text-sm">
@@ -60,10 +55,10 @@ const TradingSimulator: React.FC<TradingSimulatorProps> = ({
               </tbody>
             </table>
           </div>
-        ) : (
-          <p className="text-gray-400">No open trades for {symbol}.</p>
-        )}
-      </div>
+        ))
+      ) : (
+        <p className="text-gray-400">No open trades.</p>
+      )}
     </div>
   );
 };

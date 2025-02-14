@@ -29,7 +29,7 @@ export const Header = () => {
           </Button>
 
           <SolanaIcon className="h-4 w-4" />
-          <span className="text-gray-200">{walletBalance.toFixed(4)} SOL</span>
+          <span className="text-gray-200">{walletBalance.toFixed(2)} SOL</span>
         </div>
       </div>
     </div>

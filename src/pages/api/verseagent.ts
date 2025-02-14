@@ -46,7 +46,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   // Update agent
-  user.agents[agentIndex] = { ...user.agents[agentIndex], ...updates };
+  if (Array.isArray(updates.tradeHistory)) {
+    user.agents[agentIndex].tradeHistory = [
+      ...user.agents[agentIndex].tradeHistory,
+      ...updates.tradeHistory
+    ];
+  }
+  
+  // Update semua field lainnya
+  Object.keys(updates).forEach((key) => {
+    if (key !== "tradeHistory") {
+      user.agents[agentIndex][key] = updates[key];
+    }
+  });
 
   try {
     fs.writeFileSync(agentsFilePath, JSON.stringify(agentsData, null, 2), "utf8");
