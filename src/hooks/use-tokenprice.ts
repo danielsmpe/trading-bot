@@ -11,16 +11,28 @@ const priceSocket = io("/api/socket", {
 
 const RPC_URL = process.env.NEXT_PUBLIC_HELIUS_RPC || "https://mainnet.helius-rpc.com/";
 
-export const usePrice = async () => {
-  try {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching Solana price:', error);
-    return undefined;
-  }
+export const usePrice = () => {
+  const [solPrice, setSolPrice] = useState<number | null>(null);
+
+  const fetchPrice = async () => {
+    try {
+      const response = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
+      );
+      const data = await response.json();
+      setSolPrice(data.solana.usd);
+    } catch (error) {
+      console.error("Error fetching Solana price:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPrice();
+  }, []);
+
+  return solPrice;
 };
+
 
 export const useCoinPrice = async (address:string) => {
   try {

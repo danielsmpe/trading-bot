@@ -1,3 +1,4 @@
+import { Agent } from "@/constant/DefaultAgent";
 import { useEffect, useRef } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -19,31 +20,36 @@ export type Trade = {
   createdAt: string;
 };
 
-interface TradingState {
+type TradingState = {
   balance: number;
   portfolio: { [token: string]: Trade[] };
   tradeHistory: Trade[];
+  agentID:string
   buyToken: (
     token: string,
     tokenAddress: string,
     amount: number,
     entryPrice: number,
     stopLoss: number,
-    takeProfit: number
+    takeProfit: number,
+    agentId: string
   ) => void;
   updatePortfolio: (price: number) => void;
-}
+};
+
 
 export const useTradingStore = create<TradingState>()(
   persist(
     (set, get) => ({
-      balance: 500,
+      balance: 50,
       portfolio: {},
-      tradeHistory: [], // 🆕 Tidak di-persist
+      tradeHistory: [],
+      agentID:"",
 
-      buyToken: (token, tokenAddress, amount, entryPrice, stopLoss, takeProfit) => {
+      buyToken: (token, tokenAddress, amount, entryPrice, stopLoss, takeProfit,agentId) => {  
         const { balance, portfolio, tradeHistory } = get();
-
+        
+        
         if (!entryPrice) return alert("Invalid token");
         if (balance < amount) return alert("Insufficient balance");
 
@@ -57,7 +63,7 @@ export const useTradingStore = create<TradingState>()(
           takeProfit,
           status: "holding",
           tradeType: "buy",
-          createdAt: new Date().toISOString(), // 🆕 Tambah timestamp
+          createdAt: new Date().toISOString(),
         };
 
         set({
@@ -66,7 +72,8 @@ export const useTradingStore = create<TradingState>()(
             ...portfolio,
             [token]: [...(portfolio[token] || []), newTrade],
           },
-          tradeHistory: [...tradeHistory, newTrade], // 🆕 Trade history tetap di state, tapi tidak persist
+          agentID: agentId,
+          tradeHistory: [...tradeHistory, newTrade],
         });
       },
 
@@ -81,6 +88,8 @@ export const useTradingStore = create<TradingState>()(
             if (trade.status === "holding") {
               if (price <= trade.stopLoss || price >= trade.takeProfit) {
                 const exitPrice = price;
+                console.log("exitprice",exitPrice)
+                console.log("entri",trade.entryPrice)
                 const pnl = (exitPrice - trade.entryPrice) * trade.amount;
                 newBalance += trade.amount * (exitPrice / trade.entryPrice);
 
@@ -90,13 +99,13 @@ export const useTradingStore = create<TradingState>()(
                   pnl,
                   status: "closed",
                   tradeType: "sell",
-                  createdAt: new Date().toISOString(), // 🆕 Tambahkan timestamp ke closed trade
+                  createdAt: new Date().toISOString(),
                 });
 
-                return false; // ❌ Hapus trade dari portfolio
+                return false;
               }
             }
-            return true; // ✅ Tetap simpan trade yang masih holding
+            return true;
           });
 
           if (filteredTrades.length > 0) {
@@ -105,9 +114,9 @@ export const useTradingStore = create<TradingState>()(
         });
 
         set({
-          portfolio: updatedPortfolio, // ✅ Hanya trade aktif yang tersimpan
-          tradeHistory: [...tradeHistory, ...closedTrades], // ✅ Simpan history closed trade
-          balance: newBalance, // ✅ Update saldo setelah auto-sell
+          portfolio: updatedPortfolio,
+          tradeHistory: [...tradeHistory, ...closedTrades],
+          balance: newBalance,
         });
       },
     }),
@@ -115,30 +124,122 @@ export const useTradingStore = create<TradingState>()(
       name: "trading-storage",
       partialize: (state) => ({
         balance: state.balance,
-        portfolio: state.portfolio, // 🆕 tradeHistory tidak disimpan
+        agentID: state.agentID,
+        portfolio: state.portfolio,
       }),
     }
   )
 );
 
 export const useTradingSimulator = (price: number) => {
-  const { balance, portfolio, tradeHistory, buyToken, updatePortfolio } = useTradingStore();
+  const { balance, portfolio, tradeHistory,agentID, buyToken, updatePortfolio } = useTradingStore();
   const prevPriceRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (price !== null && Object.keys(portfolio).length > 0) {
-      // Cek apakah harga benar-benar berubah (hindari infinite loop)
       if (prevPriceRef.current !== price) {
-        prevPriceRef.current = price; // Update harga sebelumnya
+        prevPriceRef.current = price;
         updatePortfolio(price);
       }
     }
   }, [price]);
   
-
-  useEffect(() => {
-    console.log("✅ Portfolio Loaded:", portfolio);
-  }, [portfolio]);
-
-  return { balance, portfolio, tradeHistory, buyToken };
+  return { balance, portfolio, tradeHistory, buyToken,agentID };
 };
+
+export function simulateMarketMovement(agent: Agent, solPrice: number | null): Agent {
+  if (!solPrice) return agent;
+
+  if (!agent.isActive) return agent;
+
+  // Set default values if not defined
+  const takeProfit = agent.takeProfit ?? Infinity;  // Default to Infinity if undefined
+  const stopLoss = agent.stopLoss ?? 0; // Default to 0 if undefined
+
+  let pnlChange: number;
+
+  // Risk level determines the change in pnl
+  switch (agent.riskLevel) {
+    case "Low Risk":
+      pnlChange = (Math.random() - 0.5) * 2; // Minor fluctuations
+      break;
+    case "High Risk":
+      pnlChange = (Math.random() - 0.5) * 10; // Larger fluctuations
+      break;
+    case "Trending 24h":
+      pnlChange = (Math.random() - 0.5) * 4; // Moderate fluctuations
+      if (Math.random() < 0.1) {
+        pnlChange *= 3; // Random high fluctuation for trending condition
+      }
+      break;
+    default:
+      pnlChange = 0;
+  }
+
+  // Ensure that agent.pnlPercentage is treated as a number
+  const currentPnlPercentage = isNaN(Number(agent.pnlPercentage)) ? 0 : Number(agent.pnlPercentage);
+  const newPnlPercentage = currentPnlPercentage + pnlChange;
+
+  // Calculate the new worth based on pnl percentage
+  const newMade = (agent.invested * newPnlPercentage) / 100;
+  const newCurrentWorth = agent.invested + newMade;
+
+  // Ensure calculations result in valid numbers
+  if (isNaN(newPnlPercentage) || isNaN(newMade) || isNaN(newCurrentWorth)) {
+    console.error("Invalid calculation detected!", {
+      agent,
+      pnlChange,
+      newPnlPercentage,
+      newMade,
+      newCurrentWorth,
+    });
+    return agent; // Return the original agent in case of invalid calculation
+  }
+
+  // Check if stop loss is triggered
+  if (newPnlPercentage <= -stopLoss) {
+    return {
+      ...agent,
+      pnlPercentage: newPnlPercentage,
+      currentWorth: newCurrentWorth,
+      made: newMade,
+      isActive: false,
+      isStopped: true,
+      status: "stopped",
+      alerts: [
+        ...agent.alerts,
+        `Stop loss triggered at ${newPnlPercentage.toFixed(2)}%`,
+      ],
+      stopReason: "stop loss",
+      stoppedAt: Date.now(),
+    };
+  }
+
+  // Check if take profit is triggered
+  if (newPnlPercentage >= takeProfit) {
+    return {
+      ...agent,
+      pnlPercentage: newPnlPercentage,
+      currentWorth: newCurrentWorth,
+      made: newMade,
+      isActive: false,
+      isStopped: true,
+      status: "stopped",
+      alerts: [
+        ...agent.alerts,
+        `Take profit triggered at ${newPnlPercentage.toFixed(2)}%`,
+      ],
+      stopReason: "take profit",
+      stoppedAt: Date.now(),
+    };
+  }
+
+  return {
+    ...agent,
+    pnlPercentage: newPnlPercentage,
+    currentWorth: newCurrentWorth,
+    made: newMade,
+  };
+}
+
+

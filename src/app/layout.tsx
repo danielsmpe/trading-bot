@@ -4,6 +4,8 @@ import { Inter } from "next/font/google";
 import type React from "react";
 import { Header } from "../components/Header";
 import AppWalletProvider from "@/components/AppWalletProvider";
+import { TradingProvider } from "@/context/TradingContext";
+import { getAgentByUserAndAgentId } from "@/constant/DefaultAgent";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,8 +23,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} bg-black`}>
         <AppWalletProvider>
-          <Header />
-          <div className="pt-16">{children}</div>
+          <TradingProvider>
+            <Header />
+            <div className="pt-16">{children}</div>
+          </TradingProvider>
         </AppWalletProvider>
       </body>
     </html>

@@ -1,4 +1,6 @@
+import { SolanaIcon } from "@/components/SolanaIcon";
 import { useTradingStore } from "@/hooks/use-tradeSimulator";
+import { formatDecimal } from "@/lib/priceconvert";
 import { useEffect, useState } from "react";
 
 export function calculatePriceLevel(
@@ -28,7 +30,8 @@ const TradingSimulator: React.FC<{ price: number | null }> = ({ price }) => {
           <div key={symbol} className="mb-4 p-4 bg-gray-800 rounded-lg">
             <h4 className="font-semibold text-yellow-400">{symbol}</h4>
             <p key={renderKey} className="text-sm text-gray-400">
-              Current Price: {price !== null ? `$${price.toFixed(6)}` : "N/A"}
+              Current Price:{" "}
+              {price !== null ? `$${formatDecimal(price)}` : "N/A"}
             </p>
             <table className="w-full mt-2 text-sm">
               <thead>
@@ -42,13 +45,16 @@ const TradingSimulator: React.FC<{ price: number | null }> = ({ price }) => {
               <tbody>
                 {portfolio[symbol].map((trade) => (
                   <tr key={trade.id} className="border-b border-gray-700">
-                    <td>{trade.amount}</td>
-                    <td>${trade.entryPrice.toFixed(6)}</td>
+                    <td className="flex">
+                      <SolanaIcon className="w-3 h-3 mt-1 mr-0.5" />
+                      <p>{trade.amount} SOL</p>
+                    </td>
+                    <td>${formatDecimal(trade.entryPrice)}</td>
                     <td className="text-red-400">
-                      ${trade.stopLoss.toFixed(6)}
+                      ${formatDecimal(trade.stopLoss)}
                     </td>
                     <td className="text-green-400">
-                      ${trade.takeProfit.toFixed(6)}
+                      ${formatDecimal(trade.takeProfit)}
                     </td>
                   </tr>
                 ))}

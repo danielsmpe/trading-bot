@@ -12,19 +12,15 @@ import {
 import { SolanaIcon } from "./SolanaIcon";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
+import { convertSolToUsd, formatDecimal } from "@/lib/priceconvert";
+import { useTradingContext } from "@/context/TradingContext";
 
 interface TradingCardProps {
   agentId: string;
   agentName: string;
   pnlPercentage: number;
-  invested: {
-    sol: number;
-    usd: number;
-  };
-  currentWorth: {
-    sol: number;
-    usd: number;
-  };
+  invested: number;
+  currentWorth: number;
   made: number;
   isActive: boolean;
   isStopped: boolean;
@@ -82,6 +78,7 @@ export function TradingCard({
         : "text-red-500"
       : "text-gray-400";
 
+  const { solPrice } = useTradingContext();
   const getRiskIcon = () => {
     switch (riskLevel) {
       case "Low Risk":
@@ -102,6 +99,8 @@ export function TradingCard({
       router.push(`demo/${agentId}`);
     }
   };
+
+  const formattedPnlPercentage = Number(pnlPercentage).toFixed(2);
 
   return (
     <div
@@ -141,12 +140,12 @@ export function TradingCard({
         <div className="flex items-baseline gap-2">
           <span className={`text-4xl font-bold ${textColor}`}>
             {isProfit ? "+" : ""}
-            {pnlPercentage.toFixed(2)}%
+            {Number(formattedPnlPercentage)}%
           </span>
           <div className="flex items-center gap-1">
             <SolanaIcon />
             <span className="text-xl text-white">
-              {Math.abs(made).toFixed(3)}
+              {Math.abs(made).toFixed(2)}
             </span>
           </div>
         </div>
@@ -157,21 +156,23 @@ export function TradingCard({
             <p className="text-gray-400 mb-1">INVESTED</p>
             <div className="flex items-center gap-1">
               <SolanaIcon />
-              <span className="text-xl text-white">
-                {invested.sol.toFixed(2)}
-              </span>
+              <span className="text-xl text-white">{invested.toFixed(2)}</span>
             </div>
-            <p className="text-gray-500">${invested.usd.toFixed(2)}</p>
+            <p className="text-gray-500">
+              ${convertSolToUsd(solPrice, invested)}
+            </p>
           </div>
           <div>
             <p className="text-gray-400 mb-1">CURRENT WORTH</p>
             <div className="flex items-center gap-1">
               <SolanaIcon />
               <span className="text-xl text-white">
-                {currentWorth.sol.toFixed(2)}
+                {currentWorth.toFixed(2)}
               </span>
             </div>
-            <p className="text-gray-500">${currentWorth.usd.toFixed(2)}</p>
+            <p className="text-gray-500">
+              ${convertSolToUsd(solPrice, currentWorth)}
+            </p>
           </div>
         </div>
 

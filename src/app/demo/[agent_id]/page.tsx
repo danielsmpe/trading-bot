@@ -20,15 +20,16 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
   const [loading, setIsLoading] = useState(false);
   const quickAmounts = [0.01, 0.1, 0.5, 1];
   const initialAgents = getAgentsByUserId("USER-1") || [];
+  const buyamount = (agent?.balance ?? 0) * 0.1;
 
   const [formData, setFormData] = useState({
-    amount: agent?.amount || 0.05,
-    takeProfit: 20,
-    trailingTakeProfit: false,
-    trailingTakeProfitValue: 10,
-    stopLoss: 40,
-    trailingStopLoss: false,
-    trailingStopLossValue: 5,
+    amount: buyamount || 0.05,
+    takeProfit: agent?.takeProfit || 20,
+    trailingTakeProfit: agent?.trailingTakeProfit || false,
+    trailingTakeProfitValue: agent?.trailingTakeProfitValue || 10,
+    stopLoss: agent?.stopLoss || 40,
+    trailingStopLoss: agent?.trailingStopLoss || false,
+    trailingStopLossValue: agent?.trailingStopLossValue || 5,
   });
 
   const handleQuickAmount = (value: number) => {
@@ -92,7 +93,9 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
           </div>
           {activeTab === "VerseAgent Details" && <AgentDetails agent={agent} />}
           {activeTab === "Trade Overview" && <TradingOverview agent={agent} />}
-          {activeTab === "FAQ" && <p>FAQ Content</p>}
+          {activeTab === "FAQ" && (
+            <p className="text-center mt-5">FAQ Content</p>
+          )}
         </div>
 
         {/* Right */}

@@ -12,14 +12,8 @@ export interface Agent {
     agentId: string;
     agentName: string;
     pnlPercentage: number;
-    invested: {
-      sol: number;
-      usd: number;
-    };
-    currentWorth: {
-      sol: number;
-      usd: number;
-    };
+    invested: number
+    currentWorth: number
     made: number;
     isActive: boolean;
     isStopped: boolean;
@@ -32,7 +26,9 @@ export interface Agent {
     createDate?:string,
     pairList?:string,
     rank?:number
-    checks?: SecurityCheck[];
+    checks?: SecurityCheck[]
+    totalInvestedSol?:number
+    takeProfit?:number
   }
   
 export const initialAgents: Agent[] = [
@@ -40,8 +36,8 @@ export const initialAgents: Agent[] = [
       agentId: "DNA-1",
       agentName: "Agent DNA-1",
       pnlPercentage: 12.5,
-      invested: { sol: 10, usd: 2280 },
-      currentWorth: { sol: 11.25, usd: 2565 },
+      invested: 50,
+      currentWorth: 50,
       made: 1.25,
       isActive: true,
       isStopped: false,
@@ -63,8 +59,8 @@ export const initialAgents: Agent[] = [
       agentId: "FINE-7",
       agentName: "Agent FINE-7",
       pnlPercentage: 28.3,
-      invested: { sol: 50, usd: 11400 },
-      currentWorth: { sol: 64.15, usd: 14626.2 },
+      invested: 50,
+      currentWorth: 50,
       made: 14.15,
       isActive: true,
       isStopped: false,
@@ -86,8 +82,8 @@ export const initialAgents: Agent[] = [
       agentId: "POU-3",
       agentName: "Agent POU-3",
       pnlPercentage: -5.2,
-      invested: { sol: 20, usd: 4560 },
-      currentWorth: { sol: 18.96, usd: 4322.88 },
+      invested: 50,
+      currentWorth: 50,
       made: -1.04,
       isActive: true,
       isStopped: false,
@@ -109,8 +105,8 @@ export const initialAgents: Agent[] = [
       agentId: "WAW-2",
       agentName: "Agent WAW-4",
       pnlPercentage: 7.8,
-      invested: { sol: 30, usd: 6840 },
-      currentWorth: { sol: 32.34, usd: 7373.52 },
+      invested: 50,
+      currentWorth: 50,
       made: 2.34,
       isActive: true,
       isStopped: false,
@@ -132,8 +128,8 @@ export const initialAgents: Agent[] = [
       agentId: "H2W-9",
       agentName: "Agent H2W-9",
       pnlPercentage: -2.1,
-      invested: { sol: 15, usd: 3420 },
-      currentWorth: { sol: 14.685, usd: 3348.18 },
+      invested: 50,
+      currentWorth: 50,
       made: -0.315,
       isActive: true,
       isStopped: false,
@@ -155,8 +151,8 @@ export const initialAgents: Agent[] = [
       agentId: "HMU-2",
       agentName: "Agent HMU-2",
       pnlPercentage: 15.6,
-      invested: { sol: 25, usd: 5700 },
-      currentWorth: { sol: 28.9, usd: 6589.2 },
+      invested: 50,
+      currentWorth: 50,
       made: 3.9,
       isActive: true,
       isStopped: false,
