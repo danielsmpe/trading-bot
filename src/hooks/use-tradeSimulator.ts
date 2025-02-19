@@ -62,19 +62,31 @@ export const useTradingStore = create<TradingState>()(
 
         const agent = agents[agentId] || { portfolio: {}, tradeHistory: [] };
 
-        set({
-          balance: balance - amount,
+        // Ensure that we are not sharing the same portfolio object between agents
+        const updatedPortfolio = Object.keys(agent.portfolio).reduce((acc, key) => {
+          acc[key] = [...agent.portfolio[key]];
+          return acc;
+        }, {} as { [token: string]: Trade[] });
+
+        if (!updatedPortfolio[token]) {
+          updatedPortfolio[token] = [];
+        }
+        updatedPortfolio[token] = [...updatedPortfolio[token], newTrade];
+
+        console.log("Before set:", JSON.stringify(agents, null, 2));
+
+        set((state) => ({
+          balance: state.balance - amount,
           agents: {
-            ...agents,
+            ...state.agents,
             [agentId]: {
-              portfolio: {
-                ...agent.portfolio,
-                [token]: [...(agent.portfolio[token] || []), newTrade],
-              },
-              tradeHistory: [...agent.tradeHistory, newTrade],
+              portfolio: updatedPortfolio,
+              tradeHistory: [...(state.agents[agentId]?.tradeHistory || []), newTrade],
             },
           },
-        });
+        }));
+
+        console.log("After set:", JSON.stringify(get().agents, null, 2));
       },
 
       updatePortfolio: (price) => {
@@ -84,7 +96,7 @@ export const useTradingStore = create<TradingState>()(
 
         Object.keys(agents).forEach((agentId) => {
           const agent = agents[agentId];
-          const updatedPortfolio: { [token: string]: Trade[] } = {};
+          const updatedPortfolio: { [token: string]: Trade[] } = { ...agent.portfolio };
           const closedTrades: Trade[] = [];
 
           Object.keys(agent.portfolio).forEach((token) => {

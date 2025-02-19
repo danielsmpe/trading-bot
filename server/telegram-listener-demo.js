@@ -398,7 +398,7 @@ async function handleLowRiskTrade(type, message) {
     type,
     tokenAddress,
     amount: validAgent.balance,
-    riskLevel: "Low Risk",
+    riskLevel: tradeData.riskLevel,
     agent: validAgent.agentName
   };
 }
