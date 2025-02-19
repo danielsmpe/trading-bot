@@ -7,10 +7,11 @@ import {
 } from "@/constant/DefaultAgent";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { updateAgent } from "@/hooks/user-agent";
 import AgentDetails from "./_Components/AgentDetails";
 import { TradingOverview } from "./_Components/TradingOverview";
+import { useTradingContext } from "@/context/TradingContext";
 
 const AgentPage = ({ params }: { params: { agent_id: string } }) => {
   const router = useRouter();
@@ -21,6 +22,11 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
   const quickAmounts = [0.01, 0.1, 0.5, 1];
   const initialAgents = getAgentsByUserId("USER-1") || [];
   const buyamount = (agent?.balance ?? 0) * 0.1;
+  const { setAgentId } = useTradingContext();
+  const agentId = agent?.agentId;
+  useEffect(() => {
+    setAgentId(agentId);
+  }, [agentId]);
 
   const [formData, setFormData] = useState({
     amount: buyamount || 0.05,

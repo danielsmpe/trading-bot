@@ -92,6 +92,3 @@ export function usePriceSocket(mintAddress: string) {
 
   return { price,symbol, isConnected };
 }
-
-
-

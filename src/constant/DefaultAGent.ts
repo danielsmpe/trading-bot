@@ -29,6 +29,8 @@ export interface Agent {
     checks?: SecurityCheck[]
     totalInvestedSol?:number
     takeProfit?:number
+    tradeHistory?:any[]
+    totalPnlsol?: number; 
   }
   
 export const initialAgents: Agent[] = [
@@ -196,16 +198,8 @@ export const getAgentByUserAndAgentId = (agentId: string) => {
 };
 
 export const getAgentsByUserId = (userId: string) => {
-  // Cari user berdasarkan userId
   const user = users.find(user => user.userId === userId);
-
-  // Jika user ditemukan, ambil seluruh data agen yang dimiliki oleh user
-  if (user) {
-    return user.agents; // Mengembalikan seluruh data agen
-  }
-
-  // Jika user tidak ditemukan, kembalikan null
-  return null;
+  return user?.agents ?? []; // Pastikan selalu return array, bukan null
 };
 
 

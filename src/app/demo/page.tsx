@@ -25,14 +25,7 @@ type AgentFilter = "All Agents" | "Activated" | "Deactivated";
 
 const INITIAL_WALLET_BALANCE = 500;
 
-const ActiveAgents = getAgentsByUserId("USER-2") || [];
-const allAgents = [
-  ...initialAgents.filter(
-    (agent) =>
-      !ActiveAgents.some((activeAgent) => activeAgent.agentId === agent.agentId)
-  ),
-  ...ActiveAgents,
-];
+const allAgents = getAgentsByUserId("USER-2") || [];
 
 export default function Dashboard() {
   const [agentFilterState, setAgentFilterState] =
@@ -163,7 +156,7 @@ export default function Dashboard() {
 
   const handleCreateAgent = useCallback(
     async (newAgent: any) => {
-      const investmentAmount = newAgent.minLiquidity;
+      const investmentAmount = newAgent.invested;
       if (walletBalance < investmentAmount) {
         toast.error(
           `Insufficient balance to create a new agent. You need ${investmentAmount} SOL.`,

@@ -201,7 +201,6 @@ function shouldBuy(data) {
   return score >= 0;
 }
 
-
 // main code
 async function startListening() {
   const client = new TelegramClient(new StringSession(stringSession), apiId, apiHash, {
@@ -222,7 +221,7 @@ async function startListening() {
       const text = message?.message;
       const chatId = message?.peerId?.channelId?.toString();
       const topicId = message?.replyTo?.replyToMsgId
-      const allowedChannelIds = ["12345678", "87654321","2447330760"]; 
+      const allowedChannelIds = ["2202241417", "2122751413","2447330760"]; 
 
       if (!allowedChannelIds.includes(chatId)) {
         console.log(`🚫 Message ignored (from Chat ID: ${chatId})`);
@@ -236,22 +235,31 @@ async function startListening() {
 
       if (chatId === "2202241417") {
         const targetTopicId = "2386593";
-        if (topicId !== targetTopicId) {
+        if (topicId == targetTopicId) {
             console.log(`🚫 Message ignored (from Topic ID: ${topicId})`);
             await handleLowRiskTrade("BUY", text);
             return;
         }
       }
-      if (chatId === "2447330760") {
-        console.log("kepanggil ")
+
+      if (chatId === "2122751413") {
+        console.log("High Risk")
         await handleLowRiskTrade("BUY", text);
       }
+
+      if (chatId === "2447330760") {
+        await Promise.all([
+            handleHighRiskTrade("BUY", text),
+            handleLowRiskTrade("BUY", text)
+        ]);
+    }
+    
     }
   });
 }
 
 async function handleHighRiskTrade(type, message) {
-  console.log(`🔄 Validating ${type} Order...`);
+  console.log(`🔄 Validating High Risk Order...`);
   
   const tokenAddress = extractTokenAddress(message);
   if (!tokenAddress) {
@@ -294,7 +302,7 @@ async function handleHighRiskTrade(type, message) {
 }
 
 async function handleLowRiskTrade(type, message) {
-  console.log(`🔄 Validating ${type} Order...`);
+  console.log(`🔄 Validating Low Risk Order...`);
   
   // Extract token address from message
   const tokenAddress = extractTokenAddress(message);

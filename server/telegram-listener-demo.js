@@ -70,9 +70,22 @@ function extractLowRiskTradeData(message) {
   const holdersMatch = message.match(/Holder:\s*(\d+)/);
   const holders = holdersMatch ? parseInt(holdersMatch[1]) : 0;
 
-  // Menarik jumlah pemegang token (holders)
-  const openMatch = message.match(/Open:\s*(\d+)/);
-  const open = openMatch ? parseInt(openMatch[1]) : 0;
+  // Menarik waktu open (format: "1h ago", "1d ago", dsb.)
+  const openMatch = message.match(/Open:\s*(\d+)([mhd])\s*ago/);
+  let openMinutes = 0;
+
+  if (openMatch) {
+    const value = parseInt(openMatch[1]);
+    const unit = openMatch[2];
+
+    if (unit === 'm') {
+      openMinutes = value; // dalam menit
+    } else if (unit === 'h') {
+      openMinutes = value * 60; // konversi jam ke menit
+    } else if (unit === 'd') {
+      openMinutes = value * 1440; // konversi hari ke menit
+    }
+  }
 
   // Menarik jumlah MCP
   const mcpMatch = message.match(/MCP:\s*\$\s*([\d\.\,]+)(K)?/);
@@ -98,12 +111,12 @@ function extractLowRiskTradeData(message) {
     }
   }
 
+  // Menarik informasi liquidity
   const liquidityMatch = message.match(/Liq:\s*([\d\.]+)\s*SOL\s*\(\s*\$([\d\.]+)(K|M)?/);
   let liquidity = 0;
   if (liquidityMatch) {
     let liquidityStr = liquidityMatch[2];
     let multiplier = liquidityMatch[3] === 'K' ? 1000 : liquidityMatch[3] === 'M' ? 1000000 : 1;
-  
     liquidity = parseFloat(liquidityStr.replace(',', '')) * multiplier;
   }
 
@@ -115,6 +128,9 @@ function extractLowRiskTradeData(message) {
   const change5mMatch = message.match(/5m\s*\|\s*1h\s*\|\s*6h:\s*([-+]?\d+\.\d+)%/);
   const change5m = change5mMatch ? parseFloat(change5mMatch[1]) : 0;
 
+  // Menentukan Risk Level
+  const riskLevel = openMinutes > 1440 ? "Trending 24h" : "Low Risk"; 
+
   return {
     holders,
     liquidity,
@@ -122,7 +138,8 @@ function extractLowRiskTradeData(message) {
     mcp,
     change5m,
     txVolume5m,
-    open
+    open: openMinutes, 
+    riskLevel
   };
 }
 
@@ -247,7 +264,7 @@ async function startListening() {
       const text = message?.message;
       const chatId = message?.peerId?.channelId?.toString();
       const topicId = message?.replyTo?.replyToMsgId;
-      const allowedChannelIds = ["2202241417", "87654321", "2447330760"];
+      const allowedChannelIds = ["2202241417", "2122751413","2447330760"]; 
 
       if (!allowedChannelIds.includes(chatId)) {
         console.log(`🚫 Message ignored (from Chat ID: ${chatId})`);
@@ -260,38 +277,41 @@ async function startListening() {
 
       let tradeData = null;
 
-      // **Cek High Risk Trade dulu**
-      if (chatId === "2447330760") {
-        console.log("🔎 Checking High Risk Trade...");
-        tradeData = await handleHighRiskTrade("BUY", text);
-      }
-
-      // **Jika tidak lolos High Risk, cek Low Risk**
-      if (!tradeData && chatId === "2202241417") {
+      if (chatId === "2202241417") {
         const targetTopicId = "2386593";
-        if (topicId !== targetTopicId) {
+        if (topicId == targetTopicId) {
           console.log(`🚫 Message ignored (from Topic ID: ${topicId})`);
+          tradeData = await handleLowRiskTrade("BUY", text);
           return;
         }
-
-        console.log("🔎 Checking Low Risk Trade...");
+      }
+      
+      if (chatId === "2122751413") {
         tradeData = await handleLowRiskTrade("BUY", text);
       }
-
+      
+      if (chatId === "2447330760") {
+        const [highRiskTrade, lowRiskTrade] = await Promise.all([
+          handleHighRiskTrade("BUY", text),
+          handleLowRiskTrade("BUY", text)
+        ]);
+      
+        tradeData = highRiskTrade || lowRiskTrade;
+      }
+      
       // **Jika tradeData valid, kirim ke FE lewat Socket.io**
       if (tradeData) {
         console.log("📤 Sending trade data to client...");
         io.emit("trade", tradeData);
       } else {
         console.log("❌ No valid trade. Not sending to client.");
-      }
-    }
-  });
+      }      
+}});
 }
 
 
 async function handleHighRiskTrade(type, message) {
-  console.log(`🔄 Validating ${type} Order...`);
+  console.log(`🔄 Validating High Order...`);
   
   const tokenAddress = extractTokenAddress(message);
   if (!tokenAddress) {
@@ -338,7 +358,7 @@ async function handleHighRiskTrade(type, message) {
 
 
 async function handleLowRiskTrade(type, message) {
-  console.log(`🔄 Validating ${type} Order...`);
+  console.log(`🔄 Validating Low and Trending Order...`);
   
   const tokenAddress = extractTokenAddress(message);
   if (!tokenAddress) {
@@ -347,6 +367,7 @@ async function handleLowRiskTrade(type, message) {
   }
 
   const tradeData = extractLowRiskTradeData(message);
+  console.log(tradeData)
   const validate = shouldBuy(tradeData);
 
   if (!validate) {
@@ -358,7 +379,7 @@ async function handleLowRiskTrade(type, message) {
   const agents = allagents.find(user => user.userId === USER).agents;
   
   let validAgent = agents.find(agent => 
-    agent.isActive === true && agent.riskLevel === 'Low Risk'
+    agent.isActive === true && agent.riskLevel === tradeData.riskLevel
   );
   
   if (!validAgent) {

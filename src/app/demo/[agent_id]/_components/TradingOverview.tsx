@@ -15,16 +15,12 @@ export const TradingOverview = (verseagent: any) => {
     totalPnlSol,
     totalInvested,
     setAgentId,
-    agentID,
     pnlPercentage,
   } = useTradingContext();
   const agentId = verseagent?.agent?.agentId;
   useEffect(() => {
     setAgentId(agentId);
   }, [agentId]);
-
-  console.log("totalpnl", totalPnlSol);
-  console.log("pnlPrecentage", pnlPercentage);
 
   return (
     <div>
@@ -87,11 +83,11 @@ export const TradingOverview = (verseagent: any) => {
         </div>
       </div>
 
-      {agentID === agentId && Object.keys(portfolio).length > 0 && (
+      {Object.keys(portfolio).length > 0 && (
         <div>
           <p className="text-responsive font-semibold">Active Trade</p>
           <div className="mt-2">
-            <TradingSimulator price={price} />
+            <TradingSimulator price={price} agentId={agentId} />
           </div>
         </div>
       )}

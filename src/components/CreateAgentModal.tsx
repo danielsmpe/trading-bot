@@ -19,6 +19,35 @@ interface CreateAgentModalProps {
   onClose: () => void;
   onCreateAgent: (agent: any) => void;
 }
+const getStopLossMultiplier = (
+  risk: "Low Risk" | "High Risk" | "Trending 24h"
+) => {
+  switch (risk) {
+    case "Trending 24h":
+      return 10;
+    case "High Risk":
+      return 20;
+    case "Low Risk":
+      return 40;
+    default:
+      return 10;
+  }
+};
+
+const getTakeProfitMultiplier = (
+  risk: "Low Risk" | "High Risk" | "Trending 24h"
+) => {
+  switch (risk) {
+    case "Trending 24h":
+      return 10;
+    case "High Risk":
+      return 20;
+    case "Low Risk":
+      return 40;
+    default:
+      return 20;
+  }
+};
 
 export function CreateAgentModal({
   isOpen,
@@ -27,24 +56,40 @@ export function CreateAgentModal({
 }: CreateAgentModalProps) {
   const [agentName, setAgentName] = useState("");
   const [minLiquidity, setMinLiquidity] = useState("");
-  const [auditChecks, setAuditChecks] = useState({
-    mintAuthDisabled: false,
-    freezeAuthDisabled: false,
-    websiteSocialAvailable: false,
-    avoidScamToken: false,
-  });
+  const [invested, setInvested] = useState("");
+  const [checks, setAuditChecks] = useState([
+    {
+      id: 1,
+      check: "Mint Authority Disabled",
+      status: true,
+    },
+    {
+      id: 2,
+      check: "Freeze Authority Disabled",
+      status: true,
+    },
+    {
+      id: 3,
+      check: "Avoid Scam Tokens",
+      status: true,
+    },
+    {
+      id: 4,
+      check: "Website Handles Available",
+      status: true,
+    },
+  ]);
   const [riskLevel, setRiskLevel] = useState<
     "Low Risk" | "High Risk" | "Trending 24h"
   >("Low Risk");
-  const [stopLoss, setStopLoss] = useState("");
 
   const handleCreateAgent = () => {
     if (
       !agentName ||
       !minLiquidity ||
       !riskLevel ||
-      !stopLoss ||
-      Object.values(auditChecks).every((v) => !v)
+      !invested ||
+      checks.every((check) => !check.status)
     ) {
       toast.error("Please fill in all fields before deploying the agent.", {
         position: "bottom-right",
@@ -56,9 +101,11 @@ export function CreateAgentModal({
     const newAgent = {
       agentName,
       minLiquidity: Number.parseFloat(minLiquidity),
-      auditChecks,
+      invested: Number.parseFloat(invested),
+      checks,
       riskLevel,
-      stopLoss: Number.parseFloat(stopLoss),
+      stopLoss: getStopLossMultiplier(riskLevel),
+      takeProfit: getTakeProfitMultiplier(riskLevel),
       status: "waiting",
     };
     onCreateAgent(newAgent);
@@ -67,28 +114,29 @@ export function CreateAgentModal({
     // Reset form state
     setAgentName("");
     setMinLiquidity("");
-    setAuditChecks({
-      mintAuthDisabled: false,
-      freezeAuthDisabled: false,
-      websiteSocialAvailable: false,
-      avoidScamToken: false,
-    });
+    setAuditChecks((prevChecks) =>
+      prevChecks.map((check) => ({
+        ...check,
+        status: false,
+      }))
+    );
     setRiskLevel("Low Risk");
-    setStopLoss("");
+    setInvested("");
   };
 
   useEffect(() => {
     if (!isOpen) {
       setAgentName("");
       setMinLiquidity("");
-      setAuditChecks({
-        mintAuthDisabled: false,
-        freezeAuthDisabled: false,
-        websiteSocialAvailable: false,
-        avoidScamToken: false,
-      });
+      setAuditChecks((prevChecks) =>
+        prevChecks.map((check) => ({
+          ...check,
+          status: false, // Mengubah semua status menjadi false
+        }))
+      );
+
       setRiskLevel("Low Risk");
-      setStopLoss("");
+      setInvested("");
     }
   }, [isOpen]);
 
@@ -119,6 +167,26 @@ export function CreateAgentModal({
           </div>
           <div className="space-y-2">
             <Label
+              htmlFor="invested"
+              className="text-sm font-medium text-gray-400"
+            >
+              Invested
+            </Label>
+            <SolanaIcon className="absolute left-8 top-[36.5%] transform -translate-y-1/2 w-5 h-5" />
+            <Input
+              id="invested"
+              value={invested}
+              onChange={(e) => setInvested(e.target.value)}
+              type="number"
+              step="0.01"
+              min="0"
+              max="100"
+              className="pl-10 bg-gray-800 border-gray-700 text-white focus:ring-[#60d6a2] focus:border-[#60d6a2]"
+              placeholder="Enter how much you invested"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label
               htmlFor="minLiquidity"
               className="text-sm font-medium text-gray-400"
             >
@@ -143,26 +211,30 @@ export function CreateAgentModal({
               Audit Checks
             </Label>
             <div className="grid grid-cols-2 gap-2">
-              {Object.entries(auditChecks).map(([key, value]) => (
+              {checks.map((check) => (
                 <div
-                  key={key}
+                  key={check.id}
                   className="flex items-center space-x-2 bg-gray-800 p-2 rounded-md"
                 >
                   <Checkbox
-                    id={key}
-                    checked={value}
+                    id={check.id.toString()}
+                    checked={check.status}
                     onCheckedChange={(checked) =>
-                      setAuditChecks((prev) => ({ ...prev, [key]: checked }))
+                      setAuditChecks((prev) =>
+                        prev.map((c) =>
+                          c.id === check.id
+                            ? { ...c, status: Boolean(checked) }
+                            : c
+                        )
+                      )
                     }
                     className="border-gray-600 data-[state=checked]:bg-[#60d6a2] data-[state=checked]:border-[#60d6a2]"
                   />
                   <label
-                    htmlFor={key}
+                    htmlFor={check.id.toString()}
                     className="text-sm font-medium leading-none text-gray-300 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    {key
-                      .replace(/([A-Z])/g, " $1")
-                      .replace(/^./, (str) => str.toUpperCase())}
+                    {check.check}
                   </label>
                 </div>
               ))}
@@ -205,25 +277,6 @@ export function CreateAgentModal({
                 </Button>
               ))}
             </div>
-          </div>
-          <div className="space-y-2">
-            <Label
-              htmlFor="stopLoss"
-              className="text-sm font-medium text-gray-400"
-            >
-              Stop Loss (%)
-            </Label>
-            <Input
-              id="stopLoss"
-              value={stopLoss}
-              onChange={(e) => setStopLoss(e.target.value)}
-              type="number"
-              step="0.1"
-              min="0"
-              max="100"
-              className="bg-gray-800 border-gray-700 text-white focus:ring-[#60d6a2] focus:border-[#60d6a2]"
-              placeholder="Enter stop loss percentage"
-            />
           </div>
         </div>
         <DialogFooter className="flex flex-col items-stretch gap-4">

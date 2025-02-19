@@ -16,10 +16,8 @@
         "trailingStopLoss": false,
         "trailingStopLossValue": 5,
         "pnlPercentage": 28.3,
-        "invested": {
-          "sol": 50,
-          "usd": 11400
-        },
+        "totalPnlsol": 0.5,
+        "invested": 20,
         "currentWorth": {
           "sol": 64.15,
           "usd": 14626.2
@@ -55,7 +53,8 @@
         ],
         "createDate": "2024-02-03T12:00:00Z",
         "pairList": "NEW",
-        "rank": 200
+        "rank": 200,
+        "tradeHistory": []
       },
       {
         "agentId": "FINE-7",
@@ -71,10 +70,9 @@
         "trailingStopLossValue": 5,
         "coinAddress": "0xSomeCoinAddressForFINE7",
         "pnlPercentage": 28.3,
-        "invested": {
-          "sol": 50,
-          "usd": 11400
-        },
+        "totalPnlsol": 0.5,
+        "tradeHistory": [],
+        "invested": 20,
         "currentWorth": {
           "sol": 64.15,
           "usd": 14626.2
@@ -108,58 +106,6 @@
             "status": true
           }
         ]
-      },
-      {
-        "agentId": "POU-3",
-        "agentName": "Agent POU-3",
-        "isActive": false,
-        "isStopped": false,
-        "balance": 0.001,
-        "takeProfit": 20,
-        "stopLoss": 40,
-        "trailingTakeProfit": false,
-        "trailingTakeProfitValue": 10,
-        "trailingStopLoss": false,
-        "trailingStopLossValue": 5,
-        "coinAddress": "0xSomeCoinAddressForFINE7",
-        "pnlPercentage": 28.3,
-        "invested": {
-          "sol": 20,
-          "usd": 4560
-        },
-        "currentWorth": {
-          "sol": 18.96,
-          "usd": 4322.88
-        },
-        "alerts": [],
-        "riskLevel": "High Risk",
-        "status": {
-          "holding": false,
-          "coinAddress": "0xSomeCoinAddressForDNA1"
-        },
-        "amount": 0.05,
-        "checks": [
-          {
-            "id": 1,
-            "check": "Mint Authority Disabled",
-            "status": true
-          },
-          {
-            "id": 2,
-            "check": "Freeze Authority Disabled",
-            "status": true
-          },
-          {
-            "id": 3,
-            "check": "Avoid Scam Tokens",
-            "status": true
-          },
-          {
-            "id": 4,
-            "check": "Website Handles Available",
-            "status": true
-          }
-        ]
       }
     ]
   },
@@ -168,27 +114,27 @@
     "walletAddress": "0x9876543210abcdef1234567890abcdef12345678",
     "agents": [
       {
-        "agentId": "DNA-1",
-        "agentName": "Agent DNA-1",
-        "isActive": false,
+        "agentId": "VerseAgent-1",
+        "agentName": "VerseAgent-1",
+        "isActive": true,
         "isStopped": false,
-        "balance": 0.001,
-        "takeProfit": 20,
+        "balance": 10,
+        "takeProfit": 40,
         "stopLoss": 40,
         "trailingTakeProfit": false,
-        "trailingTakeProfitValue": 10,
+        "trailingTakeProfitValue": 0,
         "trailingStopLoss": false,
-        "trailingStopLossValue": 5,
-        "pnlPercentage": 28.3,
-        "invested": 50,
-        "currentWorth": 64.5,
+        "trailingStopLossValue": 0,
+        "pnlPercentage": "0.00",
+        "invested": 5,
+        "currentWorth": 21,
         "alerts": [],
         "riskLevel": "Low Risk",
         "status": {
           "holding": false,
           "coinAddress": "0xSomeCoinAddressForDNA1"
         },
-        "amount": 0.0001,
+        "amount": 0,
         "checks": [
           {
             "id": 1,
@@ -211,55 +157,38 @@
             "status": true
           }
         ],
-        "createDate": "2024-02-03T12:00:00Z",
-        "pairList": "NEW",
-        "rank": 200,
-        "made": 14.5,
+        "createDate": "2025-02-19T03:32:08.457Z",
+        "pairList": "NONE",
+        "rank": 0,
         "tradeHistory": [
-          {
-            "id": "5bffa79f-b8f1-4ef6-8dd2-02fd6ccbad5c",
-            "token": "BOME",
-            "tokenAddress": "ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82",
-            "entryPrice": 0.002066481,
-            "amount": 0.1,
-            "stopLoss": 0.002064,
-            "takeProfit": 0.002069,
-            "status": "closed",
-            "tradeType": "sell",
-            "createdAt": "2025-02-17T08:58:22.305Z",
-            "exitPrice": 0.002076948,
-            "pnl": 0.0000010467000000000115
-          }
-        ]
+         
+        ],
+        "minLiquidity": 200,
+        "made": 0,
+        "totalPnlsol": 0
       },
       {
-        "agentId": "FINE-7",
-        "agentName": "Agent FINE-7",
+        "agentId": "VerseAgent-2",
+        "agentName": "VerseAgent-2",
         "isActive": true,
         "isStopped": false,
-        "balance": 15,
+        "balance": 0,
         "takeProfit": 20,
-        "stopLoss": 40,
-        "trailingTakeProfit": true,
-        "trailingTakeProfitValue": 40,
+        "stopLoss": 20,
+        "trailingTakeProfit": false,
+        "trailingTakeProfitValue": 0,
         "trailingStopLoss": false,
-        "trailingStopLossValue": 5,
-        "pnlPercentage": "1.5",
-        "totalPnlsol": 0.5,
-        "invested": 10,
-        "currentWorth": 15,
-        "made": -1.04,
-        "amount": 1.5,
-        "createDate": "2024-02-03T12:00:00Z",
-        "pairList": "NEW",
-        "rank": 200,
+        "trailingStopLossValue": 0,
+        "pnlPercentage": 0,
+        "invested": 20,
+        "currentWorth": 20,
+        "alerts": [],
         "riskLevel": "High Risk",
-        "stoppedAt": null,
         "status": {
           "holding": false,
           "coinAddress": "0xSomeCoinAddressForDNA1"
         },
-        "alerts": [],
+        "amount": 0,
         "checks": [
           {
             "id": 1,
@@ -282,46 +211,63 @@
             "status": true
           }
         ],
-        "tradeHistory": [
+        "createDate": "2025-02-19T10:07:32.280Z",
+        "pairList": "NONE",
+        "rank": 0,
+        "tradeHistory": [],
+        "minLiquidity": 200,
+        "made": 0
+      },
+      {
+        "agentId": "VerseAgent-3",
+        "agentName": "VerseAgent-3",
+        "isActive": true,
+        "isStopped": false,
+        "balance": 0,
+        "takeProfit": 10,
+        "stopLoss": 10,
+        "trailingTakeProfit": false,
+        "trailingTakeProfitValue": 0,
+        "trailingStopLoss": false,
+        "trailingStopLossValue": 0,
+        "pnlPercentage": 0,
+        "invested": 20,
+        "currentWorth": 20,
+        "alerts": [],
+        "riskLevel": "Trending 24h",
+        "status": {
+          "holding": false,
+          "coinAddress": "0xSomeCoinAddressForDNA1"
+        },
+        "amount": 0,
+        "checks": [
           {
-            "id": "c86116c6-25af-43b4-84b4-4487f194c5a8",
-            "token": "BOME",
-            "tokenAddress": "ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82",
-            "entryPrice": 0.002116419,
-            "amount": 0.1,
-            "stopLoss": 0.002114,
-            "takeProfit": 0.002119,
-            "status": "holding",
-            "tradeType": "buy",
-            "createdAt": "2025-02-17T02:01:50.659Z"
+            "id": 1,
+            "check": "Mint Authority Disabled",
+            "status": true
           },
           {
-            "id": "c86116c6-25af-43b4-84b4-4487f194c5a8",
-            "token": "BOME",
-            "tokenAddress": "ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82",
-            "entryPrice": 0.002116419,
-            "amount": 0.1,
-            "stopLoss": 0.002114,
-            "takeProfit": 0.002119,
-            "status": "closed",
-            "tradeType": "sell",
-            "createdAt": "2025-02-17T02:04:44.575Z",
-            "exitPrice": 0.002119474,
-            "pnl": 0.00004
+            "id": 2,
+            "check": "Freeze Authority Disabled",
+            "status": true
           },
           {
-            "id": "e072be8c-a082-4dc1-9487-f560c713e558",
-            "token": "TRUMP",
-            "tokenAddress": "8nz3iGeHKCy7TZXinEoFgXHb9Y2jK3PoUAdHHZ7Fpump",
-            "entryPrice": 0.000005145,
-            "amount": 1.5,
-            "stopLoss": 0.000003,
-            "takeProfit": 0.000006,
-            "status": "holding",
-            "tradeType": "buy",
-            "createdAt": "2025-02-18T09:28:54.023Z"
+            "id": 3,
+            "check": "Avoid Scam Tokens",
+            "status": true
+          },
+          {
+            "id": 4,
+            "check": "Website Handles Available",
+            "status": true
           }
-        ]
+        ],
+        "createDate": "2025-02-19T10:07:47.958Z",
+        "pairList": "NONE",
+        "rank": 0,
+        "tradeHistory": [],
+        "minLiquidity": 200,
+        "made": 0
       }
     ]
   }

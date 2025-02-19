@@ -22,9 +22,7 @@ export type Trade = {
 
 type TradingState = {
   balance: number;
-  portfolio: { [token: string]: Trade[] };
-  tradeHistory: Trade[];
-  agentID:string
+  agents: { [agentID: string]: { portfolio: { [token: string]: Trade[] }; tradeHistory: Trade[] } };
   buyToken: (
     token: string,
     tokenAddress: string,
@@ -37,19 +35,15 @@ type TradingState = {
   updatePortfolio: (price: number) => void;
 };
 
-
 export const useTradingStore = create<TradingState>()(
   persist(
     (set, get) => ({
       balance: 50,
-      portfolio: {},
-      tradeHistory: [],
-      agentID:"",
+      agents: {},
 
-      buyToken: (token, tokenAddress, amount, entryPrice, stopLoss, takeProfit,agentId) => {  
-        const { balance, portfolio, tradeHistory } = get();
-        
-        
+      buyToken: (token, tokenAddress, amount, entryPrice, stopLoss, takeProfit, agentId) => {
+        const { balance, agents } = get();
+
         if (!entryPrice) return alert("Invalid token");
         if (balance < amount) return alert("Insufficient balance");
 
@@ -66,56 +60,69 @@ export const useTradingStore = create<TradingState>()(
           createdAt: new Date().toISOString(),
         };
 
+        const agent = agents[agentId] || { portfolio: {}, tradeHistory: [] };
+
         set({
           balance: balance - amount,
-          portfolio: {
-            ...portfolio,
-            [token]: [...(portfolio[token] || []), newTrade],
+          agents: {
+            ...agents,
+            [agentId]: {
+              portfolio: {
+                ...agent.portfolio,
+                [token]: [...(agent.portfolio[token] || []), newTrade],
+              },
+              tradeHistory: [...agent.tradeHistory, newTrade],
+            },
           },
-          agentID: agentId,
-          tradeHistory: [...tradeHistory, newTrade],
         });
       },
 
       updatePortfolio: (price) => {
-        const { portfolio, tradeHistory, balance } = get();
-        const updatedPortfolio: { [token: string]: Trade[] } = {};
-        const closedTrades: Trade[] = [];
+        const { agents, balance } = get();
+        const updatedAgents = { ...agents };
         let newBalance = balance;
 
-        Object.keys(portfolio).forEach((token) => {
-          const filteredTrades = portfolio[token].filter((trade) => {
-            if (trade.status === "holding") {
-              if (price <= trade.stopLoss || price >= trade.takeProfit) {
-                const exitPrice = price;
-                console.log("exitprice",exitPrice)
-                console.log("entri",trade.entryPrice)
-                const pnl = (exitPrice - trade.entryPrice) * trade.amount;
-                newBalance += trade.amount * (exitPrice / trade.entryPrice);
+        Object.keys(agents).forEach((agentId) => {
+          const agent = agents[agentId];
+          const updatedPortfolio: { [token: string]: Trade[] } = {};
+          const closedTrades: Trade[] = [];
 
-                closedTrades.push({
-                  ...trade,
-                  exitPrice,
-                  pnl,
-                  status: "closed",
-                  tradeType: "sell",
-                  createdAt: new Date().toISOString(),
-                });
+          Object.keys(agent.portfolio).forEach((token) => {
+            const filteredTrades = agent.portfolio[token].filter((trade) => {
+              if (trade.status === "holding") {
+                if (price <= trade.stopLoss || price >= trade.takeProfit) {
+                  const exitPrice = price;
+                  const pnl = (exitPrice - trade.entryPrice) * trade.amount;
+                  newBalance += trade.amount * (exitPrice / trade.entryPrice);
 
-                return false;
+                  closedTrades.push({
+                    ...trade,
+                    exitPrice,
+                    pnl,
+                    status: "closed",
+                    tradeType: "sell",
+                    createdAt: new Date().toISOString(),
+                  });
+
+                  return false;
+                }
               }
+              return true;
+            });
+
+            if (filteredTrades.length > 0) {
+              updatedPortfolio[token] = filteredTrades;
             }
-            return true;
           });
 
-          if (filteredTrades.length > 0) {
-            updatedPortfolio[token] = filteredTrades;
-          }
+          updatedAgents[agentId] = {
+            portfolio: updatedPortfolio,
+            tradeHistory: [...agent.tradeHistory, ...closedTrades],
+          };
         });
 
         set({
-          portfolio: updatedPortfolio,
-          tradeHistory: [...tradeHistory, ...closedTrades],
+          agents: updatedAgents,
           balance: newBalance,
         });
       },
@@ -124,27 +131,26 @@ export const useTradingStore = create<TradingState>()(
       name: "trading-storage",
       partialize: (state) => ({
         balance: state.balance,
-        agentID: state.agentID,
-        portfolio: state.portfolio,
+        agents: state.agents,
       }),
     }
   )
 );
 
 export const useTradingSimulator = (price: number) => {
-  const { balance, portfolio, tradeHistory,agentID, buyToken, updatePortfolio } = useTradingStore();
+  const { balance, agents, buyToken, updatePortfolio } = useTradingStore();
   const prevPriceRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (price !== null && Object.keys(portfolio).length > 0) {
+    if (price !== null && Object.keys(agents).length > 0) {
       if (prevPriceRef.current !== price) {
         prevPriceRef.current = price;
         updatePortfolio(price);
       }
     }
   }, [price]);
-  
-  return { balance, portfolio, tradeHistory, buyToken,agentID };
+
+  return { balance, agents, buyToken };
 };
 
 export function simulateMarketMovement(agent: Agent, solPrice: number | null): Agent {
@@ -241,5 +247,3 @@ export function simulateMarketMovement(agent: Agent, solPrice: number | null): A
     made: newMade,
   };
 }
-
-

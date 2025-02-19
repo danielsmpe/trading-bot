@@ -14,13 +14,18 @@ export function calculatePriceLevel(
   return parseFloat(result.toFixed(decimals));
 }
 
-const TradingSimulator: React.FC<{ price: number | null }> = ({ price }) => {
-  const { portfolio } = useTradingStore();
+const TradingSimulator: React.FC<{ price: number | null; agentId: string }> = ({
+  price,
+  agentId,
+}) => {
+  const { agents } = useTradingStore();
   const [renderKey, setRenderKey] = useState(0);
 
   useEffect(() => {
     setRenderKey((prev) => prev + 1);
   }, [price]);
+
+  const portfolio = agents[agentId]?.portfolio || {};
 
   return (
     <div className="text-white rounded-lg shadow-lg">

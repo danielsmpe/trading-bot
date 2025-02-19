@@ -28,7 +28,7 @@ export const AgentDetails = (verseagent: any) => {
             tooltip="This shows the list of trading pairs associated with this agent."
           />
         </div>
-        <p className="text-white ">{agent?.pairList}</p>
+        <p className="text-white ">NEW</p>
       </div>
       <div>
         <div className="text-gray-400 flex">
@@ -37,7 +37,7 @@ export const AgentDetails = (verseagent: any) => {
             tooltip="The rank indicates the agent's performance level in comparison to others."
           />
         </div>
-        <p className="text-white">Up to {agent?.rank}</p>
+        <p className="text-white">Up to 200</p>
       </div>
       <div>
         <p className="text-gray-400">Min. Liquidity</p>
@@ -55,7 +55,7 @@ export const AgentDetails = (verseagent: any) => {
       <div>
         <p className="text-gray-400 mb-2">Security Checks</p>
         <ul className="space-y-2">
-          {agent.checks?.map((item: SecurityCheck) => (
+          {agent?.checks?.map((item: SecurityCheck) => (
             <li key={item.id} className="flex items-center">
               {item.status ? (
                 <CheckCircle
