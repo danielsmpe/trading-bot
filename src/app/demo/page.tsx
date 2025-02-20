@@ -248,7 +248,6 @@ export default function Dashboard() {
   );
 
   const activeAgents = filteredAgents.filter((agent) => agent.isActive);
-  console.log("activeAgents", activeAgents);
   const stoppedAgents = filteredAgents.filter((agent) => !agent.isActive);
 
   const activeTotalInvested = activeAgents.reduce(
@@ -297,7 +296,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-black p-8">
       {/* Crypto Ticker */}
-      <div className="mb-8">
+      <div className="mb-6 mt-2">
         <LiveCoinWatchWidget />
       </div>
       <Toaster position="bottom-right" />
