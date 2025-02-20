@@ -21,8 +21,13 @@ export type Trade = {
 };
 
 type TradingState = {
-  balance: number;
-  agents: { [agentID: string]: { portfolio: { [token: string]: Trade[] }; tradeHistory: Trade[] } };
+  agents: {
+    [agentID: string]: {
+      balance: number;
+      portfolio: { [token: string]: Trade[] };
+      tradeHistory: Trade[];
+    };
+  };
   buyToken: (
     token: string,
     tokenAddress: string,
@@ -32,20 +37,20 @@ type TradingState = {
     takeProfit: number,
     agentId: string
   ) => void;
-  updatePortfolio: (price: number) => void;
+  updatePortfolio: (price: number, agentId: string) => void;
 };
 
 export const useTradingStore = create<TradingState>()(
   persist(
     (set, get) => ({
-      balance: 50,
       agents: {},
 
       buyToken: (token, tokenAddress, amount, entryPrice, stopLoss, takeProfit, agentId) => {
-        const { balance, agents } = get();
+        const { agents } = get();
+        const agent = agents[agentId] || { balance: 50, portfolio: {}, tradeHistory: [] };
 
         if (!entryPrice) return alert("Invalid token");
-        if (balance < amount) return alert("Insufficient balance");
+        if (agent.balance < amount) return alert("Insufficient balance");
 
         const newTrade: Trade = {
           id: crypto.randomUUID(),
@@ -60,110 +65,100 @@ export const useTradingStore = create<TradingState>()(
           createdAt: new Date().toISOString(),
         };
 
-        const agent = agents[agentId] || { portfolio: {}, tradeHistory: [] };
-
-        // Ensure that we are not sharing the same portfolio object between agents
-        const updatedPortfolio = Object.keys(agent.portfolio).reduce((acc, key) => {
-          acc[key] = [...agent.portfolio[key]];
-          return acc;
-        }, {} as { [token: string]: Trade[] });
-
+        const updatedPortfolio = { ...agent.portfolio };
         if (!updatedPortfolio[token]) {
           updatedPortfolio[token] = [];
         }
         updatedPortfolio[token] = [...updatedPortfolio[token], newTrade];
 
-        console.log("Before set:", JSON.stringify(agents, null, 2));
-
         set((state) => ({
-          balance: state.balance - amount,
           agents: {
             ...state.agents,
             [agentId]: {
+              ...agent,
+              balance: agent.balance - amount,
               portfolio: updatedPortfolio,
-              tradeHistory: [...(state.agents[agentId]?.tradeHistory || []), newTrade],
+              tradeHistory: [...agent.tradeHistory, newTrade],
             },
           },
         }));
-
-        console.log("After set:", JSON.stringify(get().agents, null, 2));
       },
 
-      updatePortfolio: (price) => {
-        const { agents, balance } = get();
-        const updatedAgents = { ...agents };
-        let newBalance = balance;
+      updatePortfolio: (price, agentId) => {
+        const { agents } = get();
+        const agent = agents[agentId];
+        if (!agent) return;
 
-        Object.keys(agents).forEach((agentId) => {
-          const agent = agents[agentId];
-          const updatedPortfolio: { [token: string]: Trade[] } = { ...agent.portfolio };
-          const closedTrades: Trade[] = [];
+        const updatedPortfolio = { ...agent.portfolio };
+        const closedTrades: Trade[] = [];
+        let updatedBalance = agent.balance;
 
-          Object.keys(agent.portfolio).forEach((token) => {
-            const filteredTrades = agent.portfolio[token].filter((trade) => {
-              if (trade.status === "holding") {
-                if (price <= trade.stopLoss || price >= trade.takeProfit) {
-                  const exitPrice = price;
-                  const pnl = (exitPrice - trade.entryPrice) * trade.amount;
-                  newBalance += trade.amount * (exitPrice / trade.entryPrice);
+        Object.keys(updatedPortfolio).forEach((token) => {
+          const filteredTrades = updatedPortfolio[token].filter((trade) => {
+            if (trade.status === "holding") {
+              if (price <= trade.stopLoss || price >= trade.takeProfit) {
+                const exitPrice = price;
+                const pnl = (exitPrice - trade.entryPrice) * trade.amount;
+                updatedBalance += trade.amount * (exitPrice / trade.entryPrice);
 
-                  closedTrades.push({
-                    ...trade,
-                    exitPrice,
-                    pnl,
-                    status: "closed",
-                    tradeType: "sell",
-                    createdAt: new Date().toISOString(),
-                  });
+                closedTrades.push({
+                  ...trade,
+                  exitPrice,
+                  pnl,
+                  status: "closed",
+                  tradeType: "sell",
+                  createdAt: new Date().toISOString(),
+                });
 
-                  return false;
-                }
+                return false;
               }
-              return true;
-            });
-
-            if (filteredTrades.length > 0) {
-              updatedPortfolio[token] = filteredTrades;
             }
+            return true;
           });
 
-          updatedAgents[agentId] = {
-            portfolio: updatedPortfolio,
-            tradeHistory: [...agent.tradeHistory, ...closedTrades],
-          };
+          updatedPortfolio[token] = filteredTrades;
         });
 
-        set({
-          agents: updatedAgents,
-          balance: newBalance,
-        });
+        set((state) => ({
+          agents: {
+            ...state.agents,
+            [agentId]: {
+              ...agent,
+              balance: updatedBalance,
+              portfolio: updatedPortfolio,
+              tradeHistory: [...agent.tradeHistory, ...closedTrades],
+            },
+          },
+        }));
       },
     }),
+
     {
       name: "trading-storage",
       partialize: (state) => ({
-        balance: state.balance,
         agents: state.agents,
       }),
     }
   )
 );
 
-export const useTradingSimulator = (price: number) => {
-  const { balance, agents, buyToken, updatePortfolio } = useTradingStore();
+export const useTradingSimulator = (price: number, agentId: string) => {
+  const { agents, buyToken, updatePortfolio } = useTradingStore();
   const prevPriceRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (price !== null && Object.keys(agents).length > 0) {
+    if (price !== null && agents[agentId]) {
       if (prevPriceRef.current !== price) {
         prevPriceRef.current = price;
-        updatePortfolio(price);
+        updatePortfolio(price, agentId);
       }
     }
-  }, [price]);
+  }, [price, agentId]);
 
-  return { balance, agents, buyToken };
+  return { balance: agents[agentId]?.balance ?? 50, agents, buyToken };
 };
+
+
 
 export function simulateMarketMovement(agent: Agent, solPrice: number | null): Agent {
   if (!solPrice) return agent;
