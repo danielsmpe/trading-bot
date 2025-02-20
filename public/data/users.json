@@ -125,7 +125,7 @@
         "trailingTakeProfitValue": 0,
         "trailingStopLoss": false,
         "trailingStopLossValue": 0,
-        "pnlPercentage": "-0.00",
+        "pnlPercentage": "0.00",
         "invested": 5,
         "currentWorth": 21,
         "riskLevel": "Low Risk",

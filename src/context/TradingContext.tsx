@@ -96,8 +96,6 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [mintAddress]);
 
   const { prices, symbols } = usePriceSocket(storedMintAddresses || []);
-  const priceData = prices[mintAddress] || null;
-  const priceSymbol = symbols[mintAddress] || null;
   //---------------------------------------------------------------------------//
 
   const prevTradeHistoryLength = useRef(agent?.tradeHistory.length || 0);
@@ -136,44 +134,35 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [agentId, agent]);
 
-  // useEffect(() => {
-  //   console.log("📈 Agent data:", activeAgent);
+  useEffect(() => {
+    const updateAgentTrades = async () => {
+      if (
+        activeAgent &&
+        activeAgent.tradeHistory.length > prevTradeHistoryLength.current
+      ) {
+        const newTrades = activeAgent.tradeHistory.slice(
+          prevTradeHistoryLength.current
+        );
+        const totalPnl = activeAgent.tradeHistory.reduce(
+          (acc: number, trade: any) => acc + (trade.pnl || 0),
+          0
+        );
+        const pnlPercentage = (
+          (totalPnl / (investedFromAgent || 1)) *
+          100
+        ).toFixed(2);
 
-  //   const updateAgentTrades = async () => {
-  //     if (
-  //       activeAgent &&
-  //       activeAgent.tradeHistory.length > prevTradeHistoryLength.current
-  //     ) {
-  //       const newTrades = activeAgent.tradeHistory.slice(
-  //         prevTradeHistoryLength.current
-  //       );
-  //       const totalPnl = activeAgent.tradeHistory.reduce(
-  //         (acc: number, trade: any) => acc + (trade.pnl || 0),
-  //         0
-  //       );
-  //       const pnlPercentage = (
-  //         (totalPnl / (investedFromAgent || 1)) *
-  //         100
-  //       ).toFixed(2);
+        await updateAgent(agentId, {
+          tradeHistory: newTrades,
+          pnlPercentage,
+        });
 
-  //       await updateAgent(agentId, {
-  //         tradeHistory: newTrades,
-  //         pnlPercentage,
-  //       });
+        prevTradeHistoryLength.current = activeAgent.tradeHistory.length;
+      }
+    };
 
-  //       prevTradeHistoryLength.current = activeAgent.tradeHistory.length;
-  //     }
-  //   };
-
-  //   updateAgentTrades();
-  // }, [activeAgent?.tradeHistory.length]);
-
-  // useEffect(() => {
-  //   if (mintAddress && priceData !== null) {
-  //     setPrice(priceData);
-  //     setPreSymbol(priceSymbol || "");
-  //   }
-  // }, [mintAddress, priceData]);
+    updateAgentTrades();
+  }, [tradeData]);
 
   useEffect(() => {
     if (prices && symbols) {
@@ -197,7 +186,7 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log("📈 Buy token", tradeData);
       allAgents.forEach((agent) => {
         if (agent.riskLevel === tradeData.riskLevel) {
-          console.log("Before buyToken:", agents[agent.agentId]?.portfolio);
+          console.log(agent);
           buyToken(
             symbol,
             tradeData.mintAddress,
@@ -207,7 +196,6 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
             calculatePriceLevel(price, agent.takeProfit ?? 20, "TP"),
             agent.agentId
           );
-          console.log("After buyToken:", agents[agent.agentId]?.portfolio);
         }
       });
     }

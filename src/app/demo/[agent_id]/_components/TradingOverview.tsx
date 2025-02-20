@@ -17,7 +17,6 @@ export const TradingOverview = (verseagent: any) => {
     pnlPercentage,
     trackedPrices,
   } = useTradingContext();
-  console.log("📊 Tracked Prices:", trackedPrices);
   const agentId = verseagent?.agent?.agentId;
   useEffect(() => {
     setAgentId(agentId);
