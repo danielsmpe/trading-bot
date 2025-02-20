@@ -1,6 +1,7 @@
 "use client";
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -113,6 +114,7 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
   const [totalPnlSol, setTotalPnlSol] = useState(totalPnlsolFromAgent);
   const [pnlPercentage, setPnlPercentage] = useState(pnlPercentageFromAgent);
   const [buyamount, setBuyAmount] = useState(buy);
+  const [isTracking, setIsTracking] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -164,6 +166,8 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
     updateAgentTrades();
   }, [tradeData]);
 
+  const boughtTradesRef = useRef(new Set<string>());
+
   useEffect(() => {
     if (prices && symbols) {
       setTrackedPrices((prev) => {
@@ -180,53 +184,46 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [prices, symbols]);
 
   useEffect(() => {
-    if (tradeData && trackedPrices[tradeData.tokenAddress]) {
-      const { price, symbol } = trackedPrices[tradeData.tokenAddress];
-
-      console.log("📈 Buy token", tradeData);
-      allAgents.forEach((agent) => {
-        if (agent.riskLevel === tradeData.riskLevel) {
-          console.log(agent);
-          buyToken(
-            symbol,
-            tradeData.mintAddress,
-            buyamount,
-            price,
-            calculatePriceLevel(price, agent.stopLoss ?? 20, "SL"),
-            calculatePriceLevel(price, agent.takeProfit ?? 20, "TP"),
-            agent.agentId
-          );
-        }
-      });
+    if (!isTracking && Object.keys(trackedPrices).length > 0) {
+      setIsTracking(true);
     }
-  }, [tradeData, trackedPrices]);
+  }, [trackedPrices, isTracking]);
+
+  const handleBuy = useCallback(() => {
+    if (!tradeData || !trackedPrices[tradeData.tokenAddress]) return;
+
+    const { price, symbol } = trackedPrices[tradeData.tokenAddress];
+
+    allAgents.forEach((agent) => {
+      if (agent.riskLevel === tradeData.riskLevel) {
+        const tradeKey = `${tradeData.tokenAddress}-${agent.agentId}`; // Unik per token + agent
+
+        if (boughtTradesRef.current.has(tradeKey)) {
+          console.log(`🚀 Skip buy: ${tradeKey} already bought`);
+          return; // Skip jika sudah dibeli
+        }
+
+        console.log("📈 Buying token for agent:", agent);
+        buyToken(
+          symbol,
+          tradeData.mintAddress,
+          buyamount,
+          price,
+          calculatePriceLevel(price, agent.stopLoss ?? 20, "SL"),
+          calculatePriceLevel(price, agent.takeProfit ?? 20, "TP"),
+          agent.agentId
+        );
+
+        boughtTradesRef.current.add(tradeKey); // Tandai sudah dibeli
+      }
+    });
+  }, [tradeData, trackedPrices, allAgents, buyToken]);
 
   useEffect(() => {
-    if (price !== null && agents[agentId]) {
-      let newBalance = Number(totalInvested);
-      let newTotalPnlSol = Number(pnlPercentage);
-
-      const agentPortfolio = agents[agentId]?.portfolio || {};
-
-      Object.keys(agentPortfolio).forEach((token) => {
-        agentPortfolio[token].forEach((trade) => {
-          if (trade.status === "holding") {
-            newTotalPnlSol += (price - trade.entryPrice) * trade.amount;
-          }
-        });
-      });
-
-      newBalance += newTotalPnlSol;
-      const newPnlPercentage =
-        newBalance > 0
-          ? parseFloat(((newTotalPnlSol / newBalance) * 100).toFixed(2))
-          : 0.0;
-
-      setTotalInvested(newBalance);
-      setTotalPnlSol(newTotalPnlSol);
-      setPnlPercentage(newPnlPercentage);
+    if (Object.keys(trackedPrices).length > 0) {
+      handleBuy();
     }
-  }, [price, agents, agentId]);
+  }, [trackedPrices, handleBuy]);
 
   return (
     <TradingContext.Provider

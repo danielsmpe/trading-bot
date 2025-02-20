@@ -125,9 +125,10 @@
         "trailingTakeProfitValue": 0,
         "trailingStopLoss": false,
         "trailingStopLossValue": 0,
-        "pnlPercentage": 0,
+        "pnlPercentage": "-0.00",
         "invested": 20,
         "currentWorth": 20,
+        "totalPnlsol": 0,
         "alerts": [],
         "riskLevel": "Low Risk",
         "status": {
@@ -157,11 +158,117 @@
             "status": true
           }
         ],
-        "createDate": "2025-02-20T10:06:14.501Z",
+        "createDate": "2025-02-20T10:35:07.715Z",
+        "pairList": "NONE",
+        "rank": 0,
+        "tradeHistory": [
+          
+        ],
+        "minLiquidity": 200,
+        "made": 0
+      },
+      {
+        "agentId": "VerseAgent-2",
+        "agentName": "VerseAgent-2",
+        "isActive": true,
+        "isStopped": false,
+        "balance": 0,
+        "takeProfit": 20,
+        "stopLoss": 20,
+        "trailingTakeProfit": false,
+        "trailingTakeProfitValue": 0,
+        "trailingStopLoss": false,
+        "trailingStopLossValue": 0,
+        "pnlPercentage": 0,
+        "invested": 10,
+        "currentWorth": 10,
+        "totalPnlsol": 0,
+        "alerts": [],
+        "riskLevel": "High Risk",
+        "status": {
+          "holding": false,
+          "coinAddress": "0xSomeCoinAddressForDNA1"
+        },
+        "amount": 0,
+        "checks": [
+          {
+            "id": 1,
+            "check": "Mint Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 2,
+            "check": "Freeze Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 3,
+            "check": "Avoid Scam Tokens",
+            "status": true
+          },
+          {
+            "id": 4,
+            "check": "Website Handles Available",
+            "status": true
+          }
+        ],
+        "createDate": "2025-02-20T10:35:29.507Z",
         "pairList": "NONE",
         "rank": 0,
         "tradeHistory": [],
         "minLiquidity": 200,
+        "made": 0
+      },
+      {
+        "agentId": "VerseAgent-3",
+        "agentName": "VerseAgent-3",
+        "isActive": true,
+        "isStopped": false,
+        "balance": 0,
+        "takeProfit": 10,
+        "stopLoss": 10,
+        "trailingTakeProfit": false,
+        "trailingTakeProfitValue": 0,
+        "trailingStopLoss": false,
+        "trailingStopLossValue": 0,
+        "pnlPercentage": 0,
+        "totalPnlsol": 0,
+        "invested": 5,
+        "currentWorth": 5,
+        "alerts": [],
+        "riskLevel": "Trending 24h",
+        "status": {
+          "holding": false,
+          "coinAddress": "0xSomeCoinAddressForDNA1"
+        },
+        "amount": 0,
+        "checks": [
+          {
+            "id": 1,
+            "check": "Mint Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 2,
+            "check": "Freeze Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 3,
+            "check": "Avoid Scam Tokens",
+            "status": true
+          },
+          {
+            "id": 4,
+            "check": "Website Handles Available",
+            "status": true
+          }
+        ],
+        "createDate": "2025-02-20T10:35:43.273Z",
+        "pairList": "NONE",
+        "rank": 0,
+        "tradeHistory": [],
+        "minLiquidity": 100,
         "made": 0
       }
     ]

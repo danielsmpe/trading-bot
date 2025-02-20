@@ -173,6 +173,7 @@ export default function Dashboard() {
         pnlPercentage: 0,
         invested: investmentAmount,
         currentWorth: investmentAmount,
+        totalPnlsol: 0,
         made: 0,
         isActive: true,
         isStopped: false,
