@@ -248,6 +248,7 @@ export default function Dashboard() {
   );
 
   const activeAgents = filteredAgents.filter((agent) => agent.isActive);
+  console.log("activeAgents", activeAgents);
   const stoppedAgents = filteredAgents.filter((agent) => !agent.isActive);
 
   const activeTotalInvested = activeAgents.reduce(
@@ -256,9 +257,10 @@ export default function Dashboard() {
   );
 
   const activeTotalWorth = activeAgents.reduce(
-    (acc, agent) => acc + agent.balance,
+    (acc, agent) => acc + agent.currentWorth,
     0
   );
+
   const stoppedTotalWorth = stoppedAgents.reduce(
     (acc, agent) => acc + agent.currentWorth,
     0

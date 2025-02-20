@@ -118,166 +118,9 @@
         "agentName": "VerseAgent-1",
         "isActive": true,
         "isStopped": false,
-        "balance": 10,
-        "takeProfit": 1,
-        "stopLoss": 1,
-        "trailingTakeProfit": false,
-        "trailingTakeProfitValue": 0,
-        "trailingStopLoss": false,
-        "trailingStopLossValue": 0,
-        "pnlPercentage": "0.00",
-        "invested": 5,
-        "currentWorth": 21,
-        "riskLevel": "Low Risk",
-        "minLiquidity": 200,
-        "made": 0,
-        "totalPnlsol": 0,
-        "createDate": "2025-02-19T03:32:08.457Z",
-        "pairList": "NONE",
-        "rank": 0,
-        "amount": 0,
-        "alerts": [],
-        "status": {
-          "holding": false,
-          "coinAddress": "0xSomeCoinAddressForDNA1"
-        },
-        "checks": [
-          {
-            "id": 1,
-            "check": "Mint Authority Disabled",
-            "status": true
-          },
-          {
-            "id": 2,
-            "check": "Freeze Authority Disabled",
-            "status": true
-          },
-          {
-            "id": 3,
-            "check": "Avoid Scam Tokens",
-            "status": true
-          },
-          {
-            "id": 4,
-            "check": "Website Handles Available",
-            "status": true
-          }
-        ],
-        "tradeHistory": [
-          {
-            "id": "49035e74-d92d-41ea-8428-6ddc8749f272",
-            "token": "smol",
-            "tokenAddress": "9yVo4ZgMEkYHsiwcGAX5e15bpU7QAZdAJ1aKTDpVpump",
-            "entryPrice": 0.000019939,
-            "amount": 10,
-            "stopLoss": 0.00002,
-            "takeProfit": 0.00002,
-            "status": "holding",
-            "tradeType": "buy",
-            "createdAt": "2025-02-20T07:36:37.371Z"
-          },
-          {
-            "id": "49035e74-d92d-41ea-8428-6ddc8749f272",
-            "token": "smol",
-            "tokenAddress": "9yVo4ZgMEkYHsiwcGAX5e15bpU7QAZdAJ1aKTDpVpump",
-            "entryPrice": 0.000019939,
-            "amount": 10,
-            "stopLoss": 0.00002,
-            "takeProfit": 0.00002,
-            "status": "closed",
-            "tradeType": "sell",
-            "createdAt": "2025-02-20T07:38:03.874Z",
-            "exitPrice": 0,
-            "pnl": -0.00019939
-          }
-        ]
-      },
-      {
-        "agentId": "VerseAgent-2",
-        "agentName": "VerseAgent-2",
-        "isActive": true,
-        "isStopped": false,
-        "balance": 20,
-        "takeProfit": 1,
-        "stopLoss": 1,
-        "trailingTakeProfit": false,
-        "trailingTakeProfitValue": 0,
-        "trailingStopLoss": false,
-        "trailingStopLossValue": 0,
-        "pnlPercentage": "-0.00",
-        "invested": 20,
-        "currentWorth": 20,
-        "riskLevel": "High Risk",
-        "createDate": "2025-02-19T10:07:32.280Z",
-        "pairList": "NONE",
-        "rank": 0,
-        "minLiquidity": 200,
-        "made": 0,
-        "amount": 0,
-        "alerts": [],
-        "status": {
-          "holding": false,
-          "coinAddress": "0xSomeCoinAddressForDNA1"
-        },
-        "checks": [
-          {
-            "id": 1,
-            "check": "Mint Authority Disabled",
-            "status": true
-          },
-          {
-            "id": 2,
-            "check": "Freeze Authority Disabled",
-            "status": true
-          },
-          {
-            "id": 3,
-            "check": "Avoid Scam Tokens",
-            "status": true
-          },
-          {
-            "id": 4,
-            "check": "Website Handles Available",
-            "status": true
-          }
-        ],
-        "tradeHistory": [
-          {
-            "id": "39f48d84-79cf-438c-84ed-39b39f396468",
-            "token": "TRUMP",
-            "tokenAddress": "8nz3iGeHKCy7TZXinEoFgXHb9Y2jK3PoUAdHHZ7Fpump",
-            "entryPrice": 0.000003735,
-            "amount": 2,
-            "stopLoss": 0.000004,
-            "takeProfit": 0.000004,
-            "status": "holding",
-            "tradeType": "buy",
-            "createdAt": "2025-02-20T08:12:00.779Z"
-          },
-          {
-            "id": "39f48d84-79cf-438c-84ed-39b39f396468",
-            "token": "TRUMP",
-            "tokenAddress": "8nz3iGeHKCy7TZXinEoFgXHb9Y2jK3PoUAdHHZ7Fpump",
-            "entryPrice": 0.000003735,
-            "amount": 2,
-            "stopLoss": 0.000004,
-            "takeProfit": 0.000004,
-            "status": "closed",
-            "tradeType": "sell",
-            "createdAt": "2025-02-20T08:12:03.703Z",
-            "exitPrice": 0,
-            "pnl": -0.00000747
-          }
-        ]
-      },
-      {
-        "agentId": "VerseAgent-3",
-        "agentName": "VerseAgent-3",
-        "isActive": true,
-        "isStopped": false,
-        "balance": 20,
-        "takeProfit": 1,
-        "stopLoss": 1,
+        "balance": 0,
+        "takeProfit": 40,
+        "stopLoss": 40,
         "trailingTakeProfit": false,
         "trailingTakeProfitValue": 0,
         "trailingStopLoss": false,
@@ -285,18 +128,13 @@
         "pnlPercentage": 0,
         "invested": 20,
         "currentWorth": 20,
-        "minLiquidity": 200,
-        "made": 0,
-        "amount": 0,
-        "createDate": "2025-02-19T10:07:47.958Z",
-        "pairList": "NONE",
-        "rank": 0,
-        "riskLevel": "Trending 24h",
         "alerts": [],
+        "riskLevel": "Low Risk",
         "status": {
           "holding": false,
           "coinAddress": "0xSomeCoinAddressForDNA1"
         },
+        "amount": 0,
         "checks": [
           {
             "id": 1,
@@ -319,7 +157,12 @@
             "status": true
           }
         ],
-        "tradeHistory": []
+        "createDate": "2025-02-20T10:06:14.501Z",
+        "pairList": "NONE",
+        "rank": 0,
+        "tradeHistory": [],
+        "minLiquidity": 200,
+        "made": 0
       }
     ]
   }

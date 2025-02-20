@@ -209,7 +209,7 @@ export function simulateMarketMovement(agent: Agent, solPrice: number | null): A
   }
 
   // Check if stop loss is triggered
-  if (newPnlPercentage <= -stopLoss) {
+  if (agent.invested <= 0) {
     return {
       ...agent,
       pnlPercentage: newPnlPercentage,
@@ -228,7 +228,7 @@ export function simulateMarketMovement(agent: Agent, solPrice: number | null): A
   }
 
   // Check if take profit is triggered
-  if (newPnlPercentage >= takeProfit) {
+  if (newPnlPercentage == 0.21645132) {
     return {
       ...agent,
       pnlPercentage: newPnlPercentage,
