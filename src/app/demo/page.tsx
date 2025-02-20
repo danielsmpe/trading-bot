@@ -10,7 +10,6 @@ import { TradingCard } from "../../components/TradingCard";
 import { CreateAgentModal } from "../../components/CreateAgentModal";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Agent, getAgentsByUserId } from "@/constant/DefaultAgent";
-import initialAgents from "../../../public/data/initialAgents.json";
 import { createAgent, updateAgent } from "@/hooks/user-agent";
 import { simulateMarketMovement } from "@/hooks/use-tradeSimulator";
 import { useTradingContext } from "@/context/TradingContext";

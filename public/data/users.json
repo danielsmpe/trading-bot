@@ -128,13 +128,19 @@
         "pnlPercentage": "0.00",
         "invested": 5,
         "currentWorth": 21,
-        "alerts": [],
         "riskLevel": "Low Risk",
+        "minLiquidity": 200,
+        "made": 0,
+        "totalPnlsol": 0,
+        "createDate": "2025-02-19T03:32:08.457Z",
+        "pairList": "NONE",
+        "rank": 0,
+        "amount": 0,
+        "alerts": [],
         "status": {
           "holding": false,
           "coinAddress": "0xSomeCoinAddressForDNA1"
         },
-        "amount": 0,
         "checks": [
           {
             "id": 1,
@@ -157,15 +163,8 @@
             "status": true
           }
         ],
-        "createDate": "2025-02-19T03:32:08.457Z",
-        "pairList": "NONE",
-        "rank": 0,
-        "tradeHistory": [
-         
-        ],
-        "minLiquidity": 200,
-        "made": 0,
-        "totalPnlsol": 0
+        "tradeHistory": [ 
+        ]
       },
       {
         "agentId": "VerseAgent-2",
@@ -182,13 +181,18 @@
         "pnlPercentage": 0,
         "invested": 20,
         "currentWorth": 20,
-        "alerts": [],
         "riskLevel": "High Risk",
+        "createDate": "2025-02-19T10:07:32.280Z",
+        "pairList": "NONE",
+        "rank": 0,
+        "minLiquidity": 200,
+        "made": 0,
+        "amount": 0,
+        "alerts": [],
         "status": {
           "holding": false,
           "coinAddress": "0xSomeCoinAddressForDNA1"
         },
-        "amount": 0,
         "checks": [
           {
             "id": 1,
@@ -211,12 +215,8 @@
             "status": true
           }
         ],
-        "createDate": "2025-02-19T10:07:32.280Z",
-        "pairList": "NONE",
-        "rank": 0,
-        "tradeHistory": [],
-        "minLiquidity": 200,
-        "made": 0
+        "tradeHistory": []
+
       },
       {
         "agentId": "VerseAgent-3",
@@ -233,13 +233,18 @@
         "pnlPercentage": 0,
         "invested": 20,
         "currentWorth": 20,
-        "alerts": [],
+        "minLiquidity": 200,
+        "made": 0,
+        "amount": 0,
+        "createDate": "2025-02-19T10:07:47.958Z",
+        "pairList": "NONE",
+        "rank": 0,
         "riskLevel": "Trending 24h",
+        "alerts": [],
         "status": {
           "holding": false,
           "coinAddress": "0xSomeCoinAddressForDNA1"
         },
-        "amount": 0,
         "checks": [
           {
             "id": 1,
@@ -262,12 +267,7 @@
             "status": true
           }
         ],
-        "createDate": "2025-02-19T10:07:47.958Z",
-        "pairList": "NONE",
-        "rank": 0,
-        "tradeHistory": [],
-        "minLiquidity": 200,
-        "made": 0
+        "tradeHistory": []
       }
     ]
   }

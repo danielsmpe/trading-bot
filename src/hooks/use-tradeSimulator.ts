@@ -259,3 +259,82 @@ export function simulateMarketMovement(agent: Agent, solPrice: number | null): A
     made: newMade,
   };
 }
+
+export function realMarketMovement(agent: Agent, realTimePrice: number | null): Agent {
+  if (!realTimePrice || !agent.isActive) return agent;
+
+  const takeProfit = agent.takeProfit ?? Infinity;
+  const stopLoss = agent.stopLoss ?? 0;
+  const entryPrice = agent.entryPrice ?? realTimePrice;
+
+  let pnlChange: number = 0;
+  const priceChange = ((realTimePrice - entryPrice) / entryPrice) * 100;
+
+  // Tentukan perubahan PNL berdasarkan level risiko
+  switch (agent.riskLevel) {
+    case "Low Risk":
+      pnlChange = priceChange * 0.5; // Fluktuasi rendah
+      break;
+    case "High Risk":
+      pnlChange = priceChange * 1.5; // Fluktuasi tinggi
+      break;
+    case "Trending 24h":
+      pnlChange = priceChange; // Fluktuasi moderat
+      if (Math.random() < 0.1) {
+        pnlChange *= 1.5;
+      }
+      break;
+    default:
+      pnlChange = 0;
+  }
+
+  // Perbarui PNL
+  const newPnlPercentage = (agent.pnlPercentage ?? 0) + pnlChange;
+  const newMade = (agent.invested * newPnlPercentage) / 100;
+  const newCurrentWorth = agent.invested + newMade;
+
+  // Stop loss check
+  if (newPnlPercentage <= -stopLoss) {
+    return {
+      ...agent,
+      pnlPercentage: newPnlPercentage,
+      currentWorth: newCurrentWorth,
+      made: newMade,
+      isActive: false,
+      isStopped: true,
+      status: "stopped",
+      alerts: [
+        ...agent.alerts,
+        `Stop loss triggered at ${newPnlPercentage.toFixed(2)}%`,
+      ],
+      stopReason: "stop loss",
+      stoppedAt: Date.now(),
+    };
+  }
+
+  // Take profit check
+  if (newPnlPercentage >= takeProfit) {
+    return {
+      ...agent,
+      pnlPercentage: newPnlPercentage,
+      currentWorth: newCurrentWorth,
+      made: newMade,
+      isActive: false,
+      isStopped: true,
+      status: "stopped",
+      alerts: [
+        ...agent.alerts,
+        `Take profit triggered at ${newPnlPercentage.toFixed(2)}%`,
+      ],
+      stopReason: "take profit",
+      stoppedAt: Date.now(),
+    };
+  }
+
+  return {
+    ...agent,
+    pnlPercentage: newPnlPercentage,
+    currentWorth: newCurrentWorth,
+    made: newMade,
+  };
+}

@@ -10,10 +10,7 @@ import { useTradingSimulator } from "@/hooks/use-tradeSimulator";
 import { usePriceSocket, useTradeSocket } from "@/hooks/use-socket";
 import { updateAgent } from "@/hooks/user-agent";
 import { calculatePriceLevel } from "@/app/demo/[agent_id]/_Components/TradingSimulator";
-import {
-  getAgentByUserAndAgentId,
-  getAgentsByUserId,
-} from "@/constant/DefaultAgent";
+import { getAgentsByUserId } from "@/constant/DefaultAgent";
 
 type Portfolio = Record<string, { token: string; tokenAddress: string }[]>;
 
@@ -93,7 +90,7 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
       setCurrentWorth(agent.currentWorth ?? 0);
       setTotalPnlSol(agent.totalPnlsol ?? 0);
       setPnlPercentage(agent.pnlPercentage ?? 0);
-      setPnlPercentage(agent.balance ?? 0.1);
+      setBuyAmount(agent.balance ?? 0.5);
     }
   }, [agentId, agent]);
 

@@ -31,6 +31,7 @@ export interface Agent {
     takeProfit?:number
     tradeHistory?:any[]
     totalPnlsol?: number; 
+    entryPrice?: number;
   }
   
 export const initialAgents: Agent[] = [
