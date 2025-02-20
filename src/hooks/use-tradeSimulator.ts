@@ -158,8 +158,7 @@ export const useTradingSimulator = (price: number, agentId: string) => {
   return { balance: agents[agentId]?.balance ?? 50, agents, buyToken };
 };
 
-
-
+// Market movement
 export function simulateMarketMovement(agent: Agent, solPrice: number | null): Agent {
   if (!solPrice) return agent;
 

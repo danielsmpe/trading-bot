@@ -10,7 +10,10 @@ import { useTradingSimulator } from "@/hooks/use-tradeSimulator";
 import { usePriceSocket, useTradeSocket } from "@/hooks/use-socket";
 import { updateAgent } from "@/hooks/user-agent";
 import { calculatePriceLevel } from "@/app/demo/[agent_id]/_Components/TradingSimulator";
-import { getAgentsByUserId } from "@/constant/DefaultAgent";
+import {
+  getAgentByUserAndAgentId,
+  getAgentsByUserId,
+} from "@/constant/DefaultAgent";
 
 type Portfolio = Record<string, { token: string; tokenAddress: string }[]>;
 
@@ -34,6 +37,7 @@ interface TradingContextProps {
   pnlPercentage: any;
   setAgentId: any;
   agentID: any;
+  trackedPrices: any;
 }
 
 const TradingContext = createContext<TradingContextProps | undefined>(
@@ -47,22 +51,60 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
   const [agentId, setAgentId] = useState("");
   const agent = allAgents.find((a) => a.agentId === agentId);
   const [price, setPrice] = useState<number | null>(null);
+  const [trackedPrices, setTrackedPrices] = useState<
+    Record<string, { price: number; symbol: string }>
+  >({});
   const [hasBought, setHasBought] = useState(false);
   const [presymbol, setPreSymbol] = useState("");
   const { agents, buyToken } = useTradingSimulator(price ?? 0, agentId);
+  const activeAgent = agents[agentId];
   const { tradeData } = useTradeSocket();
   const [storedToken, setStoredToken] = useState<Portfolio | null>(null);
   const solPrice = 180;
+
+  //--------------------------GET REALTIME COIN PRICE---------------------------//
   let mintAddress =
     tradeData?.tokenAddress ||
     (storedToken && Object.values(storedToken).flat()[0]?.tokenAddress);
 
-  const { price: priceData, symbol: priceSymbol } = usePriceSocket(mintAddress);
+  const [storedMintAddresses, setStoredMintAddresses] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedMints = JSON.parse(
+        localStorage.getItem("mintAddresses") || "[]"
+      );
+      setStoredMintAddresses(savedMints);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && mintAddress) {
+      setStoredMintAddresses((prev) => {
+        const newMintAddresses = [...new Set([...prev, mintAddress])];
+
+        // Hanya update localStorage jika ada perubahan
+        if (JSON.stringify(prev) !== JSON.stringify(newMintAddresses)) {
+          localStorage.setItem(
+            "mintAddresses",
+            JSON.stringify(newMintAddresses)
+          );
+        }
+        return newMintAddresses;
+      });
+    }
+  }, [mintAddress]);
+
+  const { prices, symbols } = usePriceSocket(storedMintAddresses || []);
+  const priceData = prices[mintAddress] || null;
+  const priceSymbol = symbols[mintAddress] || null;
+  //---------------------------------------------------------------------------//
+
   const prevTradeHistoryLength = useRef(agent?.tradeHistory.length || 0);
 
   // Ambil data trade history dari agent
   const HistoryTrade = agent?.tradeHistory || [];
-  const investedFromAgent = agent?.balance || 0;
+  const investedFromAgent = agent?.balance || 1;
   const currentWorthFromAgent = agent?.currentWorth || 0;
   const pnlPercentageFromAgent = agent?.pnlPercentage || 0;
   const totalPnlsolFromAgent = agent?.totalPnlsol || 0;
@@ -90,50 +132,75 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
       setCurrentWorth(agent.currentWorth ?? 0);
       setTotalPnlSol(agent.totalPnlsol ?? 0);
       setPnlPercentage(agent.pnlPercentage ?? 0);
-      setBuyAmount(agent.balance ?? 0.5);
+      setBuyAmount(agent.balance ? agent.balance * 0.1 : 0.1);
     }
   }, [agentId, agent]);
 
-  useEffect(() => {
-    const updateAgentTrades = async () => {
-      if (agent && agent.tradeHistory.length > prevTradeHistoryLength.current) {
-        const newTrades = agent.tradeHistory.slice(
-          prevTradeHistoryLength.current
-        );
-        const totalPnl = agent.tradeHistory.reduce(
-          (acc: number, trade: any) => acc + (trade.pnl || 0),
-          0
-        );
-        const pnlPercentage = ((totalPnl / agent.invested) * 100).toFixed(2);
+  // useEffect(() => {
+  //   console.log("📈 Agent data:", activeAgent);
 
-        await updateAgent(agent.agentId, {
-          tradeHistory: newTrades,
-          pnlPercentage,
+  //   const updateAgentTrades = async () => {
+  //     if (
+  //       activeAgent &&
+  //       activeAgent.tradeHistory.length > prevTradeHistoryLength.current
+  //     ) {
+  //       const newTrades = activeAgent.tradeHistory.slice(
+  //         prevTradeHistoryLength.current
+  //       );
+  //       const totalPnl = activeAgent.tradeHistory.reduce(
+  //         (acc: number, trade: any) => acc + (trade.pnl || 0),
+  //         0
+  //       );
+  //       const pnlPercentage = (
+  //         (totalPnl / (investedFromAgent || 1)) *
+  //         100
+  //       ).toFixed(2);
+
+  //       await updateAgent(agentId, {
+  //         tradeHistory: newTrades,
+  //         pnlPercentage,
+  //       });
+
+  //       prevTradeHistoryLength.current = activeAgent.tradeHistory.length;
+  //     }
+  //   };
+
+  //   updateAgentTrades();
+  // }, [activeAgent?.tradeHistory.length]);
+
+  // useEffect(() => {
+  //   if (mintAddress && priceData !== null) {
+  //     setPrice(priceData);
+  //     setPreSymbol(priceSymbol || "");
+  //   }
+  // }, [mintAddress, priceData]);
+
+  useEffect(() => {
+    if (prices && symbols) {
+      setTrackedPrices((prev) => {
+        const updatedPrices = { ...prev };
+        Object.keys(prices).forEach((mint) => {
+          updatedPrices[mint] = {
+            price: prices[mint] as number,
+            symbol: symbols[mint] || "",
+          };
         });
-
-        prevTradeHistoryLength.current = agent.tradeHistory.length;
-      }
-    };
-
-    updateAgentTrades();
-  }, [agent?.tradeHistory, agent]);
-
-  useEffect(() => {
-    if (mintAddress && priceData !== null) {
-      setPrice(priceData);
-      setPreSymbol(priceSymbol || "");
+        return updatedPrices;
+      });
     }
-  }, [mintAddress, priceData]);
+  }, [prices, symbols]);
 
   useEffect(() => {
-    if (tradeData && price !== null) {
+    if (tradeData && trackedPrices[tradeData.tokenAddress]) {
+      const { price, symbol } = trackedPrices[tradeData.tokenAddress];
+
       console.log("📈 Buy token", tradeData);
       allAgents.forEach((agent) => {
         if (agent.riskLevel === tradeData.riskLevel) {
           console.log("Before buyToken:", agents[agent.agentId]?.portfolio);
           buyToken(
-            presymbol,
-            mintAddress,
+            symbol,
+            tradeData.mintAddress,
             buyamount,
             price,
             calculatePriceLevel(price, agent.stopLoss ?? 20, "SL"),
@@ -144,7 +211,7 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       });
     }
-  }, [tradeData, price]);
+  }, [tradeData, trackedPrices]);
 
   useEffect(() => {
     if (price !== null && agents[agentId]) {
@@ -195,6 +262,7 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
         pnlPercentage,
         currentWorth,
         agentID: agentId,
+        trackedPrices,
       }}
     >
       {children}

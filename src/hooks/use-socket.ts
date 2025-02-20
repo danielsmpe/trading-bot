@@ -42,53 +42,62 @@ export function useTradeSocket() {
   return { isConnected, tradeData };
 }
 
-export function usePriceSocket(mintAddress: string) {
-  const [price, setPrice] = useState<number | null>(null);
-  const [symbol, setSymbol] = useState<string | null>(null);
+export function usePriceSocket(mintAddresses: string[]) {
+  const [prices, setPrices] = useState<Record<string, number | null>>({});
+  const [symbols, setSymbols] = useState<Record<string, string | null>>({});
   const [isConnected, setIsConnected] = useState(false);
-  const socketRef = useRef<Socket | null>(null); // 🔥 Simpan socket ref agar bisa disconnect manual
+  const socketRef = useRef<Socket | null>(null);
+  const isMounted = useRef(true);
 
   useEffect(() => {
-    if (!mintAddress) {
-      console.log("⚠️ No mintAddress provided, skipping socket connection.");
+    isMounted.current = true;
+
+    if (!mintAddresses || mintAddresses.length === 0) {
+      console.log("⚠️ No mintAddresses provided, skipping socket connection.");
       return;
     }
 
-    console.log(`🛜 Connecting to price socket for ${mintAddress}...`);
+    console.log(`🛜 Connecting to price socket for: ${mintAddresses.join(", ")}...`);
 
-    // Jika sudah ada koneksi sebelumnya, disconnect dulu biar bisa refresh koneksi
+    // Jika socket sudah ada, disconnect dulu
     if (socketRef.current) {
       console.log("🔌 Disconnecting existing socket before reconnecting...");
       socketRef.current.disconnect();
     }
 
-    socketRef.current = io("ws://localhost:4000", {
+    // Membuat koneksi WebSocket baru
+    const socket = io("ws://localhost:4000", {
       transports: ["websocket"],
     });
 
-    socketRef.current.on("connect", () => {
+    socketRef.current = socket;
+
+    socket.on("connect", () => {
+      if (!isMounted.current) return;
       console.log("✅ Price Socket Connected");
       setIsConnected(true);
-      socketRef.current?.emit("subscribe", mintAddress);
+      socket.emit("subscribe", mintAddresses);
     });
 
-    socketRef.current.on("connect_error", (error) => {
+    socket.on("connect_error", (error) => {
+      if (!isMounted.current) return;
       console.error("❌ WebSocket connection error:", error);
-    });    
-
-    socketRef.current.on("priceUpdate", (data) => {
-      if (data.mint === mintAddress) {
-        console.log(`📈 Price Update for ${mintAddress}: $${data.price}`);
-        setPrice(data.price);
-        setSymbol(data.symbol)
-      }
     });
 
-    return () => {
-      console.log("🔌 Cleaning up socket connection...");
-      socketRef.current?.disconnect();
-    };
-  }, [mintAddress]); // 🔥 Re-run useEffect setiap kali mintAddress berubah!
+    socket.on("priceUpdate", (data) => {
+      if (!isMounted.current || !mintAddresses.includes(data.mint)) return;
+      console.log(`📈 Price Update for ${data.mint}: $${data.price}`);
+      setPrices((prevPrices) => ({ ...prevPrices, [data.mint]: data.price }));
+      setSymbols((prevSymbols) => ({ ...prevSymbols, [data.mint]: data.symbol }));
+    });
 
-  return { price,symbol, isConnected };
+    // Cleanup saat unmount
+    return () => {
+      isMounted.current = false;
+      console.log("🔌 Cleaning up socket connection...");
+      socket.disconnect();
+    };
+  }, [JSON.stringify(mintAddresses)]); // Gunakan `JSON.stringify` agar dependensi di-tracking dengan benar
+
+  return { prices, symbols, isConnected };
 }

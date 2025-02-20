@@ -125,7 +125,7 @@
         "trailingTakeProfitValue": 0,
         "trailingStopLoss": false,
         "trailingStopLossValue": 0,
-        "pnlPercentage": "0.00",
+        "pnlPercentage": "-0.00",
         "invested": 5,
         "currentWorth": 21,
         "riskLevel": "Low Risk",
@@ -163,7 +163,33 @@
             "status": true
           }
         ],
-        "tradeHistory": [ 
+        "tradeHistory": [
+          {
+            "id": "49035e74-d92d-41ea-8428-6ddc8749f272",
+            "token": "smol",
+            "tokenAddress": "9yVo4ZgMEkYHsiwcGAX5e15bpU7QAZdAJ1aKTDpVpump",
+            "entryPrice": 0.000019939,
+            "amount": 10,
+            "stopLoss": 0.00002,
+            "takeProfit": 0.00002,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-20T07:36:37.371Z"
+          },
+          {
+            "id": "49035e74-d92d-41ea-8428-6ddc8749f272",
+            "token": "smol",
+            "tokenAddress": "9yVo4ZgMEkYHsiwcGAX5e15bpU7QAZdAJ1aKTDpVpump",
+            "entryPrice": 0.000019939,
+            "amount": 10,
+            "stopLoss": 0.00002,
+            "takeProfit": 0.00002,
+            "status": "closed",
+            "tradeType": "sell",
+            "createdAt": "2025-02-20T07:38:03.874Z",
+            "exitPrice": 0,
+            "pnl": -0.00019939
+          }
         ]
       },
       {
@@ -178,7 +204,7 @@
         "trailingTakeProfitValue": 0,
         "trailingStopLoss": false,
         "trailingStopLossValue": 0,
-        "pnlPercentage": 0,
+        "pnlPercentage": "-0.00",
         "invested": 20,
         "currentWorth": 20,
         "riskLevel": "High Risk",
@@ -215,8 +241,34 @@
             "status": true
           }
         ],
-        "tradeHistory": []
-
+        "tradeHistory": [
+          {
+            "id": "39f48d84-79cf-438c-84ed-39b39f396468",
+            "token": "TRUMP",
+            "tokenAddress": "8nz3iGeHKCy7TZXinEoFgXHb9Y2jK3PoUAdHHZ7Fpump",
+            "entryPrice": 0.000003735,
+            "amount": 2,
+            "stopLoss": 0.000004,
+            "takeProfit": 0.000004,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-20T08:12:00.779Z"
+          },
+          {
+            "id": "39f48d84-79cf-438c-84ed-39b39f396468",
+            "token": "TRUMP",
+            "tokenAddress": "8nz3iGeHKCy7TZXinEoFgXHb9Y2jK3PoUAdHHZ7Fpump",
+            "entryPrice": 0.000003735,
+            "amount": 2,
+            "stopLoss": 0.000004,
+            "takeProfit": 0.000004,
+            "status": "closed",
+            "tradeType": "sell",
+            "createdAt": "2025-02-20T08:12:03.703Z",
+            "exitPrice": 0,
+            "pnl": -0.00000747
+          }
+        ]
       },
       {
         "agentId": "VerseAgent-3",

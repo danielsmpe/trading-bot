@@ -8,7 +8,6 @@ type Portfolio = Record<string, { token: string; tokenAddress: string }[]>;
 
 export const TradingOverview = (verseagent: any) => {
   const {
-    price,
     solPrice,
     portfolio,
     HistoryTrade,
@@ -16,7 +15,9 @@ export const TradingOverview = (verseagent: any) => {
     totalInvested,
     setAgentId,
     pnlPercentage,
+    trackedPrices,
   } = useTradingContext();
+  console.log("📊 Tracked Prices:", trackedPrices);
   const agentId = verseagent?.agent?.agentId;
   useEffect(() => {
     setAgentId(agentId);
@@ -87,7 +88,7 @@ export const TradingOverview = (verseagent: any) => {
         <div>
           <p className="text-responsive font-semibold">Active Trade</p>
           <div className="mt-2">
-            <TradingSimulator price={price} agentId={agentId} />
+            <TradingSimulator prices={trackedPrices} agentId={agentId} />
           </div>
         </div>
       )}

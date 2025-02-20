@@ -42,22 +42,24 @@ const fetchTokenPrice = async (address) => {
 io.on("connection", (socket) => {
   console.log("✅ Client connected:", socket.id);
 
-  socket.on("subscribe", async (mintAddress) => {
-    console.log(`📩 Client subscribed to ${mintAddress}`);
+  socket.on("subscribe", async (mintAddresses) => {
+    console.log(`📩 Client subscribed to ${mintAddresses}`);
 
-    if (!mintSubscriptions.has(mintAddress)) {
-      mintSubscriptions.set(mintAddress, new Set());
-    }
-    mintSubscriptions.get(mintAddress).add(socket.id);
+    mintAddresses.forEach(async (mintAddress) => {
+      if (!mintSubscriptions.has(mintAddress)) {
+        mintSubscriptions.set(mintAddress, new Set());
+      }
+      mintSubscriptions.get(mintAddress).add(socket.id);
 
-    // 🟢 Fetch harga pertama kali
-    const data = await fetchTokenPrice(mintAddress);
-    const price = data.usdPrice
-    const symbol = data.symbol
-    if (price !== undefined) {
-      lastPrices.set(mintAddress, price);
-      socket.emit("priceUpdate", { mint: mintAddress, price ,symbol });
-    }
+      // 🟢 Fetch harga pertama kali
+      const data = await fetchTokenPrice(mintAddress);
+      const price = data.usdPrice;
+      const symbol = data.symbol;
+      if (price !== undefined) {
+        lastPrices.set(mintAddress, price);
+        socket.emit("priceUpdate", { mint: mintAddress, price, symbol });
+      }
+    });
   });
 
   socket.on("disconnect", () => {

@@ -14,8 +14,8 @@ export function calculatePriceLevel(
   return parseFloat(result.toFixed(decimals));
 }
 
-const TradingSimulator: React.FC<{ price: number | null; agentId: string }> = ({
-  price,
+const TradingSimulator: React.FC<{ prices: any; agentId: string }> = ({
+  prices,
   agentId,
 }) => {
   const { agents } = useTradingStore();
@@ -23,9 +23,21 @@ const TradingSimulator: React.FC<{ price: number | null; agentId: string }> = ({
 
   useEffect(() => {
     setRenderKey((prev) => prev + 1);
-  }, [price]);
+  }, [prices]);
 
   const portfolio = agents[agentId]?.portfolio || {};
+  const filteredPrices = Object.keys(portfolio).reduce((acc, symbol) => {
+    const foundEntry = Object.entries(prices).find(
+      ([, value]) =>
+        (value as { price: number; symbol: string }).symbol === symbol
+    );
+
+    if (foundEntry) {
+      acc[symbol] = (foundEntry[1] as { price: number; symbol: string }).price;
+    }
+
+    return acc;
+  }, {} as Record<string, number>);
 
   return (
     <div className="text-white rounded-lg shadow-lg">
@@ -36,7 +48,9 @@ const TradingSimulator: React.FC<{ price: number | null; agentId: string }> = ({
             <h4 className="font-semibold text-yellow-400">{symbol}</h4>
             <p key={renderKey} className="text-sm text-gray-400">
               Current Price:{" "}
-              {price !== null ? `$${formatDecimal(price)}` : "N/A"}
+              {filteredPrices[symbol] !== undefined
+                ? `$${formatDecimal(filteredPrices[symbol])}`
+                : "N/A"}
             </p>
             <table className="w-full mt-2 text-sm">
               <thead>
