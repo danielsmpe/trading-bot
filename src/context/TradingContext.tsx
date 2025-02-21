@@ -116,15 +116,15 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
   const [buyamount, setBuyAmount] = useState(buy);
   const [isTracking, setIsTracking] = useState(false);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedData = localStorage.getItem("trading-storage");
-      const token: Portfolio = storedData
-        ? JSON.parse(storedData).state.agents?.[agentId]?.portfolio
-        : {};
-      setStoredToken(token);
-    }
-  }, [agentId]);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const storedData = localStorage.getItem("trading-storage");
+  //     const token: Portfolio = storedData
+  //       ? JSON.parse(storedData).state.agents?.[agentId]?.portfolio
+  //       : {};
+  //     setStoredToken(token);
+  //   }
+  // }, [agentId]);
 
   useEffect(() => {
     if (agent) {
@@ -175,7 +175,7 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
         Object.keys(prices).forEach((mint) => {
           updatedPrices[mint] = {
             price: prices[mint] as number,
-            symbol: symbols[mint] || "",
+            symbol: symbols[mint] || prev[mint]?.symbol || "",
           };
         });
         return updatedPrices;
@@ -196,17 +196,17 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
 
     allAgents.forEach((agent) => {
       if (agent.riskLevel === tradeData.riskLevel) {
-        const tradeKey = `${tradeData.tokenAddress}-${agent.agentId}`; // Unik per token + agent
+        const tradeKey = `${tradeData.tokenAddress}-${agent.agentId}`;
 
         if (boughtTradesRef.current.has(tradeKey)) {
           console.log(`🚀 Skip buy: ${tradeKey} already bought`);
-          return; // Skip jika sudah dibeli
+          return;
         }
 
         console.log("📈 Buying token for agent:", agent);
         buyToken(
           symbol,
-          tradeData.mintAddress,
+          tradeData.tokenAddress,
           buyamount,
           price,
           calculatePriceLevel(price, agent.stopLoss ?? 20, "SL"),
@@ -214,7 +214,7 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
           agent.agentId
         );
 
-        boughtTradesRef.current.add(tradeKey); // Tandai sudah dibeli
+        boughtTradesRef.current.add(tradeKey);
       }
     });
   }, [tradeData, trackedPrices, allAgents, buyToken]);

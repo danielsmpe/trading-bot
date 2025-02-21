@@ -119,8 +119,8 @@
         "isActive": true,
         "isStopped": false,
         "balance": 0,
-        "takeProfit": 40,
-        "stopLoss": 40,
+        "takeProfit": 10,
+        "stopLoss": 10,
         "trailingTakeProfit": false,
         "trailingTakeProfitValue": 0,
         "trailingStopLoss": false,
@@ -162,7 +162,56 @@
         "pairList": "NONE",
         "rank": 0,
         "tradeHistory": [
-          
+          {
+            "id": "2f51a965-9fd2-4219-a7a4-5652f708407c",
+            "token": "",
+            "entryPrice": 0.000056265,
+            "amount": 0.1,
+            "stopLoss": 0.000034,
+            "takeProfit": 0.000079,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-21T03:25:41.994Z"
+          },
+          {
+            "id": "1f747d3b-abb5-434e-b016-ef92277f012e",
+            "token": "",
+            "entryPrice": 0.000051585,
+            "amount": 0.1,
+            "stopLoss": 0.000031,
+            "takeProfit": 0.000072,
+            "status": "closed",
+            "tradeType": "sell",
+            "createdAt": "2025-02-21T03:44:48.268Z",
+            "exitPrice": 0,
+            "pnl": -0.000005158500000000001
+          },
+          {
+            "id": "170784a8-7612-40c7-828b-657074aa928c",
+            "token": "Jelly AI",
+            "tokenAddress": "CDmt3iou2XdyNybDJ9cnJ2L4jZTiDviNvs73Nzjbpump",
+            "entryPrice": 0.000058689,
+            "amount": 0.1,
+            "stopLoss": 0.000053,
+            "takeProfit": 0.000065,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-21T04:01:13.811Z"
+          },
+          {
+            "id": "170784a8-7612-40c7-828b-657074aa928c",
+            "token": "Jelly AI",
+            "tokenAddress": "CDmt3iou2XdyNybDJ9cnJ2L4jZTiDviNvs73Nzjbpump",
+            "entryPrice": 0.000058689,
+            "amount": 0.1,
+            "stopLoss": 0.000053,
+            "takeProfit": 0.000065,
+            "status": "closed",
+            "tradeType": "sell",
+            "createdAt": "2025-02-21T04:04:20.468Z",
+            "exitPrice": 0,
+            "pnl": -0.000005868900000000001
+          }
         ],
         "minLiquidity": 200,
         "made": 0
@@ -179,7 +228,7 @@
         "trailingTakeProfitValue": 0,
         "trailingStopLoss": false,
         "trailingStopLossValue": 0,
-        "pnlPercentage": 0,
+        "pnlPercentage": "0.00",
         "invested": 10,
         "currentWorth": 10,
         "totalPnlsol": 0,
@@ -215,7 +264,19 @@
         "createDate": "2025-02-20T10:35:29.507Z",
         "pairList": "NONE",
         "rank": 0,
-        "tradeHistory": [],
+        "tradeHistory": [
+          {
+            "id": "852df535-3e47-4904-8e80-f1756453837b",
+            "token": "TRUMP",
+            "entryPrice": 0.00000373,
+            "amount": 0.1,
+            "stopLoss": 0.000003,
+            "takeProfit": 0.000004,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-21T01:38:45.188Z"
+          }
+        ],
         "minLiquidity": 200,
         "made": 0
       },

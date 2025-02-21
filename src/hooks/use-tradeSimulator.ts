@@ -69,7 +69,7 @@ export const useTradingStore = create<TradingState>()(
         if (!updatedPortfolio[token]) {
           updatedPortfolio[token] = [];
         }
-        updatedPortfolio[token] = [...updatedPortfolio[token], newTrade];
+        updatedPortfolio[token] = updatedPortfolio[token] ? [...updatedPortfolio[token], newTrade] : [newTrade];
 
         set((state) => ({
           agents: {
@@ -96,7 +96,7 @@ export const useTradingStore = create<TradingState>()(
         Object.keys(updatedPortfolio).forEach((token) => {
           const filteredTrades = updatedPortfolio[token].filter((trade) => {
             if (trade.status === "holding") {
-              if (price <= trade.stopLoss || price >= trade.takeProfit) {
+              if (price <= trade.stopLoss || price >= trade.takeProfit) {    
                 const exitPrice = price;
                 const pnl = (exitPrice - trade.entryPrice) * trade.amount;
                 updatedBalance += trade.amount * (exitPrice / trade.entryPrice);
