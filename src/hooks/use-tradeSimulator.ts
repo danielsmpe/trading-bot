@@ -41,8 +41,9 @@ type TradingState = {
     takeProfit: number,
     agentId: string
   ) => void;
-  updatePortfolio: (price: number, agentId: string) => void;
+  updatePortfolio: (prices: Record<string, number>, agentId: string) => void; // <-- Updated here
 };
+
 
 export const useTradingStore = create<TradingState>()(
   persist(
@@ -100,45 +101,48 @@ export const useTradingStore = create<TradingState>()(
         });
       },
 
-      updatePortfolio: async (price, agentId) => { 
+      updatePortfolio: async (prices: Record<string, number>, agentId: string) => {
         const { agents } = get();
         const agent = agents[agentId];
         if (!agent) return;
-        if (!price || price <= 0) return;
-      
+
         const updatedPortfolio = { ...agent.portfolio };
         const closedTrades: Trade[] = [];
         let updatedBalance = agent.balance;
         let totalPnl = agent.totalPnl;
-      
+
         Object.keys(updatedPortfolio).forEach((token) => {
-          updatedPortfolio[token] = updatedPortfolio[token]
-            .map((trade) => {
-              if (trade.status === "holding" && (price <= trade.stopLoss || price >= trade.takeProfit)) {
-                const exitPrice = price;
-                const pnl = (exitPrice - trade.entryPrice) * trade.amount;
-                updatedBalance += pnl;
-                totalPnl += pnl;
-      
-                const closedTrade = {
-                  ...trade,
-                  exitPrice,
-                  pnl,
-                  amount: trade.amount,
-                  status: "closed" as "closed",
-                  tradeType: "sell" as TradeType,
-                  createdAt: new Date().toISOString(),
-                };
-      
-                closedTrades.push(closedTrade);
-                return closedTrade;
-              }
-              return trade;
-            })
-            .filter((trade) => trade.status !== "closed");
+          updatedPortfolio[token] = updatedPortfolio[token].map((trade) => {
+            const tokenPrice = prices[trade.tokenAddress];
+
+            if (
+              trade.status === "holding" &&
+              tokenPrice !== undefined &&
+              (tokenPrice <= trade.stopLoss || tokenPrice >= trade.takeProfit)
+            ) {
+              const exitPrice = tokenPrice;
+              const pnl = (exitPrice - trade.entryPrice) * trade.amount;
+              updatedBalance += pnl;
+              totalPnl += pnl;
+
+              const closedTrade = {
+                ...trade,
+                exitPrice,
+                pnl,
+                status: "closed" as "closed",
+                tradeType: "sell" as TradeType,
+                createdAt: new Date().toISOString(),
+              };
+
+              closedTrades.push(closedTrade);
+              return closedTrade;
+            }
+            return trade;
+          }).filter((trade) => trade.status !== "closed");
         });
-      
+
         const pnlPercentage = parseFloat(((totalPnl / agent.initBalance) * 100).toFixed(2));
+
         set((state) => ({
           agents: {
             ...state.agents,
@@ -149,24 +153,20 @@ export const useTradingStore = create<TradingState>()(
               tradeHistory: [...agent.tradeHistory, ...closedTrades],
               totalPnl,
               pnlPercentage,
-              
             },
           },
         }));
 
-        const newinitbalance = updatedBalance + agent.balance * 0.1
-        console.log(newinitbalance)
         if (closedTrades.length > 0) {
           await updateAgent(agentId, {
             tradeHistory: closedTrades,
             pnlPercentage,
             totalPnlsol: totalPnl,
-            balance: newinitbalance,
-            initbalance: newinitbalance,
+            balance: updatedBalance + agent.balance * 0.1,
+            initbalance: updatedBalance + agent.balance * 0.1,
           });
         }
       },
-      
     }),
     {
       name: "trading-storage",
@@ -177,18 +177,22 @@ export const useTradingStore = create<TradingState>()(
   )
 );
 
-export const useTradingSimulator = (price: number, agentId: string) => {
+export const useTradingSimulator = (trackedPrices: Record<string, { price: number }>, agentId: string) => {
   const { agents, buyToken, updatePortfolio } = useTradingStore();
-  const prevPriceRef = useRef<number | null>(null);
+  const prevPricesRef = useRef<Record<string, number>>({});
 
   useEffect(() => {
-    if (price !== null && agents[agentId]) {
-      if (prevPriceRef.current !== price) {
-        prevPriceRef.current = price;
-        updatePortfolio(price, agentId);
+    if (Object.keys(trackedPrices).length > 0 && agents[agentId]) {
+      const currentPrices = Object.fromEntries(
+        Object.entries(trackedPrices).map(([key, value]) => [key, value.price])
+      );
+
+      if (JSON.stringify(prevPricesRef.current) !== JSON.stringify(currentPrices)) {
+        prevPricesRef.current = currentPrices;
+        updatePortfolio(currentPrices, agentId);
       }
     }
-  }, [price, agentId]);
+  }, [trackedPrices, agentId]);
 
   return { balance: agents[agentId]?.balance ?? 50, agents, buyToken };
 };

@@ -63,8 +63,7 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
   >({});
   const { tradeData } = useTradeSocket();
   const tokenAddress = tradeData?.tokenAddress;
-  const livePrice = tokenAddress ? trackedPrices[tokenAddress]?.price || 0 : 0;
-  const { agents, buyToken } = useTradingSimulator(livePrice, agentId);
+  const { agents, buyToken } = useTradingSimulator(trackedPrices, agentId);
   const [storedToken, setStoredToken] = useState<Portfolio | null>(null);
   const solPrice = 180;
 
@@ -103,8 +102,6 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const { prices, symbols } = usePriceSocket(storedMintAddresses || []);
   //---------------------------------------------------------------------------//
-
-  const prevTradeHistoryLength = useRef(agent?.tradeHistory.length || 0);
 
   // Ambil data trade history dari agent
   const HistoryTrade = agent?.tradeHistory || [];
