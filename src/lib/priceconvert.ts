@@ -1,4 +1,8 @@
 export function formatDecimal(number: number): string {
+  if (number === undefined || number === null || isNaN(number)) {
+    return "0";
+  }
+
   if (number === 0 || Math.abs(number) >= 1) return number.toString();
 
   const isNegative = number < 0;
@@ -18,11 +22,15 @@ export function formatDecimal(number: number): string {
   return isNegative ? `-${formatted}` : formatted;
 }
 
+
 export function convertSolToUsd(solPrice: number, amount: number): string {
-    if (solPrice <= 0) return "Invalid solPrice";
-    const usdAmount = solPrice * amount;
-    return usdAmount.toFixed(2);
+  if (isNaN(solPrice) || solPrice <= 0) return "0.00";
+  if (isNaN(amount) || amount <= 0) return "0.00";
+
+  const usdAmount = solPrice * amount;
+  return usdAmount.toFixed(5);
 }
+
 
 export function convertUsdToSol(solPrice: number, usdAmount: number): string {
   if (solPrice <= 0) return "Invalid solPrice";

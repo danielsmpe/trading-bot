@@ -14,13 +14,22 @@ export const TradingOverview = (verseagent: any) => {
     totalPnlSol,
     totalInvested,
     setAgentId,
-    pnlPercentage,
     trackedPrices,
+    agents,
   } = useTradingContext();
   const agentId = verseagent?.agent?.agentId;
+  const agentdb = verseagent?.agent;
   useEffect(() => {
     setAgentId(agentId);
   }, [agentId]);
+
+  const agent = agents[agentId] || {};
+  const balance = agent.balance || agentdb?.balance;
+  const totalPnl = agent.totalPnl || agentdb?.totalPnlsol;
+  const pnlusd = Number(convertSolToUsd(solPrice, totalPnl));
+  const pnlPercentage = parseFloat(
+    ((agent.totalPnl / agent.initBalance) * 100).toFixed(5)
+  );
 
   return (
     <div>
@@ -35,16 +44,16 @@ export const TradingOverview = (verseagent: any) => {
             <div className="flex items-center gap-1">
               <SolanaIcon className="w-6 h-6" />
               <p className="text-2xl font-bold text-white">
-                {formatDecimal(totalInvested)} SOL
+                {formatDecimal(balance)} SOL
               </p>
             </div>
             <div className="flex items-end">
               <p
                 className={`text-sm ${
-                  totalPnlSol >= 0 ? "text-[#60d6a2]" : "text-red-500"
+                  totalPnl >= 0 ? "text-[#60d6a2]" : "text-red-500"
                 }`}
               >
-                ${convertSolToUsd(solPrice, totalInvested)}
+                ${convertSolToUsd(solPrice, balance)}
               </p>
             </div>
           </div>
@@ -59,31 +68,31 @@ export const TradingOverview = (verseagent: any) => {
             <div className="flex items-center gap-1">
               <SolanaIcon className="w-6 h-6" />
               <p className="text-2xl font-bold text-white">
-                {formatDecimal(totalPnlSol)} SOL
+                {formatDecimal(totalPnl)} SOL
               </p>
             </div>
             <div className="flex items-end">
               <p
                 className={`${
-                  totalPnlSol >= 0 ? "text-green-400" : "text-red-500"
+                  totalPnl >= 0 ? "text-green-400" : "text-red-500"
                 }`}
               >
-                {totalPnlSol >= 0 ? "+" : ""}
+                {agent?.totalPnl >= 0 ? "+" : ""}
                 {formatDecimal(pnlPercentage)}%
               </p>
               <p
                 className={`text-sm ${
-                  totalPnlSol >= 0 ? "text-[#60d6a2]" : "text-red-500"
+                  totalPnl >= 0 ? "text-[#60d6a2]" : "text-red-500"
                 }`}
               >
-                ${convertSolToUsd(solPrice, totalPnlSol)}
+                ${formatDecimal(pnlusd)}
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {Object.keys(portfolio).length > 0 && (
+      {Object.values(portfolio).some((trades) => trades.length > 0) && (
         <div>
           <p className="text-responsive font-semibold">Active Trade</p>
           <div className="mt-2">

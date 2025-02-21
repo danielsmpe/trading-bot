@@ -172,6 +172,7 @@ export default function Dashboard() {
         agentId: newAgent.agentName,
         pnlPercentage: 0,
         invested: investmentAmount,
+        balance: investmentAmount,
         currentWorth: investmentAmount,
         totalPnlsol: 0,
         made: 0,

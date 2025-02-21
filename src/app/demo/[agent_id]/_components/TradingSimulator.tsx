@@ -25,6 +25,8 @@ const TradingSimulator: React.FC<{ prices: any; agentId: string }> = ({
     setRenderKey((prev) => prev + 1);
   }, [prices]);
 
+  console.log;
+
   const portfolio = agents[agentId]?.portfolio || {};
   const filteredPrices = Object.keys(portfolio).reduce((acc, symbol) => {
     const foundEntry = Object.entries(prices).find(
