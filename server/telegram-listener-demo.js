@@ -282,7 +282,6 @@ async function startListening() {
         if (topicId == targetTopicId) {
           console.log(`🚫 Message ignored (from Topic ID: ${topicId})`);
           tradeData = await handleLowRiskTrade("BUY", text);
-          return;
         }
       }
       

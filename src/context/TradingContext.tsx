@@ -132,11 +132,13 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
           return;
         }
 
+        const amount = agent.balance * 0.1 || 0;
+
         console.log("📈 Buying token for agent:", agent);
         buyToken(
           symbol,
           tradeData.tokenAddress,
-          buyamount,
+          amount,
           price,
           calculatePriceLevel(price, agent.stopLoss ?? 20, "SL"),
           calculatePriceLevel(price, agent.takeProfit ?? 20, "TP"),

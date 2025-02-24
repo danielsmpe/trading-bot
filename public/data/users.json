@@ -161,18 +161,6 @@
         "pairList": "NONE",
         "rank": 0,
         "tradeHistory": [
-          {
-            "id": "8bb98778-8e71-4bc9-9c0f-de85d5309996",
-            "token": "moses",
-            "tokenAddress": "ByT2qeVt4UUa9LRhTE6dUM1GHvCA3qN53CfgNKSKpump",
-            "entryPrice": 0.000003967,
-            "amount": 0,
-            "stopLoss": 0.000002,
-            "takeProfit": 0.000006,
-            "status": "holding",
-            "tradeType": "buy",
-            "createdAt": "2025-02-24T07:11:16.825Z"
-          }
         ],
         "minLiquidity": 50,
         "totalPnlsol": 0,
