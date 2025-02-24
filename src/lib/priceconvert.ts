@@ -7,7 +7,7 @@ export function formatDecimal(number: number): string {
 
   const isNegative = number < 0;
   const absNum = Math.abs(number);
-  const numStr = absNum.toString();
+  const numStr = absNum.toFixed(20); // Hindari notasi ilmiah dengan banyak desimal
   const match = numStr.match(/^0\.(0+)(\d+)/);
 
   if (!match) return number.toString();
@@ -15,10 +15,14 @@ export function formatDecimal(number: number): string {
   const zeroCount = match[1].length;
   let significantPart = match[2];
 
-  const maxSignificantLength = 10 - (zeroCount.toString().length + 5);
+  const maxSignificantLength = 5; // Tampilkan 5 digit signifikan setelah nol
   significantPart = significantPart.slice(0, maxSignificantLength);
 
-  let formatted = `0.0{${zeroCount}}${significantPart}`;
+  // Gunakan notasi kurung jika nol berturut-turut banyak
+  let formatted = zeroCount > 3
+    ? `0.{0(${zeroCount})}${significantPart}`
+    : `0.${"0".repeat(zeroCount)}${significantPart}`;
+
   return isNegative ? `-${formatted}` : formatted;
 }
 
@@ -32,8 +36,8 @@ export function convertSolToUsd(solPrice: number, amount: number): string {
 }
 
 
-export function convertUsdToSol(solPrice: number, usdAmount: number): string {
-  if (solPrice <= 0) return "Invalid solPrice";
+export function convertUsdToSol(solPrice: number, usdAmount: number): number {
+  if (solPrice <= 0) throw new Error("Invalid solPrice"); // Lebih baik lempar error
   const solAmount = usdAmount / solPrice;
-  return solAmount.toFixed(6);
+  return parseFloat(solAmount.toFixed(6)); // Mengembalikan number, bukan string
 }

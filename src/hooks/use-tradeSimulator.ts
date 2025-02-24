@@ -122,6 +122,7 @@ export const useTradingStore = create<TradingState>()(
             ) {
               const exitPrice = tokenPrice;
               const pnl = (exitPrice - trade.entryPrice) * trade.amount;
+              const sellAmount = (trade.amount * exitPrice) / trade.entryPrice;
               updatedBalance += pnl;
               totalPnl += pnl;
 
@@ -129,6 +130,7 @@ export const useTradingStore = create<TradingState>()(
                 ...trade,
                 exitPrice,
                 pnl,
+                amount:sellAmount,
                 status: "closed" as "closed",
                 tradeType: "sell" as TradeType,
                 createdAt: new Date().toISOString(),
