@@ -19,6 +19,61 @@ type User = {
   walletAddress: string;
   agents: Agent[];
 };
+
+// Untuk agent pertama
+interface BasicAgent {
+  agentId: string;
+  agentName: string;
+  isActive: boolean;
+  isStopped: boolean;
+  balance: number;
+  takeProfit: number;
+  stopLoss: number;
+  pnlPercentage: number;
+  invested: number;
+  currentWorth: number;
+  totalPnlsol: number;
+  status: {
+    holding: boolean;
+    coinAddress: string;
+  };
+  tradeHistory: {
+    id: string;
+    token: string;
+    entryPrice: number;
+    amount: number;
+    stopLoss: number;
+    takeProfit: number;
+    status: string;
+    tradeType: string;
+    createdAt: string;
+  }[];
+}
+
+// Untuk realtimeAgents
+interface RealtimeAgent {
+  agentId: string;
+  initBalance: number;
+  balance: number;
+  portfolio: Record<
+    string,
+    {
+      id: string;
+      token: string;
+      tokenAddress: string;
+      entryPrice: number;
+      amount: number;
+      stopLoss: number;
+      takeProfit: number;
+      status: string;
+      tradeType: string;
+      createdAt: string;
+    }[]
+  >;
+  totalPnl: number;
+  pnlPercentage: number;
+}
+
 type RiskFilter = "All" | "Low Risk" | "High Risk" | "Trending 24h";
 type AgentFilter = "All Agents" | "Activated" | "Deactivated";
 
@@ -53,50 +108,6 @@ export default function Dashboard() {
 
     setAgents(filteredAgents);
   }, [agentFilterState]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setAgents((prevAgents) => {
-        const updatedAgents = prevAgents.map((agent) => {
-          const updatedAgent = agent.isActive
-            ? simulateMarketMovement(agent, solPrice)
-            : agent;
-          if (
-            updatedAgent.isActive !== agent.isActive &&
-            updatedAgent.status === "stopped"
-          ) {
-            setAgentsToNotify((prev) => [...prev, updatedAgent]);
-          }
-          return updatedAgent;
-        });
-        return updatedAgents;
-      });
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (agentsToNotify.length > 0) {
-      agentsToNotify.forEach((agent) => {
-        if (agent.status === "active") {
-          toast.success(`${agent.agentName} is now active!`, {
-            duration: 5000,
-            position: "bottom-right",
-          });
-        } else if (agent.status === "stopped") {
-          const stopReason =
-            agent.stopReason === "manually" ? "manually" : "by stop loss";
-          toast(`${agent.agentName} has been stopped ${stopReason}.`, {
-            duration: 5000,
-            position: "bottom-right",
-            icon: "🛑",
-          });
-        }
-      });
-      setAgentsToNotify([]);
-    }
-  }, [agentsToNotify]);
 
   const resumeAgent = useCallback(
     async (index: number) => {
@@ -249,34 +260,55 @@ export default function Dashboard() {
     riskFilterState === "All" ? true : agent.riskLevel === riskFilterState
   );
 
-  const activeAgents = filteredAgents.filter((agent) => agent.isActive);
+  const activeAgents = filteredAgents.filter(
+    (agent: BasicAgent) => agent.isActive
+  ) as BasicAgent[];
   const stoppedAgents = filteredAgents.filter((agent) => !agent.isActive);
 
+  const { agents: realtimeAgents } = useTradingContext();
+
+  const initialAgents = agents.reduce((acc, agent) => {
+    acc[agent.agentId] = realtimeAgents[agent.agentId] || {
+      agentId: agent.agentId,
+      initBalance: agent.balance,
+      balance: agent.balance, // Pakai data dari agents jika realtime kosong
+      portfolio: agent.portfolio || {}, // Gunakan portfolio dari agent jika ada
+      totalPnl: agent.totalPnlsol || 0, // Total PnL dari agent
+      pnlPercentage: agent.pnlPercentage || 0, // PnL Percentage dari agent
+    };
+    return acc;
+  }, {} as Record<string, RealtimeAgent>);
+
+  // Calculate Stats
+  const agentEntries = Object.entries(initialAgents) as [
+    string,
+    RealtimeAgent
+  ][];
+  const totalAgents = agentEntries.length;
+
   const activeTotalInvested = activeAgents.reduce(
-    (acc, agent) => acc + agent.invested,
+    (sum, agent) => sum + (agent.invested || agent.balance || 0),
     0
   );
 
   const activeTotalWorth = activeAgents.reduce(
-    (acc, agent) => acc + agent.currentWorth,
+    (sum, agent) =>
+      sum + (realtimeAgents[agent.agentId]?.balance || agent.balance || 0),
     0
   );
 
-  const stoppedTotalWorth = stoppedAgents.reduce(
-    (acc, agent) => acc + agent.currentWorth,
+  const activePnlSol = activeAgents.reduce(
+    (sum, agent) =>
+      sum + (realtimeAgents[agent.agentId]?.totalPnl || agent.totalPnlsol || 0),
     0
   );
 
-  const activePnlSol = activeTotalWorth - activeTotalInvested;
-  const activePnlUsd = activePnlSol * solPrice;
+  const totalPnlSol = agentEntries.reduce(
+    (sum, [_, agent]) => sum + (agent.totalPnl || 0),
+    0
+  );
+
   const isActivePnlPositive = activePnlSol >= 0;
-
-  const totalPnlSol =
-    activeTotalWorth +
-    stoppedTotalWorth -
-    (activeTotalInvested +
-      stoppedAgents.reduce((acc, agent) => acc + agent.invested, 0));
-  const totalPnlUsd = totalPnlSol * solPrice;
   const isTotalPnlPositive = totalPnlSol >= 0;
 
   const sortedAgents = [...filteredAgents].sort((a, b) => {
@@ -354,13 +386,11 @@ export default function Dashboard() {
         </Tabs>
       </div>
 
-      {/* Stats Overview */}
+      {/* // Stats Overview */}
       <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="bg-gradient-to-br from-[#003300] to-black p-4 rounded-xl">
           <p className="text-gray-400 text-sm">Total Agents</p>
-          <p className="text-2xl font-bold text-white">
-            {filteredAgents.length}
-          </p>
+          <p className="text-2xl font-bold text-white">{totalAgents}</p>
         </div>
         <div className="bg-gradient-to-br from-[#003300] to-black p-4 rounded-xl">
           <p className="text-gray-400 text-sm">Total Invested</p>
@@ -404,11 +434,10 @@ export default function Dashboard() {
             </p>
           </div>
           <p
-            className={`${
-              isActivePnlPositive ? "text-[#60d6a2]" : "text-red-500"
-            }`}
+            className={isActivePnlPositive ? "text-[#60d6a2]" : "text-red-500"}
           >
-            {isActivePnlPositive ? "+" : ""}${activePnlUsd.toFixed(2)}
+            {isActivePnlPositive ? "+" : ""}$
+            {(activePnlSol * solPrice).toFixed(2)}
           </p>
         </div>
         <div
@@ -428,34 +457,43 @@ export default function Dashboard() {
               {totalPnlSol.toFixed(2)} SOL
             </p>
           </div>
-          <p
-            className={`${
-              isTotalPnlPositive ? "text-[#60d6a2]" : "text-red-500"
-            }`}
-          >
-            {isTotalPnlPositive ? "+" : ""}${totalPnlUsd.toFixed(2)}
+          <p className={isTotalPnlPositive ? "text-[#60d6a2]" : "text-red-500"}>
+            {isTotalPnlPositive ? "+" : ""}$
+            {(totalPnlSol * solPrice).toFixed(2)}
           </p>
         </div>
       </div>
 
-      {/* Trading Cards Grid */}
+      {/* // Trading Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sortedAgents.map((agent, index) => (
-          <TradingCard
-            key={agent.agentId}
-            {...agent}
-            onResume={() =>
-              resumeAgent(
-                agents.findIndex((a) => a.agentName === agent.agentName)
-              )
-            }
-            onStop={() =>
-              stopAgent(
-                agents.findIndex((a) => a.agentName === agent.agentName)
-              )
-            }
-          />
-        ))}
+        {agentEntries.map(([agentId, agentData], index) => {
+          const basicAgent = filteredAgents.find(
+            (agent) => agent.agentId === agentId
+          );
+          console.log(basicAgent);
+          return (
+            <TradingCard
+              key={agentId}
+              agentId={agentId}
+              agentName={basicAgent?.agentName || "Unknown Agent"}
+              pnlPercentage={
+                agentData.pnlPercentage || basicAgent?.pnlPercentage
+              }
+              invested={agentData.initBalance}
+              currentWorth={agentData.balance}
+              made={agentData.totalPnl || basicAgent?.totalPnlsol}
+              isActive={basicAgent?.isActive || false}
+              isStopped={basicAgent?.isStopped || false}
+              status={basicAgent?.status || "waiting"}
+              riskLevel={basicAgent?.riskLevel || "Low Risk"}
+              stopLoss={basicAgent?.stopLoss || 0}
+              onResume={() => resumeAgent(index)}
+              onStop={() => stopAgent(index)}
+              alerts={basicAgent?.alerts || []}
+              defaultAgent={basicAgent?.defaultAgent || false}
+            />
+          );
+        })}
       </div>
 
       <CreateAgentModal

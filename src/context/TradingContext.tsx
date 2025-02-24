@@ -118,15 +118,35 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
   const [buyamount, setBuyAmount] = useState(buy);
   const [isTracking, setIsTracking] = useState(false);
 
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     const storedData = localStorage.getItem("trading-storage");
-  //     const token: Portfolio = storedData
-  //       ? JSON.parse(storedData).state.agents?.[agentId]?.portfolio
-  //       : {};
-  //     setStoredToken(token);
-  //   }
-  // }, [agentId]);
+  const handleBuy = useCallback(() => {
+    if (!tradeData || !trackedPrices[tradeData.tokenAddress]) return;
+
+    const { price, symbol } = trackedPrices[tradeData.tokenAddress];
+
+    allAgents.forEach((agent) => {
+      if (agent.riskLevel === tradeData.riskLevel) {
+        const tradeKey = `${tradeData.tokenAddress}-${agent.agentId}`;
+
+        if (boughtTradesRef.current.has(tradeKey)) {
+          console.log(`🚀 Skip buy: ${tradeKey} already bought`);
+          return;
+        }
+
+        console.log("📈 Buying token for agent:", agent);
+        buyToken(
+          symbol,
+          tradeData.tokenAddress,
+          buyamount,
+          price,
+          calculatePriceLevel(price, agent.stopLoss ?? 20, "SL"),
+          calculatePriceLevel(price, agent.takeProfit ?? 20, "TP"),
+          agent.agentId
+        );
+
+        boughtTradesRef.current.add(tradeKey);
+      }
+    });
+  }, [tradeData, trackedPrices, allAgents, buyToken]);
 
   useEffect(() => {
     if (agent) {
@@ -161,41 +181,58 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [trackedPrices, isTracking]);
 
-  const handleBuy = useCallback(() => {
-    if (!tradeData || !trackedPrices[tradeData.tokenAddress]) return;
-
-    const { price, symbol } = trackedPrices[tradeData.tokenAddress];
-
-    allAgents.forEach((agent) => {
-      if (agent.riskLevel === tradeData.riskLevel) {
-        const tradeKey = `${tradeData.tokenAddress}-${agent.agentId}`;
-
-        if (boughtTradesRef.current.has(tradeKey)) {
-          console.log(`🚀 Skip buy: ${tradeKey} already bought`);
-          return;
-        }
-
-        console.log("📈 Buying token for agent:", agent);
-        buyToken(
-          symbol,
-          tradeData.tokenAddress,
-          buyamount,
-          price,
-          calculatePriceLevel(price, agent.stopLoss ?? 20, "SL"),
-          calculatePriceLevel(price, agent.takeProfit ?? 20, "TP"),
-          agent.agentId
-        );
-
-        boughtTradesRef.current.add(tradeKey);
-      }
-    });
-  }, [tradeData, trackedPrices, allAgents, buyToken]);
-
   useEffect(() => {
     if (Object.keys(trackedPrices).length > 0) {
       handleBuy();
     }
   }, [trackedPrices, handleBuy]);
+
+  const calculateAgentsData = () => {
+    const updatedAgents: Record<string, any> = {};
+
+    allAgents.forEach((agent) => {
+      const agentId = agent.agentId;
+      const portfolio = agents[agentId]?.portfolio || {};
+      let totalPnl = 0;
+
+      // Calculate totalPnL from portfolio
+      Object.keys(portfolio).forEach((token) => {
+        portfolio[token].forEach((trade: any) => {
+          const currentPrice =
+            trackedPrices[trade.tokenAddress]?.price || trade.entryPrice;
+          const tradePnl = (currentPrice - trade.entryPrice) * trade.amount;
+          totalPnl += tradePnl;
+        });
+      });
+
+      const initBalance = agent.balance || 0;
+      const balance = initBalance + totalPnl;
+      const pnlPercentage =
+        initBalance > 0 ? (totalPnl / initBalance) * 100 : 0;
+
+      // Store the updated agent data
+      updatedAgents[agentId] = {
+        initBalance,
+        balance,
+        portfolio,
+        totalPnl,
+        pnlPercentage,
+      };
+    });
+
+    return updatedAgents;
+  };
+
+  // State for updated agents' data
+  const [updatedAgents, setUpdatedAgents] = useState<Record<string, any>>({});
+
+  // Update agents' data in real-time based on trackedPrices
+  useEffect(() => {
+    if (Object.keys(trackedPrices).length > 0) {
+      const newAgentsData = calculateAgentsData();
+      setUpdatedAgents(newAgentsData);
+    }
+  }, [trackedPrices, agents]);
 
   return (
     <TradingContext.Provider
@@ -220,7 +257,7 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
         currentWorth,
         agentID: agentId,
         trackedPrices,
-        agents,
+        agents: updatedAgents,
       }}
     >
       {children}
