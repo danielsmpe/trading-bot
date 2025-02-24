@@ -114,11 +114,11 @@
     "walletAddress": "0x9876543210abcdef1234567890abcdef12345678",
     "agents": [
       {
-        "agentId": "test-low-risk-p4",
-        "agentName": "test-low-risk-p4",
+        "agentId": "VerseAI-lowrisk",
+        "agentName": "VerseAI-lowrisk",
         "isActive": true,
         "isStopped": false,
-        "balance": 10,
+        "balance": 5,
         "takeProfit": 40,
         "stopLoss": 40,
         "trailingTakeProfit": false,
@@ -126,8 +126,8 @@
         "trailingStopLoss": false,
         "trailingStopLossValue": 0,
         "pnlPercentage": 0,
-        "invested": 10,
-        "currentWorth": 10,
+        "invested": 5,
+        "currentWorth": 5,
         "alerts": [],
         "riskLevel": "Low Risk",
         "status": {
@@ -157,30 +157,42 @@
             "status": true
           }
         ],
-        "createDate": "2025-02-24T04:04:25.979Z",
+        "createDate": "2025-02-24T09:07:18.014Z",
         "pairList": "NONE",
         "rank": 0,
         "tradeHistory": [
+          {
+            "id": "27db4d4b-3b6f-48a0-9968-411fb131be87",
+            "token": "AFD",
+            "tokenAddress": "ByV6oJ8rfnK1AtvJ8gH4134yd9DL8e59YK1yLeQaRNBw",
+            "entryPrice": 3.364124791,
+            "amount": 0.5,
+            "stopLoss": 2.018475,
+            "takeProfit": 4.709775,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-24T09:14:30.205Z"
+          }
         ],
-        "minLiquidity": 50,
+        "minLiquidity": 200,
         "totalPnlsol": 0,
         "made": 0
       },
       {
-        "agentId": "test-high-risk-p4",
-        "agentName": "test-high-risk-p4",
+        "agentId": "VerseAI-Highrisk",
+        "agentName": "VerseAI-Highrisk",
         "isActive": true,
         "isStopped": false,
-        "balance": 50,
-        "takeProfit": 20,
-        "stopLoss": 20,
+        "balance": 2.5,
+        "takeProfit": 5,
+        "stopLoss": 5,
         "trailingTakeProfit": false,
         "trailingTakeProfitValue": 0,
         "trailingStopLoss": false,
         "trailingStopLossValue": 0,
         "pnlPercentage": 0,
-        "invested": 50,
-        "currentWorth": 50,
+        "invested": 2.5,
+        "currentWorth": 2.5,
         "alerts": [],
         "riskLevel": "High Risk",
         "status": {
@@ -210,20 +222,33 @@
             "status": true
           }
         ],
-        "createDate": "2025-02-24T04:05:05.234Z",
+        "createDate": "2025-02-24T09:07:39.153Z",
         "pairList": "NONE",
         "rank": 0,
-        "tradeHistory": [],
-        "minLiquidity": 50,
+        "tradeHistory": [
+          {
+            "id": "cc57af93-9cb5-4061-a1eb-b6b029d841b8",
+            "token": "CYBERTRUMP",
+            "tokenAddress": "4HLtut1gUrriHug48ZsyMKCa5dYn64h6bdfLcFUppump",
+            "entryPrice": 0.000143624,
+            "amount": 0.25,
+            "stopLoss": 0.000115,
+            "takeProfit": 0.000172,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-24T09:20:08.330Z"
+          }
+        ],
+        "minLiquidity": 100,
         "totalPnlsol": 0,
         "made": 0
       },
       {
-        "agentId": "test-trending-p1",
-        "agentName": "test-trending-p1",
+        "agentId": "VerseAI-Trending24h",
+        "agentName": "VerseAI-Trending24h",
         "isActive": true,
         "isStopped": false,
-        "balance": 10,
+        "balance": 1.9800018992,
         "takeProfit": 10,
         "stopLoss": 10,
         "trailingTakeProfit": false,
@@ -231,8 +256,8 @@
         "trailingStopLoss": false,
         "trailingStopLossValue": 0,
         "pnlPercentage": 0,
-        "invested": 10,
-        "currentWorth": 10,
+        "invested": 2,
+        "currentWorth": 2,
         "alerts": [],
         "riskLevel": "Trending 24h",
         "status": {
@@ -262,12 +287,39 @@
             "status": true
           }
         ],
-        "createDate": "2025-02-24T04:05:39.570Z",
+        "createDate": "2025-02-24T09:08:01.711Z",
         "pairList": "NONE",
         "rank": 0,
-        "tradeHistory": [],
-        "minLiquidity": 50,
-        "totalPnlsol": 0,
+        "tradeHistory": [
+          {
+            "id": "79334fe2-0160-4ef6-9db6-50f7a2a1608c",
+            "token": "MINION",
+            "tokenAddress": "Ftcroajqy2289GjpB6SDdueM6EZQGGyrECrYPn5dpump",
+            "entryPrice": 0.000085202,
+            "amount": 0.2,
+            "stopLoss": 0.000077,
+            "takeProfit": 0.000094,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-24T09:16:29.046Z"
+          },
+          {
+            "id": "79334fe2-0160-4ef6-9db6-50f7a2a1608c",
+            "token": "MINION",
+            "tokenAddress": "Ftcroajqy2289GjpB6SDdueM6EZQGGyrECrYPn5dpump",
+            "entryPrice": 0.000085202,
+            "amount": 40.01230018074693,
+            "stopLoss": 0.000077,
+            "takeProfit": 0.000094,
+            "status": "closed",
+            "tradeType": "sell",
+            "createdAt": "2025-02-24T09:23:17.656Z",
+            "exitPrice": 0.000094698,
+            "pnl": 0.0000018991999999999985
+          }
+        ],
+        "minLiquidity": 100,
+        "totalPnlsol": 0.0000018991999999999985,
         "made": 0
       }
     ]

@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { updateAgent } from "./user-agent";
+import { convertSolToUsd } from "@/lib/priceconvert";
 
 export type TradeType = "buy" | "sell";
 
@@ -44,6 +45,7 @@ type TradingState = {
   updatePortfolio: (prices: Record<string, number>, agentId: string) => void; // <-- Updated here
 };
 
+const SOLPRICE = 180
 
 export const useTradingStore = create<TradingState>()(
   persist(
@@ -121,8 +123,8 @@ export const useTradingStore = create<TradingState>()(
               (tokenPrice <= trade.stopLoss || tokenPrice >= trade.takeProfit)
             ) {
               const exitPrice = tokenPrice;
-              const pnl = (exitPrice - trade.entryPrice) * trade.amount;
-              const sellAmount = (trade.amount * exitPrice) / trade.entryPrice;
+              const pnl = (exitPrice - trade.entryPrice) * convertSolToUsd(SOLPRICE,trade.amount);
+              const sellAmount = pnl + trade.entryPrice;
               updatedBalance += pnl;
               totalPnl += pnl;
 

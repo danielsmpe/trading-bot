@@ -30,7 +30,6 @@ export const TradingOverview = (verseagent: any) => {
   const pnlPercentage = parseFloat(
     ((agent.totalPnl / agent.initBalance) * 100).toFixed(5)
   );
-
   return (
     <div>
       <div className="flex space-x-8 mt-6">

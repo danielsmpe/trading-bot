@@ -3,14 +3,14 @@ export function formatDecimal(number: number): string {
     return "0";
   }
 
-  if (number === 0 || Math.abs(number) >= 1) return number.toString();
+  if (number === 0 || Math.abs(number) >= 1) return `${number}`;
 
   const isNegative = number < 0;
   const absNum = Math.abs(number);
   const numStr = absNum.toFixed(20); // Hindari notasi ilmiah dengan banyak desimal
   const match = numStr.match(/^0\.(0+)(\d+)/);
 
-  if (!match) return number.toString();
+  if (!match) return `${number}`;
 
   const zeroCount = match[1].length;
   let significantPart = match[2];
@@ -18,22 +18,21 @@ export function formatDecimal(number: number): string {
   const maxSignificantLength = 5; // Tampilkan 5 digit signifikan setelah nol
   significantPart = significantPart.slice(0, maxSignificantLength);
 
-  // Gunakan notasi kurung jika nol berturut-turut banyak
-  let formatted = zeroCount > 3
-    ? `0.{0(${zeroCount})}${significantPart}`
-    : `0.${"0".repeat(zeroCount)}${significantPart}`;
+  // Format sesuai permintaan: 0.0{n}xxxxx
+  let formatted = `0.0{${zeroCount}}${significantPart}`;
 
-  return isNegative ? `-${formatted}` : formatted;
+  return isNegative ? `-${formatted}` : `${formatted}`;
 }
 
 
-export function convertSolToUsd(solPrice: number, amount: number): string {
-  if (isNaN(solPrice) || solPrice <= 0) return "0.00";
-  if (isNaN(amount) || amount <= 0) return "0.00";
 
-  const usdAmount = solPrice * amount;
-  return usdAmount.toFixed(5);
+export function convertSolToUsd(solPrice: number, amount: number): number {
+  if (isNaN(solPrice) || solPrice <= 0) return 0;
+  if (isNaN(amount) || amount <= 0) return 0;
+
+  return parseFloat((solPrice * amount).toFixed(5));
 }
+
 
 
 export function convertUsdToSol(solPrice: number, usdAmount: number): number {

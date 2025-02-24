@@ -144,7 +144,7 @@ export function TradingCard({
           <div className="flex items-center gap-1">
             <SolanaIcon />
             <span className="text-xl text-white">
-              {Math.abs(made).toFixed(6)}
+              {Math.abs(made).toFixed(5)}
             </span>
           </div>
         </div>
@@ -155,7 +155,7 @@ export function TradingCard({
             <p className="text-gray-400 mb-1">INVESTED</p>
             <div className="flex items-center gap-1">
               <SolanaIcon />
-              <span className="text-xl text-white">{invested?.toFixed(4)}</span>
+              <span className="text-xl text-white">{invested?.toFixed(2)}</span>
             </div>
             <p className="text-gray-500">
               ${convertSolToUsd(solPrice, invested)}
