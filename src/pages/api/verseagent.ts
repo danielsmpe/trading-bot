@@ -4,7 +4,6 @@ import path from "path";
 
 const agentsFilePath = path.join(process.cwd(), "public/data/users.json");
 const env = process.env.ENV
-console.log(env)
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "PUT") {

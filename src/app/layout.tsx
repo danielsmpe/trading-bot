@@ -5,13 +5,12 @@ import type React from "react";
 import { Header } from "../components/Header";
 import AppWalletProvider from "@/components/AppWalletProvider";
 import { TradingProvider } from "@/context/TradingContext";
-import { getAgentByUserAndAgentId } from "@/constant/DefaultAgent";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Autosnipe Trading Dashboard",
-  description: "Monitor your Autosnipe trading performance",
+  title: "VerseAI Trading Dashboard",
+  description: "Monitor your VerseAI trading performance",
 };
 
 export default function RootLayout({
