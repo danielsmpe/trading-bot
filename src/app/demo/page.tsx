@@ -470,7 +470,6 @@ export default function Dashboard() {
           const basicAgent = filteredAgents.find(
             (agent) => agent.agentId === agentId
           );
-          console.log(basicAgent);
           return (
             <TradingCard
               key={agentId}

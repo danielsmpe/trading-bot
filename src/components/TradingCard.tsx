@@ -99,20 +99,7 @@ export function TradingCard({
       router.push(`demo/${agentId}`);
     }
   };
-
-  console.log(
-    agentId,
-    agentName,
-    pnlPercentage,
-    invested,
-    currentWorth,
-    made,
-    isActive,
-    isStopped,
-    riskLevel,
-    stopLoss
-  );
-  const formattedPnlPercentage = Number(pnlPercentage).toFixed(2);
+  const formattedPnlPercentage = Number(pnlPercentage).toFixed(4);
 
   return (
     <div
@@ -178,9 +165,7 @@ export function TradingCard({
             <p className="text-gray-400 mb-1">CURRENT WORTH</p>
             <div className="flex items-center gap-1">
               <SolanaIcon />
-              <span className="text-xl text-white">
-                {currentWorth?.toFixed(4)}
-              </span>
+              <span className="text-xl text-white">{currentWorth}</span>
             </div>
             <p className="text-gray-500">
               ${convertSolToUsd(solPrice, currentWorth)}

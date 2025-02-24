@@ -164,8 +164,7 @@ export const useTradingStore = create<TradingState>()(
             tradeHistory: closedTrades,
             pnlPercentage,
             totalPnlsol: totalPnl,
-            balance: updatedBalance + agent.balance * 0.1,
-            initbalance: updatedBalance + agent.balance * 0.1,
+            balance: updatedBalance + agent.balance * 0.1
           });
         }
       },
