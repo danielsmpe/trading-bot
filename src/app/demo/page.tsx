@@ -13,6 +13,7 @@ import { Agent, getAgentsByUserId } from "@/constant/DefaultAgent";
 import { createAgent, updateAgent } from "@/hooks/user-agent";
 import { simulateMarketMovement } from "@/hooks/use-tradeSimulator";
 import { useTradingContext } from "@/context/TradingContext";
+import { convertUsdToSol } from "@/lib/priceconvert";
 
 type User = {
   userId: string;
@@ -480,7 +481,10 @@ export default function Dashboard() {
               }
               invested={basicAgent?.invested}
               currentWorth={agentData.balance}
-              made={agentData.totalPnl || basicAgent?.totalPnlsol}
+              made={
+                convertUsdToSol(solPrice, agentData.totalPnl) ||
+                basicAgent?.totalPnlsol
+              }
               isActive={basicAgent?.isActive || false}
               isStopped={basicAgent?.isStopped || false}
               status={basicAgent?.status || "waiting"}

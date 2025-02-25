@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { updateAgent } from "./user-agent";
 import { convertSolToUsd, convertUsdToSol } from "@/lib/priceconvert";
+import { removeMintAddress } from "@/lib/setstorage";
 
 export type TradeType = "buy" | "sell";
 
@@ -56,7 +57,7 @@ export const useTradingStore = create<TradingState>()(
         const { agents } = get();
         const agentdb = getAgentByUserAndAgentId(agentId);
         const agent = agents[agentId] || {
-          initBalance: agentdb?.balance ?? 50,
+          initBalance: agentdb?.invested ?? 50,
           balance: agentdb?.balance ?? 50,
           portfolio: {},
           tradeHistory: [],
@@ -146,7 +147,7 @@ export const useTradingStore = create<TradingState>()(
           }).filter((trade) => trade.status !== "closed");
         });
 
-        const initBalance = agent.balance || 0;
+        const initBalance = agent.initBalance || 0;
         const initBalanceUsd = convertSolToUsd(SOLPRICE, initBalance);
         const pnlPercentage = initBalanceUsd > 0 ? (totalPnl / initBalanceUsd ) * 100 : 0
 
@@ -182,6 +183,7 @@ export const useTradingStore = create<TradingState>()(
             
             if (agents[agentId].portfolio[tokenAddress].length === 0) {
               delete agents[agentId].portfolio[tokenAddress];
+              removeMintAddress(tokenAddress);
             }
           }
         });

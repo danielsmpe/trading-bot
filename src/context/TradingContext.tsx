@@ -212,7 +212,7 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
         });
       });
 
-      const initBalance = agent.balance || 0;
+      const initBalance = agent.invested || 0;
       const initBalanceUsd = convertSolToUsd(SOLPRICE, initBalance);
       const balance = initBalance + convertUsdToSol(SOLPRICE, totalPnl);
 
