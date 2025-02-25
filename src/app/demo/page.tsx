@@ -268,7 +268,7 @@ export default function Dashboard() {
 
   const { agents: realtimeAgents } = useTradingContext();
 
-  const initialAgents = agents.reduce((acc, agent) => {
+  const initialAgents = filteredAgents.reduce((acc, agent) => {
     acc[agent.agentId] = realtimeAgents[agent.agentId] || {
       agentId: agent.agentId,
       initBalance: agent.balance,

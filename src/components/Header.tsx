@@ -7,16 +7,6 @@ import { Button } from "./ui/button";
 export const Header = () => {
   const [walletBalance, setWalletBalance] = useState(500);
 
-  // const [walletAddress] = useState(
-  //   "3ZuWjp8k3V7dLJGLh1VSbNuH5TQLNT9pkRS9yGBjep4U"
-  // );
-  // const { balance, loading, error, fetchBalance } = useBalance(walletAddress);
-  // useEffect(() => {
-  //   if (balance !== null) {
-  //     setWalletBalance(balance);
-  //   }
-  // }, [balance]);
-
   return (
     <div className="flex justify-between items-center px-8 py-4 border-b border-gray-700/50 fixed top-0 left-0 w-full z-50 bg-black/90 backdrop-blur-md">
       <h1 className="text-lg md:text-2xl lg:text-4xl font-bold text-white">
