@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { updateAgent } from "./user-agent";
-import { convertSolToUsd } from "@/lib/priceconvert";
+import { convertSolToUsd, convertUsdToSol } from "@/lib/priceconvert";
 
 export type TradeType = "buy" | "sell";
 
@@ -123,16 +123,17 @@ export const useTradingStore = create<TradingState>()(
               (tokenPrice <= trade.stopLoss || tokenPrice >= trade.takeProfit)
             ) {
               const exitPrice = tokenPrice;
-              const pnl = (exitPrice - trade.entryPrice) * convertSolToUsd(SOLPRICE,trade.amount);
-              const sellAmount = pnl + trade.entryPrice;
-              updatedBalance += pnl;
+              const pnl = ((exitPrice - trade.entryPrice) / trade.entryPrice) * convertSolToUsd(SOLPRICE, trade.amount);
+              const sellAmount = pnl + convertSolToUsd(SOLPRICE, trade.amount);
+              const amount =  convertUsdToSol(SOLPRICE, sellAmount);
+              updatedBalance += convertUsdToSol(SOLPRICE, pnl);
               totalPnl += pnl;
 
               const closedTrade = {
                 ...trade,
                 exitPrice,
                 pnl,
-                amount:sellAmount,
+                amount,
                 status: "closed" as "closed",
                 tradeType: "sell" as TradeType,
                 createdAt: new Date().toISOString(),
@@ -145,7 +146,9 @@ export const useTradingStore = create<TradingState>()(
           }).filter((trade) => trade.status !== "closed");
         });
 
-        const pnlPercentage = parseFloat(((totalPnl / agent.initBalance) * 100).toFixed(2));
+        const initBalance = agent.balance || 0;
+        const initBalanceUsd = convertSolToUsd(SOLPRICE, initBalance);
+        const pnlPercentage = initBalanceUsd > 0 ? (totalPnl / initBalanceUsd ) * 100 : 0
 
         set((state) => ({
           agents: {
@@ -165,10 +168,23 @@ export const useTradingStore = create<TradingState>()(
           await updateAgent(agentId, {
             tradeHistory: closedTrades,
             pnlPercentage,
-            totalPnlsol: totalPnl,
+            totalPnlsol: convertUsdToSol(SOLPRICE, totalPnl),
             balance: updatedBalance + agent.balance * 0.1
           });
         }
+
+        closedTrades.forEach((closedTrade) => {
+          const tokenAddress = closedTrade.tokenAddress;
+          if (agents[agentId]?.portfolio[tokenAddress]) {
+            agents[agentId].portfolio[tokenAddress] = agents[agentId].portfolio[tokenAddress].filter(
+              (trade: any) => trade.id !== closedTrade.id
+            );
+            
+            if (agents[agentId].portfolio[tokenAddress].length === 0) {
+              delete agents[agentId].portfolio[tokenAddress];
+            }
+          }
+        });
       },
     }),
     {

@@ -12,12 +12,12 @@ import {
   useTradingStore,
 } from "@/hooks/use-tradeSimulator";
 import { usePriceSocket, useTradeSocket } from "@/hooks/use-socket";
-import { updateAgent } from "@/hooks/user-agent";
 import { calculatePriceLevel } from "@/app/demo/[agent_id]/_Components/TradingSimulator";
 import {
   getAgentByUserAndAgentId,
   getAgentsByUserId,
 } from "@/constant/DefaultAgent";
+import { convertSolToUsd, convertUsdToSol } from "@/lib/priceconvert";
 
 type Portfolio = Record<string, { token: string; tokenAddress: string }[]>;
 
@@ -44,6 +44,8 @@ interface TradingContextProps {
   trackedPrices: any;
   agents: any;
 }
+
+const SOLPRICE = 180;
 
 const TradingContext = createContext<TradingContextProps | undefined>(
   undefined
@@ -202,15 +204,20 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
         portfolio[token].forEach((trade: any) => {
           const currentPrice =
             trackedPrices[trade.tokenAddress]?.price || trade.entryPrice;
-          const tradePnl = (currentPrice - trade.entryPrice) * trade.amount;
+          // Hitung PNL per trade dalam USD
+          const tradePnl =
+            ((currentPrice - trade.entryPrice) / trade.entryPrice) *
+            convertSolToUsd(SOLPRICE, trade.amount);
           totalPnl += tradePnl;
         });
       });
 
       const initBalance = agent.balance || 0;
-      const balance = initBalance + totalPnl;
+      const initBalanceUsd = convertSolToUsd(SOLPRICE, initBalance);
+      const balance = initBalance + convertUsdToSol(SOLPRICE, totalPnl);
+
       const pnlPercentage =
-        initBalance > 0 ? (totalPnl / initBalance) * 100 : 0;
+        initBalanceUsd > 0 ? (totalPnl / initBalanceUsd) * 100 : 0;
 
       // Store the updated agent data
       updatedAgents[agentId] = {

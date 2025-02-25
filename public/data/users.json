@@ -172,6 +172,18 @@
             "status": "holding",
             "tradeType": "buy",
             "createdAt": "2025-02-24T09:14:30.205Z"
+          },
+          {
+            "id": "75a9cd36-5f9c-45ce-8f96-0e6f16c2c980",
+            "token": "SBF_DOGE",
+            "tokenAddress": "9mjcSYWF4FsLphT8aK8oEjNmkFN2dvtXWn92V99Lpump",
+            "entryPrice": 0.000063547,
+            "amount": 0.5,
+            "stopLoss": 0.000038,
+            "takeProfit": 0.000089,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-25T03:48:57.734Z"
           }
         ],
         "minLiquidity": 200,
@@ -191,6 +203,7 @@
         "trailingStopLoss": false,
         "trailingStopLossValue": 0,
         "pnlPercentage": 0,
+        "totalPnlsol": 0,
         "invested": 2.5,
         "currentWorth": 2.5,
         "alerts": [],
@@ -227,20 +240,19 @@
         "rank": 0,
         "tradeHistory": [
           {
-            "id": "cc57af93-9cb5-4061-a1eb-b6b029d841b8",
-            "token": "CYBERTRUMP",
-            "tokenAddress": "4HLtut1gUrriHug48ZsyMKCa5dYn64h6bdfLcFUppump",
-            "entryPrice": 0.000143624,
+            "id": "bac92cfb-3453-4e3e-aabf-5bc12dd5e3d2",
+            "token": "BossBaby",
+            "tokenAddress": "4yV5oPzVdXgJeWksWX2NgHRnn4yDbXhgmbEuaCQFpump",
+            "entryPrice": 0.000089425,
             "amount": 0.25,
-            "stopLoss": 0.000115,
-            "takeProfit": 0.000172,
+            "stopLoss": 0.000085,
+            "takeProfit": 0.000094,
             "status": "holding",
             "tradeType": "buy",
-            "createdAt": "2025-02-24T09:20:08.330Z"
+            "createdAt": "2025-02-25T03:58:15.860Z"
           }
         ],
         "minLiquidity": 100,
-        "totalPnlsol": 0,
         "made": 0
       },
       {
@@ -248,7 +260,7 @@
         "agentName": "VerseAI-Trending24h",
         "isActive": true,
         "isStopped": false,
-        "balance": 1.9800018992,
+        "balance": 2,
         "takeProfit": 10,
         "stopLoss": 10,
         "trailingTakeProfit": false,
@@ -290,36 +302,9 @@
         "createDate": "2025-02-24T09:08:01.711Z",
         "pairList": "NONE",
         "rank": 0,
-        "tradeHistory": [
-          {
-            "id": "79334fe2-0160-4ef6-9db6-50f7a2a1608c",
-            "token": "MINION",
-            "tokenAddress": "Ftcroajqy2289GjpB6SDdueM6EZQGGyrECrYPn5dpump",
-            "entryPrice": 0.000085202,
-            "amount": 0.2,
-            "stopLoss": 0.000077,
-            "takeProfit": 0.000094,
-            "status": "holding",
-            "tradeType": "buy",
-            "createdAt": "2025-02-24T09:16:29.046Z"
-          },
-          {
-            "id": "79334fe2-0160-4ef6-9db6-50f7a2a1608c",
-            "token": "MINION",
-            "tokenAddress": "Ftcroajqy2289GjpB6SDdueM6EZQGGyrECrYPn5dpump",
-            "entryPrice": 0.000085202,
-            "amount": 40.01230018074693,
-            "stopLoss": 0.000077,
-            "takeProfit": 0.000094,
-            "status": "closed",
-            "tradeType": "sell",
-            "createdAt": "2025-02-24T09:23:17.656Z",
-            "exitPrice": 0.000094698,
-            "pnl": 0.0000018991999999999985
-          }
-        ],
+        "tradeHistory": [],
         "minLiquidity": 100,
-        "totalPnlsol": 0.0000018991999999999985,
+        "totalPnlsol": 0,
         "made": 0
       }
     ]

@@ -2,7 +2,11 @@ import { SolanaIcon } from "@/components/SolanaIcon";
 import React, { useEffect, useState } from "react";
 import { useTradingContext } from "@/context/TradingContext";
 import TradingSimulator from "./TradingSimulator";
-import { convertSolToUsd, formatDecimal } from "@/lib/priceconvert";
+import {
+  convertSolToUsd,
+  convertUsdToSol,
+  formatDecimal,
+} from "@/lib/priceconvert";
 
 type Portfolio = Record<string, { token: string; tokenAddress: string }[]>;
 
@@ -26,10 +30,7 @@ export const TradingOverview = (verseagent: any) => {
   const agent = agents[agentId] || {};
   const balance = agent.balance || agentdb?.balance;
   const totalPnl = agent.totalPnl || agentdb?.totalPnlsol;
-  const pnlusd = Number(convertSolToUsd(solPrice, totalPnl));
-  const pnlPercentage = parseFloat(
-    ((agent.totalPnl / agent.initBalance) * 100).toFixed(5)
-  );
+  const pnlPercentage = agent.pnlPercentage || agentdb?.pnlPercentage;
   return (
     <div>
       <div className="flex space-x-8 mt-6">
@@ -67,7 +68,7 @@ export const TradingOverview = (verseagent: any) => {
             <div className="flex items-center gap-1">
               <SolanaIcon className="w-6 h-6" />
               <p className="text-2xl font-bold text-white">
-                {formatDecimal(totalPnl)} SOL
+                {convertUsdToSol(solPrice, totalPnl)} SOL
               </p>
             </div>
             <div className="flex items-end">
@@ -76,15 +77,15 @@ export const TradingOverview = (verseagent: any) => {
                   totalPnl >= 0 ? "text-green-400" : "text-red-500"
                 }`}
               >
-                {agent?.totalPnl >= 0 ? "+" : ""}
-                {formatDecimal(pnlPercentage)}%
+                {pnlPercentage >= 0 ? "+" : ""}
+                {pnlPercentage.toFixed(2)}%
               </p>
               <p
                 className={`text-sm ${
                   totalPnl >= 0 ? "text-[#60d6a2]" : "text-red-500"
                 }`}
               >
-                ${formatDecimal(pnlusd)}
+                ${totalPnl.toFixed(5)}
               </p>
             </div>
           </div>

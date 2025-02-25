@@ -264,7 +264,7 @@ async function startListening() {
       const text = message?.message;
       const chatId = message?.peerId?.channelId?.toString();
       const topicId = message?.replyTo?.replyToMsgId;
-      const allowedChannelIds = ["2202241417", "2122751413","2447330760"]; 
+      const allowedChannelIds = ["2202241417", "2122751413","2377355345"]; 
 
       if (!allowedChannelIds.includes(chatId)) {
         console.log(`🚫 Message ignored (from Chat ID: ${chatId})`);
@@ -286,10 +286,10 @@ async function startListening() {
       }
       
       if (chatId === "2122751413") {
-        tradeData = await handleLowRiskTrade("BUY", text);
+        tradeData = await handleHighRiskTrade("BUY", text);
       }
       
-      if (chatId === "2447330760") {
+      if (chatId === "2377355345") {
         const [highRiskTrade, lowRiskTrade] = await Promise.all([
           handleHighRiskTrade("BUY", text),
           handleLowRiskTrade("BUY", text)

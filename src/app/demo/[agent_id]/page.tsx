@@ -12,6 +12,7 @@ import { updateAgent } from "@/hooks/user-agent";
 import AgentDetails from "./_Components/AgentDetails";
 import { TradingOverview } from "./_Components/TradingOverview";
 import { useTradingContext } from "@/context/TradingContext";
+import { convertSolToUsd } from "@/lib/priceconvert";
 
 const AgentPage = ({ params }: { params: { agent_id: string } }) => {
   const router = useRouter();
@@ -63,6 +64,8 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
       }
     }
   };
+
+  const SOLPRICE = 180;
 
   return (
     <div className="p-6 xl:px-56 bg-black min-h-screen text-white pt-16">

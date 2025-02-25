@@ -478,7 +478,7 @@ export default function Dashboard() {
               pnlPercentage={
                 agentData.pnlPercentage || basicAgent?.pnlPercentage
               }
-              invested={agentData.initBalance}
+              invested={basicAgent?.invested}
               currentWorth={agentData.balance}
               made={agentData.totalPnl || basicAgent?.totalPnlsol}
               isActive={basicAgent?.isActive || false}

@@ -99,7 +99,7 @@ export function TradingCard({
       router.push(`demo/${agentId}`);
     }
   };
-  const formattedPnlPercentage = Number(pnlPercentage).toFixed(4);
+  const formattedPnlPercentage = Number(pnlPercentage).toFixed(3);
 
   return (
     <div
@@ -144,7 +144,7 @@ export function TradingCard({
           <div className="flex items-center gap-1">
             <SolanaIcon />
             <span className="text-xl text-white">
-              {Math.abs(made).toFixed(5)}
+              {Math.abs(made).toFixed(3)}
             </span>
           </div>
         </div>

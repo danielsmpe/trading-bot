@@ -68,7 +68,7 @@ const TradingSimulator: React.FC<{ prices: any; agentId: string }> = ({
                   <tr key={trade.id} className="border-b border-gray-700">
                     <td className="flex">
                       <SolanaIcon className="w-3 h-3 mt-1 mr-0.5" />
-                      <p>{trade.amount} SOL</p>
+                      <p>{trade.amount.toFixed(2)} SOL</p>
                     </td>
                     <td>${formatDecimal(trade.entryPrice)}</td>
                     <td className="text-red-400">
