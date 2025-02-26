@@ -8,6 +8,7 @@ export const getMintAddresses = (): string[] => {
   };
   
   export const removeMintAddress = (addressToRemove: string): void => {
+    console.log('removeMintAddress', addressToRemove);
     const addresses = getMintAddresses();
     const updatedAddresses = addresses.filter((address) => address !== addressToRemove);
     setMintAddresses(updatedAddresses);

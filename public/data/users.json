@@ -112,7 +112,168 @@
   {
     "userId": "USER-2",
     "walletAddress": "0x9876543210abcdef1234567890abcdef12345678",
+    "solana":500,
     "agents": [
+      {
+        "agentId": "lowrisk-verseAI",
+        "agentName": "lowrisk-verseAI",
+        "isActive": true,
+        "isStopped": false,
+        "balance": 5,
+        "takeProfit": 40,
+        "stopLoss": 40,
+        "trailingTakeProfit": false,
+        "trailingTakeProfitValue": 0,
+        "trailingStopLoss": false,
+        "trailingStopLossValue": 0,
+        "pnlPercentage": 0,
+        "invested": 5,
+        "currentWorth": 5,
+        "alerts": [],
+        "riskLevel": "Low Risk",
+        "status": {
+          "holding": false,
+          "coinAddress": "0xSomeCoinAddressForDNA1"
+        },
+        "amount": 0,
+        "checks": [
+          {
+            "id": 1,
+            "check": "Mint Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 2,
+            "check": "Freeze Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 3,
+            "check": "Avoid Scam Tokens",
+            "status": true
+          },
+          {
+            "id": 4,
+            "check": "Website Handles Available",
+            "status": true
+          }
+        ],
+        "createDate": "2025-02-25T04:20:45.170Z",
+        "pairList": "NONE",
+        "rank": 0,
+        "tradeHistory": [
+
+        ],
+        "minLiquidity": 200,
+        "totalPnlsol": 0,
+        "made": 0
+      },
+      {
+        "agentId": "highrisk-verseAI",
+        "agentName": "highrisk-verseAI",
+        "isActive": true,
+        "isStopped": false,
+        "balance": 5,
+        "takeProfit": 20,
+        "stopLoss": 20,
+        "trailingTakeProfit": false,
+        "trailingTakeProfitValue": 0,
+        "trailingStopLoss": false,
+        "trailingStopLossValue": 0,
+        "pnlPercentage": 0,
+        "invested": 5,
+        "currentWorth": 5,
+        "alerts": [],
+        "riskLevel": "High Risk",
+        "status": {
+          "holding": false,
+          "coinAddress": "0xSomeCoinAddressForDNA1"
+        },
+        "amount": 0,
+        "checks": [
+          {
+            "id": 1,
+            "check": "Mint Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 2,
+            "check": "Freeze Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 3,
+            "check": "Avoid Scam Tokens",
+            "status": true
+          },
+          {
+            "id": 4,
+            "check": "Website Handles Available",
+            "status": true
+          }
+        ],
+        "createDate": "2025-02-25T04:20:59.749Z",
+        "pairList": "NONE",
+        "rank": 0,
+        "tradeHistory": [],
+        "minLiquidity": 100,
+        "totalPnlsol": 0,
+        "made": 0
+      },
+      {
+        "agentId": "trending24h-verseAI",
+        "agentName": "trending24h-verseAI",
+        "isActive": true,
+        "isStopped": false,
+        "balance": 2.5,
+        "takeProfit": 10,
+        "stopLoss": 10,
+        "trailingTakeProfit": false,
+        "trailingTakeProfitValue": 0,
+        "trailingStopLoss": false,
+        "trailingStopLossValue": 0,
+        "pnlPercentage": 0,
+        "invested": 2.5,
+        "currentWorth": 2.5,
+        "alerts": [],
+        "riskLevel": "Trending 24h",
+        "status": {
+          "holding": false,
+          "coinAddress": "0xSomeCoinAddressForDNA1"
+        },
+        "amount": 0,
+        "checks": [
+          {
+            "id": 1,
+            "check": "Mint Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 2,
+            "check": "Freeze Authority Disabled",
+            "status": true
+          },
+          {
+            "id": 3,
+            "check": "Avoid Scam Tokens",
+            "status": true
+          },
+          {
+            "id": 4,
+            "check": "Website Handles Available",
+            "status": true
+          }
+        ],
+        "createDate": "2025-02-25T04:21:22.432Z",
+        "pairList": "NONE",
+        "rank": 0,
+        "tradeHistory": [
+
+        ],
+        "minLiquidity": 100,
+        "totalPnlsol": 0,
+        "made": 0
+      }
     ]
   }
 ]

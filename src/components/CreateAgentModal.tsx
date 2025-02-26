@@ -55,7 +55,7 @@ export function CreateAgentModal({
   onCreateAgent,
 }: CreateAgentModalProps) {
   const [agentName, setAgentName] = useState("");
-  const [minLiquidity, setMinLiquidity] = useState("");
+  const [minLiquidity, setMinLiquidity] = useState("50");
   const [invested, setInvested] = useState("");
   const [checks, setAuditChecks] = useState([
     {
@@ -117,7 +117,7 @@ export function CreateAgentModal({
     setAuditChecks((prevChecks) =>
       prevChecks.map((check) => ({
         ...check,
-        status: false,
+        status: true,
       }))
     );
     setRiskLevel("Low Risk");
@@ -131,7 +131,7 @@ export function CreateAgentModal({
       setAuditChecks((prevChecks) =>
         prevChecks.map((check) => ({
           ...check,
-          status: false, // Mengubah semua status menjadi false
+          status: true, // Mengubah semua status menjadi false
         }))
       );
 
