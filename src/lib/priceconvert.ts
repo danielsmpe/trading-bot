@@ -24,15 +24,12 @@ export function formatDecimal(number: number): string {
   return isNegative ? `-${formatted}` : `${formatted}`;
 }
 
-
-
 export function convertSolToUsd(solPrice: number, amount: number): number {
   if (isNaN(solPrice) || solPrice <= 0) return 0;
   if (isNaN(amount) || amount <= 0) return 0;
 
   return parseFloat((solPrice * amount).toFixed(5));
 }
-
 
 
 export function convertUsdToSol(solPrice: number, usdAmount: number): number {

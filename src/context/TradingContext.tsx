@@ -7,14 +7,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-import {
-  useTradingSimulator,
-} from "@/hooks/use-tradeSimulator";
+import { useTradingSimulator } from "@/hooks/use-tradeSimulator";
 import { usePriceSocket, useTradeSocket } from "@/hooks/use-socket";
-import { calculatePriceLevel } from "@/app/demo/[agent_id]/_components/TradingSimulator";
-import {
-  getAgentsByUserId,
-} from "@/constant/DefaultAgent";
+import { calculatePriceLevel } from "@/app/demo/[agent_id]/_Components/TradingSimulator";
+import { getAgentsByUserId } from "@/constant/DefaultAgent";
 import { convertSolToUsd, convertUsdToSol } from "@/lib/priceconvert";
 
 type Portfolio = Record<string, { token: string; tokenAddress: string }[]>;
@@ -132,7 +128,7 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
           return;
         }
 
-        const amount = agent.balance * 0.1 || 0;
+        const amount = agent.amount || 0;
 
         console.log("📈 Buying token for agent:", agent);
         buyToken(

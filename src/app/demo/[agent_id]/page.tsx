@@ -16,13 +16,14 @@ import { convertSolToUsd } from "@/lib/priceconvert";
 
 const AgentPage = ({ params }: { params: { agent_id: string } }) => {
   const router = useRouter();
+  const solPrice = 180;
   const [activeTab, setActiveTab] = useState("VerseAgent Details");
   const tabs = ["VerseAgent Details", "Trade Overview", "FAQ"];
   const agent = getAgentByUserAndAgentId(params.agent_id);
   const [loading, setIsLoading] = useState(false);
   const quickAmounts = [0.01, 0.1, 0.5, 1];
-  const initialAgents = getAgentsByUserId("USER-1") || [];
-  const buyamount = (agent?.balance ?? 0) * 0.1;
+  const initialAgents = getAgentsByUserId("USER-2") || [];
+  const buyamount = agent?.amount;
   const { setAgentId } = useTradingContext();
   const agentId = agent?.agentId;
   useEffect(() => {
@@ -31,12 +32,12 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
 
   const [formData, setFormData] = useState({
     amount: buyamount || 0.05,
-    takeProfit: agent?.takeProfit || 20,
+    takeProfit: agent?.takeProfit ?? 20,
     trailingTakeProfit: agent?.trailingTakeProfit || false,
-    trailingTakeProfitValue: agent?.trailingTakeProfitValue || 10,
-    stopLoss: agent?.stopLoss || 40,
-    trailingStopLoss: agent?.trailingStopLoss || false,
-    trailingStopLossValue: agent?.trailingStopLossValue || 5,
+    trailingTakeProfitValue: agent?.trailingTakeProfitValue ?? 10,
+    stopLoss: agent?.stopLoss ?? 40,
+    trailingStopLoss: agent?.trailingStopLoss ?? false,
+    trailingStopLossValue: agent?.trailingStopLossValue ?? 5,
   });
 
   const handleQuickAmount = (value: number) => {
@@ -65,8 +66,6 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
     }
   };
 
-  const SOLPRICE = 180;
-
   return (
     <div className="p-6 xl:px-56 bg-black min-h-screen text-white pt-16">
       <Button
@@ -77,7 +76,6 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
       </Button>
       <div className="w-full grid-flow-row lg:grid grid-cols-[70%_30%] gap-8">
         {/* Left */}
-
         <div className="mt-6 p-4 py-6 bg-gradient-to-br bg-gray-400/10 rounded-2xl responsive-text">
           <p className="pb-4 text-2xl font-bold text-white">
             {params?.agent_id}
@@ -112,7 +110,10 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
           <div>
             <h4 className="lg:text-xl font-bold">Activate Verseagent</h4>
             <p className="text-gray-400 text-sm">
-              Activated on 12/3/2024, 8:00:00 PM{" "}
+              Activated on{" "}
+              {agent?.createDate
+                ? new Date(agent?.createDate).toLocaleString()
+                : "N/A"}
             </p>
           </div>
           <div className="py-4 rounded-lg">
@@ -152,8 +153,11 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
               ))}
             </div>
             <div className="flex justify-between items-center text-sm mt-3 text-gray-500">
-              <p>≈ $21.23 (0.09 SOL)</p>
-              <p>Bal: 0.006 SOL</p>
+              <p>
+                ≈ ${convertSolToUsd(solPrice, formData.amount)}(
+                {formData.amount} SOL)
+              </p>
+              <p>Bal: {agent?.balance} SOL</p>
             </div>
           </div>
 
@@ -220,10 +224,6 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
                 </div>
               )}
               {/* Additional Information */}
-              <div className="mt-2 text-sm text-yellow-400">
-                Minimum profit estimate 0.0072 SOL (lose 60% of the profit),
-                recommend reducing drawdown.
-              </div>
             </div>
 
             <div>
@@ -283,10 +283,6 @@ const AgentPage = ({ params }: { params: { agent_id: string } }) => {
                   <span className="text-gray-400 ml-2">%</span>
                 </div>
               )}
-              <div className="mt-2 text-sm text-gray-400">
-                Estimated maximum loss{" "}
-                <span className="text-red-500">0.036 SOL</span>
-              </div>
             </div>
           </div>
 

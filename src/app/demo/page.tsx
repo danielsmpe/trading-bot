@@ -10,7 +10,6 @@ import { TradingCard } from "../../components/TradingCard";
 import { CreateAgentModal } from "../../components/CreateAgentModal";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createAgent, updateAgent } from "@/hooks/user-agent";
-import { simulateMarketMovement } from "@/hooks/use-tradeSimulator";
 import { useTradingContext } from "@/context/TradingContext";
 import { convertUsdToSol } from "@/lib/priceconvert";
 import { Agent, getAgentsByUserId } from "@/constant/DefaultAgent";
@@ -185,6 +184,7 @@ export default function Dashboard() {
         pnlPercentage: 0,
         invested: investmentAmount,
         balance: investmentAmount,
+        amount: investmentAmount * 0.1,
         currentWorth: investmentAmount,
         totalPnlsol: 0,
         made: 0,
@@ -309,7 +309,6 @@ export default function Dashboard() {
     0
   );
 
-
   const isActivePnlPositive = activePnlSol >= 0;
   const isTotalPnlPositive = totalPnlSol >= 0;
 
@@ -432,14 +431,13 @@ export default function Dashboard() {
               }`}
             >
               {isActivePnlPositive ? "+" : ""}
-              {convertUsdToSol(solPrice,activePnlSol).toFixed(2)} SOL
+              {convertUsdToSol(solPrice, activePnlSol).toFixed(2)} SOL
             </p>
           </div>
           <p
             className={isActivePnlPositive ? "text-[#60d6a2]" : "text-red-500"}
           >
-            {isActivePnlPositive ? "+" : ""}$
-            {(activePnlSol).toFixed(2)}
+            {isActivePnlPositive ? "+" : ""}${activePnlSol.toFixed(2)}
           </p>
         </div>
         <div
@@ -456,12 +454,11 @@ export default function Dashboard() {
               }`}
             >
               {isTotalPnlPositive ? "+" : ""}
-              {convertUsdToSol(solPrice,totalPnlSol).toFixed(2)} SOL
+              {convertUsdToSol(solPrice, totalPnlSol).toFixed(2)} SOL
             </p>
           </div>
           <p className={isTotalPnlPositive ? "text-[#60d6a2]" : "text-red-500"}>
-            {isTotalPnlPositive ? "+" : ""}$
-            {(totalPnlSol).toFixed(2)}
+            {isTotalPnlPositive ? "+" : ""}${totalPnlSol.toFixed(2)}
           </p>
         </div>
       </div>
