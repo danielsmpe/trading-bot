@@ -9,90 +9,78 @@ import { SolanaIcon } from "../components/SolanaIcon";
 import { TradingCard } from "../components/TradingCard";
 import { CreateAgentModal } from "../components/CreateAgentModal";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Agent, getAgentsByUserId } from "@/constant/DefaultAgent";
-import initialAgents from "../../public/data/initialAgents.json";
-import { updateAgent } from "@/hooks/user-agent";
+import { createAgent, updateAgent } from "@/hooks/user-agent";
+import { simulateMarketMovement } from "@/hooks/use-tradeSimulator";
+import { useTradingContext } from "@/context/TradingContext";
+import { convertUsdToSol } from "@/lib/priceconvert";
+import { Agent, getAgentsByUserId } from "@/constant/DefaultAGent";
 
 type User = {
   userId: string;
   walletAddress: string;
   agents: Agent[];
 };
+
+// Untuk agent pertama
+interface BasicAgent {
+  agentId: string;
+  agentName: string;
+  isActive: boolean;
+  isStopped: boolean;
+  balance: number;
+  takeProfit: number;
+  stopLoss: number;
+  pnlPercentage: number;
+  invested: number;
+  currentWorth: number;
+  totalPnlsol: number;
+  status: {
+    holding: boolean;
+    coinAddress: string;
+  };
+  tradeHistory: {
+    id: string;
+    token: string;
+    entryPrice: number;
+    amount: number;
+    stopLoss: number;
+    takeProfit: number;
+    status: string;
+    tradeType: string;
+    createdAt: string;
+  }[];
+}
+
+// Untuk realtimeAgents
+interface RealtimeAgent {
+  agentId: string;
+  initBalance: number;
+  balance: number;
+  portfolio: Record<
+    string,
+    {
+      id: string;
+      token: string;
+      tokenAddress: string;
+      entryPrice: number;
+      amount: number;
+      stopLoss: number;
+      takeProfit: number;
+      status: string;
+      tradeType: string;
+      createdAt: string;
+    }[]
+  >;
+  totalPnl: number;
+  pnlPercentage: number;
+}
+
 type RiskFilter = "All" | "Low Risk" | "High Risk" | "Trending 24h";
 type AgentFilter = "All Agents" | "Activated" | "Deactivated";
 
-function simulateMarketMovement(agent: Agent): Agent {
-  const storedSolPrice = localStorage.getItem("solana_price");
-  const solPrice = storedSolPrice ? parseFloat(storedSolPrice) : 233;
+const INITIAL_WALLET_BALANCE = 500;
 
-  if (!agent.isActive) return agent;
-
-  let pnlChange: number;
-  switch (agent.riskLevel) {
-    case "Low Risk":
-      pnlChange = (Math.random() - 0.5) * 2; // -1% to 1%
-      break;
-    case "High Risk":
-      pnlChange = (Math.random() - 0.5) * 10; // -5% to 5%
-      break;
-    case "Trending 24h":
-      pnlChange = (Math.random() - 0.5) * 4; // -2% to 2%
-      if (Math.random() < 0.1) {
-        // 10% chance of significant move
-        pnlChange *= 3; // -6% to 6%
-      }
-      break;
-    default:
-      pnlChange = 0;
-  }
-
-  const newPnlPercentage = agent.pnlPercentage + pnlChange;
-  const newMade = (agent.invested.sol * newPnlPercentage) / 100;
-  const newCurrentWorth = {
-    sol: agent.invested.sol + newMade,
-    usd: (agent.invested.sol + newMade) * solPrice,
-  };
-
-  // Check if stop loss is triggered
-  if (newPnlPercentage <= -agent.stopLoss) {
-    // Update wallet balance when stop loss is triggered
-    //setWalletBalance((prev) => prev + newCurrentWorth.sol)
-
-    return {
-      ...agent,
-      pnlPercentage: newPnlPercentage,
-      currentWorth: newCurrentWorth,
-      made: newMade,
-      isActive: false,
-      isStopped: true,
-      status: "stopped",
-      alerts: [
-        ...agent.alerts,
-        `Stop loss triggered at ${newPnlPercentage.toFixed(2)}%`,
-      ],
-      stopReason: "stop loss",
-      stoppedAt: Date.now(),
-    };
-  }
-
-  return {
-    ...agent,
-    pnlPercentage: newPnlPercentage,
-    currentWorth: newCurrentWorth,
-    made: newMade,
-  };
-}
-
-const INITIAL_WALLET_BALANCE = 200;
-
-const ActiveAgents = getAgentsByUserId("USER-1") || [];
-const allAgents = [
-  ...initialAgents.filter(
-    (agent) =>
-      !ActiveAgents.some((activeAgent) => activeAgent.agentId === agent.agentId)
-  ),
-  ...ActiveAgents,
-];
+const allAgents = getAgentsByUserId("USER-1") || [];
 
 export default function Dashboard() {
   const [agentFilterState, setAgentFilterState] =
@@ -102,6 +90,7 @@ export default function Dashboard() {
   const [walletBalance, setWalletBalance] = useState(INITIAL_WALLET_BALANCE);
   const [agentsToNotify, setAgentsToNotify] = useState<Agent[]>([]);
   const [riskFilterState, setRiskFilterState] = useState<RiskFilter>("All");
+  const { solPrice } = useTradingContext();
   const setRiskFilter = useCallback((value: RiskFilter) => {
     setRiskFilterState(value);
   }, []);
@@ -109,9 +98,6 @@ export default function Dashboard() {
   const setAgentsFilter = useCallback((value: AgentFilter) => {
     setAgentFilterState(value);
   }, []);
-
-  const storedSolPrice = localStorage.getItem("solana_price");
-  const solPrice = storedSolPrice ? parseFloat(storedSolPrice) : 233;
 
   useEffect(() => {
     const filteredAgents = allAgents.filter((agent) => {
@@ -123,50 +109,6 @@ export default function Dashboard() {
 
     setAgents(filteredAgents);
   }, [agentFilterState]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setAgents((prevAgents) => {
-        const updatedAgents = prevAgents.map((agent) => {
-          const updatedAgent = agent.isActive
-            ? simulateMarketMovement(agent)
-            : agent;
-          if (
-            updatedAgent.isActive !== agent.isActive &&
-            updatedAgent.status === "stopped"
-          ) {
-            setAgentsToNotify((prev) => [...prev, updatedAgent]);
-          }
-          return updatedAgent;
-        });
-        return updatedAgents;
-      });
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (agentsToNotify.length > 0) {
-      agentsToNotify.forEach((agent) => {
-        if (agent.status === "active") {
-          toast.success(`${agent.agentName} is now active!`, {
-            duration: 5000,
-            position: "bottom-right",
-          });
-        } else if (agent.status === "stopped") {
-          const stopReason =
-            agent.stopReason === "manually" ? "manually" : "by stop loss";
-          toast(`${agent.agentName} has been stopped ${stopReason}.`, {
-            duration: 5000,
-            position: "bottom-right",
-            icon: "🛑",
-          });
-        }
-      });
-      setAgentsToNotify([]);
-    }
-  }, [agentsToNotify]);
 
   const resumeAgent = useCallback(
     async (index: number) => {
@@ -218,14 +160,14 @@ export default function Dashboard() {
       await updateAgent(stoppedAgent.agentId, {
         isActive: false,
       });
-      setWalletBalance((prev) => prev + stoppedAgent.currentWorth.sol);
+      setWalletBalance((prev) => prev + stoppedAgent.currentWorth);
     },
     [agents]
   );
 
   const handleCreateAgent = useCallback(
-    (newAgent: any) => {
-      const investmentAmount = newAgent.minLiquidity;
+    async (newAgent: any) => {
+      const investmentAmount = newAgent.invested;
       if (walletBalance < investmentAmount) {
         toast.error(
           `Insufficient balance to create a new agent. You need ${investmentAmount} SOL.`,
@@ -239,75 +181,135 @@ export default function Dashboard() {
 
       const agent: Agent = {
         ...newAgent,
+        agentId: newAgent.agentName,
         pnlPercentage: 0,
-        invested: {
-          sol: investmentAmount,
-          usd: investmentAmount * solPrice,
-        },
-        currentWorth: {
-          sol: investmentAmount,
-          usd: investmentAmount * solPrice,
-        },
+        invested: investmentAmount,
+        balance: investmentAmount,
+        currentWorth: investmentAmount,
+        totalPnlsol: 0,
         made: 0,
-        isActive: false,
+        isActive: true,
         isStopped: false,
-        status: "waiting",
+        status: {
+          holding: false,
+          coinAddress: "0xSomeCoinAddressForDNA1",
+        },
         alerts: [],
       };
+
+      // **Optimistic UI Update**: Tambahkan agent ke state sebelum request API
       setAgents((prevAgents) => [agent, ...prevAgents]);
       setWalletBalance((prev) => prev - investmentAmount);
 
-      // Simulate agent activation after 15-30 seconds
-      const activationTime = Math.floor(
-        Math.random() * (30000 - 15000 + 1) + 15000
-      );
-      setTimeout(() => {
-        setAgents((prevAgents) =>
-          prevAgents.map((a) =>
-            a.agentName === agent.agentName
-              ? { ...a, isActive: true, status: "active" }
-              : a
-          )
+      try {
+        const response = await createAgent(agent);
+
+        if (response.error) {
+          toast.error("Failed to create agent. Please try again.", {
+            position: "bottom-right",
+            duration: 5000,
+          });
+
+          // **Rollback UI Update** jika gagal
+          setAgents((prevAgents) =>
+            prevAgents.filter((a) => a.agentName !== agent.agentName)
+          );
+          setWalletBalance((prev) => prev + investmentAmount);
+          return;
+        }
+
+        toast.success("Agent created successfully!", {
+          position: "bottom-right",
+          duration: 5000,
+        });
+
+        // Simulate agent activation after 15-30 seconds
+        const activationTime = Math.floor(
+          Math.random() * (30000 - 15000 + 1) + 15000
         );
-        setAgentsToNotify((prev) => [
-          ...prev,
-          { ...agent, isActive: true, status: "active" },
-        ]);
-      }, activationTime);
+        setTimeout(() => {
+          setAgents((prevAgents) =>
+            prevAgents.map((a) =>
+              a.agentName === agent.agentName
+                ? { ...a, isActive: true, status: "active" }
+                : a
+            )
+          );
+          setAgentsToNotify((prev) => [
+            ...prev,
+            { ...agent, isActive: true, status: "active" },
+          ]);
+        }, activationTime);
+      } catch (error) {
+        console.error("❌ Error creating agent:", error);
+        toast.error("Something went wrong. Please try again.", {
+          position: "bottom-right",
+          duration: 5000,
+        });
+
+        // **Rollback UI Update** jika ada error
+        setAgents((prevAgents) =>
+          prevAgents.filter((a) => a.agentName !== agent.agentName)
+        );
+        setWalletBalance((prev) => prev + investmentAmount);
+      }
     },
-    [walletBalance]
+    [walletBalance, solPrice]
   );
 
   const filteredAgents = agents.filter((agent) =>
     riskFilterState === "All" ? true : agent.riskLevel === riskFilterState
   );
 
-  const activeAgents = filteredAgents.filter((agent) => agent.isActive);
+  const activeAgents = filteredAgents.filter(
+    (agent: BasicAgent) => agent.isActive
+  ) as BasicAgent[];
   const stoppedAgents = filteredAgents.filter((agent) => !agent.isActive);
 
+  const { agents: realtimeAgents } = useTradingContext();
+
+  const initialAgents = agents.reduce((acc, agent) => {
+    acc[agent.agentId] = realtimeAgents[agent.agentId] || {
+      agentId: agent.agentId,
+      initBalance: agent.balance,
+      balance: agent.balance, // Pakai data dari agents jika realtime kosong
+      portfolio: agent.portfolio || {}, // Gunakan portfolio dari agent jika ada
+      totalPnl: agent.totalPnlsol || 0, // Total PnL dari agent
+      pnlPercentage: agent.pnlPercentage || 0, // PnL Percentage dari agent
+    };
+    return acc;
+  }, {} as Record<string, RealtimeAgent>);
+
+  // Calculate Stats
+  const agentEntries = Object.entries(initialAgents) as [
+    string,
+    RealtimeAgent
+  ][];
+  const totalAgents = agentEntries.length;
+
   const activeTotalInvested = activeAgents.reduce(
-    (acc, agent) => acc + agent.invested.sol,
+    (sum, agent) => sum + (agent.invested || agent.balance || 0),
     0
   );
+
   const activeTotalWorth = activeAgents.reduce(
-    (acc, agent) => acc + agent.currentWorth.sol,
-    0
-  );
-  const stoppedTotalWorth = stoppedAgents.reduce(
-    (acc, agent) => acc + agent.currentWorth.sol,
+    (sum, agent) =>
+      sum + (realtimeAgents[agent.agentId]?.balance || agent.balance || 0),
     0
   );
 
-  const activePnlSol = activeTotalWorth - activeTotalInvested;
-  const activePnlUsd = activePnlSol * solPrice;
+  const activePnlSol = activeAgents.reduce(
+    (sum, agent) =>
+      sum + (realtimeAgents[agent.agentId]?.totalPnl || agent.totalPnlsol || 0),
+    0
+  );
+
+  const totalPnlSol = agentEntries.reduce(
+    (sum, [_, agent]) => sum + (agent.totalPnl || 0),
+    0
+  );
+
   const isActivePnlPositive = activePnlSol >= 0;
-
-  const totalPnlSol =
-    activeTotalWorth +
-    stoppedTotalWorth -
-    (activeTotalInvested +
-      stoppedAgents.reduce((acc, agent) => acc + agent.invested.sol, 0));
-  const totalPnlUsd = totalPnlSol * solPrice;
   const isTotalPnlPositive = totalPnlSol >= 0;
 
   const sortedAgents = [...filteredAgents].sort((a, b) => {
@@ -329,7 +331,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-black p-8">
       {/* Crypto Ticker */}
-      <div className="mb-8">
+      <div className="mb-6 mt-2">
         <LiveCoinWatchWidget />
       </div>
       <Toaster position="bottom-right" />
@@ -385,13 +387,11 @@ export default function Dashboard() {
         </Tabs>
       </div>
 
-      {/* Stats Overview */}
+      {/* // Stats Overview */}
       <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="bg-gradient-to-br from-[#003300] to-black p-4 rounded-xl">
           <p className="text-gray-400 text-sm">Total Agents</p>
-          <p className="text-2xl font-bold text-white">
-            {filteredAgents.length}
-          </p>
+          <p className="text-2xl font-bold text-white">{totalAgents}</p>
         </div>
         <div className="bg-gradient-to-br from-[#003300] to-black p-4 rounded-xl">
           <p className="text-gray-400 text-sm">Total Invested</p>
@@ -435,11 +435,10 @@ export default function Dashboard() {
             </p>
           </div>
           <p
-            className={`${
-              isActivePnlPositive ? "text-[#60d6a2]" : "text-red-500"
-            }`}
+            className={isActivePnlPositive ? "text-[#60d6a2]" : "text-red-500"}
           >
-            {isActivePnlPositive ? "+" : ""}${activePnlUsd.toFixed(2)}
+            {isActivePnlPositive ? "+" : ""}$
+            {(activePnlSol * solPrice).toFixed(2)}
           </p>
         </div>
         <div
@@ -459,34 +458,45 @@ export default function Dashboard() {
               {totalPnlSol.toFixed(2)} SOL
             </p>
           </div>
-          <p
-            className={`${
-              isTotalPnlPositive ? "text-[#60d6a2]" : "text-red-500"
-            }`}
-          >
-            {isTotalPnlPositive ? "+" : ""}${totalPnlUsd.toFixed(2)}
+          <p className={isTotalPnlPositive ? "text-[#60d6a2]" : "text-red-500"}>
+            {isTotalPnlPositive ? "+" : ""}$
+            {(totalPnlSol * solPrice).toFixed(2)}
           </p>
         </div>
       </div>
 
-      {/* Trading Cards Grid */}
+      {/* // Trading Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sortedAgents.map((agent, index) => (
-          <TradingCard
-            key={agent.agentId}
-            {...agent}
-            onResume={() =>
-              resumeAgent(
-                agents.findIndex((a) => a.agentName === agent.agentName)
-              )
-            }
-            onStop={() =>
-              stopAgent(
-                agents.findIndex((a) => a.agentName === agent.agentName)
-              )
-            }
-          />
-        ))}
+        {agentEntries.map(([agentId, agentData], index) => {
+          const basicAgent = filteredAgents.find(
+            (agent) => agent.agentId === agentId
+          );
+          return (
+            <TradingCard
+              key={agentId}
+              agentId={agentId}
+              agentName={basicAgent?.agentName || "Unknown Agent"}
+              pnlPercentage={
+                agentData.pnlPercentage || basicAgent?.pnlPercentage
+              }
+              invested={basicAgent?.invested}
+              currentWorth={agentData.balance}
+              made={
+                convertUsdToSol(solPrice, agentData.totalPnl) ||
+                basicAgent?.totalPnlsol
+              }
+              isActive={basicAgent?.isActive || false}
+              isStopped={basicAgent?.isStopped || false}
+              status={basicAgent?.status || "waiting"}
+              riskLevel={basicAgent?.riskLevel || "Low Risk"}
+              stopLoss={basicAgent?.stopLoss || 0}
+              onResume={() => resumeAgent(index)}
+              onStop={() => stopAgent(index)}
+              alerts={basicAgent?.alerts || []}
+              defaultAgent={basicAgent?.defaultAgent || false}
+            />
+          );
+        })}
       </div>
 
       <CreateAgentModal
