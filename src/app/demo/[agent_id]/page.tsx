@@ -12,7 +12,7 @@ import { updateAgent } from "@/hooks/user-agent";
 import AgentDetails from "./_Components/AgentDetails";
 import { TradingOverview } from "./_Components/TradingOverview";
 import { useTradingContext } from "@/context/TradingContext";
-import { convertSolToUsd } from "@/lib/priceconvert";
+import { convertSolToUsd, convertUsdToSol } from "@/lib/priceconvert";
 
 const AgentPage = ({ params }: { params: { agent_id: string } }) => {
   const router = useRouter();

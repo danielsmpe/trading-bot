@@ -1,13 +1,13 @@
 import { SolanaIcon } from "@/components/SolanaIcon";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useTradingContext } from "@/context/TradingContext";
-
 import {
   convertSolToUsd,
   convertUsdToSol,
   formatDecimal,
 } from "@/lib/priceconvert";
 import TradingSimulator from "./TradingSimulator";
+import { Copy } from "lucide-react";
 
 type Portfolio = Record<string, { token: string; tokenAddress: string }[]>;
 
@@ -24,14 +24,20 @@ export const TradingOverview = (verseagent: any) => {
   } = useTradingContext();
   const agentId = verseagent?.agent?.agentId;
   const agentdb = verseagent?.agent;
-  useEffect(() => {
-    setAgentId(agentId);
-  }, [agentId]);
 
   const agent = agents[agentId] || {};
   const balance = agent.balance || agentdb?.balance;
   const totalPnl = agent.totalPnl || agentdb?.totalPnlsol;
   const pnlPercentage = agent.pnlPercentage || agentdb?.pnlPercentage;
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+  };
+
+  useEffect(() => {
+    setAgentId(agentId);
+  }, [agentId]);
+
   return (
     <div>
       <div className="flex space-x-8 mt-6">
@@ -118,7 +124,19 @@ export const TradingOverview = (verseagent: any) => {
               {HistoryTrade.length > 0 ? (
                 HistoryTrade.map((trade: any, index: number) => (
                   <tr key={index} className="border-b border-gray-700">
-                    <td className="py-2 px-4">{trade.token}</td>
+                    <td className="py-2 px-4">
+                      <p>{trade.token}</p>
+                      <p
+                        className="flex items-center gap-2 cursor-pointer text-gray-500 hover:text-white"
+                        onClick={() => copyToClipboard(trade.tokenAddress)}
+                      >
+                        <span>
+                          {trade.tokenAddress.slice(0, 3)}..
+                          {trade.tokenAddress.slice(-3)}
+                        </span>
+                        <Copy size={16} />
+                      </p>
+                    </td>
                     <td
                       className={`py-2 px-4 font-semibold ${
                         trade.tradeType === "buy"

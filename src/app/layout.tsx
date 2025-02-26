@@ -5,6 +5,7 @@ import type React from "react";
 import { Header } from "../components/Header";
 import AppWalletProvider from "@/components/AppWalletProvider";
 import { TradingProvider } from "@/context/TradingContext";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,6 +25,7 @@ export default function RootLayout({
         <AppWalletProvider>
           <TradingProvider>
             <Header />
+            <Toaster />
             <div className="pt-16">{children}</div>
           </TradingProvider>
         </AppWalletProvider>

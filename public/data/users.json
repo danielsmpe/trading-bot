@@ -119,15 +119,15 @@
         "agentName": "lowrisk-verseAI",
         "isActive": true,
         "isStopped": false,
-        "balance": 5,
+        "balance": 5.408248,
         "takeProfit": 30,
         "stopLoss": 30,
         "trailingTakeProfit": false,
         "trailingTakeProfitValue": 0,
         "trailingStopLoss": false,
         "trailingStopLossValue": 0,
-        "totalPnlsol": 0,
-        "pnlPercentage": 0,
+        "totalPnlsol": 73.48465814704778,
+        "pnlPercentage": 8.164962016338642,
         "invested": 5,
         "currentWorth": 5,
         "alerts": [],
@@ -164,7 +164,60 @@
             "status": true
           }
         ],
-        "tradeHistory": []
+        "tradeHistory": [
+          {
+            "id": "c5d9ce88-230a-4a3e-a3ce-69e98383adea",
+            "token": "GOOSEMAX",
+            "tokenAddress": "E6KokS6ZVofUpGenEmywJJzMyd72fbq5uJxZ5wcDpump",
+            "entryPrice": 0.000020659,
+            "amount": 0.5,
+            "stopLoss": 0.000014,
+            "takeProfit": 0.000027,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-26T09:23:21.168Z"
+          },
+          {
+            "id": "c5d9ce88-230a-4a3e-a3ce-69e98383adea",
+            "token": "GOOSEMAX",
+            "tokenAddress": "E6KokS6ZVofUpGenEmywJJzMyd72fbq5uJxZ5wcDpump",
+            "entryPrice": 0.000020659,
+            "amount": 0.718767,
+            "stopLoss": 0.000014,
+            "takeProfit": 0.000027,
+            "status": "closed",
+            "tradeType": "sell",
+            "createdAt": "2025-02-26T09:23:38.846Z",
+            "exitPrice": 0.000029698,
+            "pnl": 39.37799506268454
+          },
+          {
+            "id": "853d3d4a-e333-448b-9ffb-2f1ab73b7754",
+            "token": "GOOSEMAX",
+            "tokenAddress": "E6KokS6ZVofUpGenEmywJJzMyd72fbq5uJxZ5wcDpump",
+            "entryPrice": 0.000029776,
+            "amount": 0.5,
+            "stopLoss": 0.000021,
+            "takeProfit": 0.000039,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-26T09:24:14.779Z"
+          },
+          {
+            "id": "853d3d4a-e333-448b-9ffb-2f1ab73b7754",
+            "token": "GOOSEMAX",
+            "tokenAddress": "E6KokS6ZVofUpGenEmywJJzMyd72fbq5uJxZ5wcDpump",
+            "entryPrice": 0.000029776,
+            "amount": 0.689481,
+            "stopLoss": 0.000021,
+            "takeProfit": 0.000039,
+            "status": "closed",
+            "tradeType": "sell",
+            "createdAt": "2025-02-26T09:24:48.186Z",
+            "exitPrice": 0.00004106,
+            "pnl": 34.10666308436325
+          }
+        ]
       },
       {
         "agentId": "highrisk-verseAI",
@@ -174,7 +227,7 @@
         "balance": 5,
         "takeProfit": 20,
         "stopLoss": 20,
-        "trailingTakeProfit": true,
+        "trailingTakeProfit": false,
         "trailingTakeProfitValue": 10,
         "trailingStopLoss": false,
         "trailingStopLossValue": 0,
@@ -265,7 +318,20 @@
         "createDate": "2025-02-25T04:21:22.432Z",
         "pairList": "NONE",
         "rank": 0,
-        "tradeHistory": [],
+        "tradeHistory": [
+          {
+            "id": "681b5272-9b80-4ebd-8b81-ef897840f111",
+            "token": "HONK2",
+            "tokenAddress": "3cBRPUDkrm8CBLtumZspwusQBpHKrpCRKyx2LU4N1G6N",
+            "entryPrice": 0.000015796,
+            "amount": 0.5,
+            "stopLoss": 0.000014,
+            "takeProfit": 0.000017,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-26T09:24:24.696Z"
+          }
+        ],
         "minLiquidity": 100,
         "totalPnlsol": 0,
         "made": 0
