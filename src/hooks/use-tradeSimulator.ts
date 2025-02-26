@@ -128,7 +128,7 @@ export const useTradingStore = create<TradingState>()(
               const sellAmount = pnl + convertSolToUsd(SOLPRICE, trade.amount);
               const amount =  convertUsdToSol(SOLPRICE, sellAmount);
               updatedBalance += convertUsdToSol(SOLPRICE, pnl);
-              totalPnl += pnl;
+              totalPnl;
 
               const closedTrade = {
                 ...trade,
@@ -169,8 +169,8 @@ export const useTradingStore = create<TradingState>()(
           await updateAgent(agentId, {
             tradeHistory: closedTrades,
             pnlPercentage,
-            totalPnlsol: convertUsdToSol(SOLPRICE, totalPnl),
-            balance: updatedBalance + agent.balance * 0.1
+            totalPnlsol: totalPnl,
+            balance: updatedBalance + convertUsdToSol(SOLPRICE,totalPnl)
           });
         }
 

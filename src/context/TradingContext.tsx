@@ -197,7 +197,7 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({
     allAgents.forEach((agent) => {
       const agentId = agent.agentId;
       const portfolio = agents[agentId]?.portfolio || {};
-      let totalPnl = 0;
+      let totalPnl = agent.totalPnlsol || 0;
 
       // Calculate totalPnL from portfolio
       Object.keys(portfolio).forEach((token) => {

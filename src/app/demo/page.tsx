@@ -483,7 +483,7 @@ export default function Dashboard() {
               currentWorth={agentData.balance}
               made={
                 convertUsdToSol(solPrice, agentData.totalPnl) ||
-                basicAgent?.totalPnlsol
+                convertUsdToSol(solPrice, basicAgent?.totalPnlsol)
               }
               isActive={basicAgent?.isActive || false}
               isStopped={basicAgent?.isStopped || false}
