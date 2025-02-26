@@ -13,7 +13,7 @@ import { createAgent, updateAgent } from "@/hooks/user-agent";
 import { simulateMarketMovement } from "@/hooks/use-tradeSimulator";
 import { useTradingContext } from "@/context/TradingContext";
 import { convertUsdToSol } from "@/lib/priceconvert";
-import { Agent, getAgentsByUserId } from "@/constant/DefaultAGent";
+import { Agent, getAgentsByUserId } from "@/constant/DefaultAgent";
 
 type User = {
   userId: string;

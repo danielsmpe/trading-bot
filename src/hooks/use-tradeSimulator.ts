@@ -128,7 +128,7 @@ export const useTradingStore = create<TradingState>()(
               const sellAmount = pnl + convertSolToUsd(SOLPRICE, trade.amount);
               const amount =  convertUsdToSol(SOLPRICE, sellAmount);
               updatedBalance += convertUsdToSol(SOLPRICE, pnl);
-              totalPnl;
+              totalPnl += pnl;
 
               const closedTrade = {
                 ...trade,

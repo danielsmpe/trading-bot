@@ -112,20 +112,21 @@
   {
     "userId": "USER-2",
     "walletAddress": "0x9876543210abcdef1234567890abcdef12345678",
-    "solana":500,
+    "solana": 500,
     "agents": [
       {
         "agentId": "lowrisk-verseAI",
         "agentName": "lowrisk-verseAI",
         "isActive": true,
         "isStopped": false,
-        "balance": 5,
-        "takeProfit": 40,
-        "stopLoss": 40,
+        "balance": 3.572226,
+        "takeProfit": 30,
+        "stopLoss": 30,
         "trailingTakeProfit": false,
         "trailingTakeProfitValue": 0,
         "trailingStopLoss": false,
         "trailingStopLossValue": 0,
+        "totalPnlsol": 0,
         "pnlPercentage": 0,
         "invested": 5,
         "currentWorth": 5,
@@ -162,10 +163,60 @@
         "pairList": "NONE",
         "rank": 0,
         "tradeHistory": [
-
+          {
+            "id": "5db78a3d-858e-4df7-a902-9dc7502dfc88",
+            "token": "KWAK",
+            "tokenAddress": "5k5XR8uNVePpvLWJUS8MWS7gDGJJavJmxGnb3xHppump",
+            "entryPrice": 0.000141376,
+            "amount": 0.5,
+            "stopLoss": 0.000085,
+            "takeProfit": 0.000198,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-26T07:01:06.200Z"
+          },
+          {
+            "id": "04dc72ac-bc61-4565-b7db-b462693525d3",
+            "token": "KWAK",
+            "tokenAddress": "5k5XR8uNVePpvLWJUS8MWS7gDGJJavJmxGnb3xHppump",
+            "entryPrice": 0.000147507,
+            "amount": 0.5,
+            "stopLoss": 0.000089,
+            "takeProfit": 0.000207,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-26T07:02:07.593Z"
+          },
+          {
+            "id": "5db78a3d-858e-4df7-a902-9dc7502dfc88",
+            "token": "KWAK",
+            "tokenAddress": "5k5XR8uNVePpvLWJUS8MWS7gDGJJavJmxGnb3xHppump",
+            "entryPrice": 0.000141376,
+            "amount": 0.292185,
+            "stopLoss": 0.000085,
+            "takeProfit": 0.000198,
+            "status": "closed",
+            "tradeType": "sell",
+            "createdAt": "2025-02-26T07:04:56.070Z",
+            "exitPrice": 0.000082616,
+            "pnl": -37.40663196016297
+          },
+          {
+            "id": "04dc72ac-bc61-4565-b7db-b462693525d3",
+            "token": "KWAK",
+            "tokenAddress": "5k5XR8uNVePpvLWJUS8MWS7gDGJJavJmxGnb3xHppump",
+            "entryPrice": 0.000147507,
+            "amount": 0.280041,
+            "stopLoss": 0.000089,
+            "takeProfit": 0.000207,
+            "status": "closed",
+            "tradeType": "sell",
+            "createdAt": "2025-02-26T07:04:56.070Z",
+            "exitPrice": 0.000082616,
+            "pnl": -39.592629502328705
+          }
         ],
         "minLiquidity": 200,
-        "totalPnlsol": 0,
         "made": 0
       },
       {

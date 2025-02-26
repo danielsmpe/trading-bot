@@ -28,9 +28,9 @@ const getStopLossMultiplier = (
     case "High Risk":
       return 20;
     case "Low Risk":
-      return 40;
+      return 30;
     default:
-      return 10;
+      return 20;
   }
 };
 
@@ -43,7 +43,7 @@ const getTakeProfitMultiplier = (
     case "High Risk":
       return 20;
     case "Low Risk":
-      return 40;
+      return 30;
     default:
       return 20;
   }

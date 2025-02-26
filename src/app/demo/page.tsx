@@ -13,7 +13,7 @@ import { createAgent, updateAgent } from "@/hooks/user-agent";
 import { simulateMarketMovement } from "@/hooks/use-tradeSimulator";
 import { useTradingContext } from "@/context/TradingContext";
 import { convertUsdToSol } from "@/lib/priceconvert";
-import { Agent, getAgentsByUserId } from "@/constant/DefaultAGent";
+import { Agent, getAgentsByUserId } from "@/constant/DefaultAgent";
 
 type User = {
   userId: string;
@@ -309,6 +309,7 @@ export default function Dashboard() {
     0
   );
 
+
   const isActivePnlPositive = activePnlSol >= 0;
   const isTotalPnlPositive = totalPnlSol >= 0;
 
@@ -431,14 +432,14 @@ export default function Dashboard() {
               }`}
             >
               {isActivePnlPositive ? "+" : ""}
-              {activePnlSol.toFixed(2)} SOL
+              {convertUsdToSol(solPrice,activePnlSol).toFixed(2)} SOL
             </p>
           </div>
           <p
             className={isActivePnlPositive ? "text-[#60d6a2]" : "text-red-500"}
           >
             {isActivePnlPositive ? "+" : ""}$
-            {(activePnlSol * solPrice).toFixed(2)}
+            {(activePnlSol).toFixed(2)}
           </p>
         </div>
         <div
@@ -455,12 +456,12 @@ export default function Dashboard() {
               }`}
             >
               {isTotalPnlPositive ? "+" : ""}
-              {totalPnlSol.toFixed(2)} SOL
+              {convertUsdToSol(solPrice,totalPnlSol).toFixed(2)} SOL
             </p>
           </div>
           <p className={isTotalPnlPositive ? "text-[#60d6a2]" : "text-red-500"}>
             {isTotalPnlPositive ? "+" : ""}$
-            {(totalPnlSol * solPrice).toFixed(2)}
+            {(totalPnlSol).toFixed(2)}
           </p>
         </div>
       </div>

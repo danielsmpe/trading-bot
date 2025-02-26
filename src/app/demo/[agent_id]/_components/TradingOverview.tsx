@@ -1,12 +1,13 @@
 import { SolanaIcon } from "@/components/SolanaIcon";
 import React, { useEffect, useState } from "react";
 import { useTradingContext } from "@/context/TradingContext";
-import TradingSimulator from "./TradingSimulator";
+
 import {
   convertSolToUsd,
   convertUsdToSol,
   formatDecimal,
 } from "@/lib/priceconvert";
+import TradingSimulator from "./TradingSimulator";
 
 type Portfolio = Record<string, { token: string; tokenAddress: string }[]>;
 

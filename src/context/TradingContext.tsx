@@ -9,12 +9,10 @@ import React, {
 } from "react";
 import {
   useTradingSimulator,
-  useTradingStore,
 } from "@/hooks/use-tradeSimulator";
 import { usePriceSocket, useTradeSocket } from "@/hooks/use-socket";
-import { calculatePriceLevel } from "@/app/demo/[agent_id]/_Components/TradingSimulator";
+import { calculatePriceLevel } from "@/app/demo/[agent_id]/_components/TradingSimulator";
 import {
-  getAgentByUserAndAgentId,
   getAgentsByUserId,
 } from "@/constant/DefaultAgent";
 import { convertSolToUsd, convertUsdToSol } from "@/lib/priceconvert";
