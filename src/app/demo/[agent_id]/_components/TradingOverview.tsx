@@ -29,6 +29,7 @@ export const TradingOverview = (verseagent: any) => {
   const balance = agent.balance || agentdb?.balance;
   const totalPnl = agent.totalPnl || agentdb?.totalPnlsol;
   const pnlPercentage = agent.pnlPercentage || agentdb?.pnlPercentage;
+  console.log(HistoryTrade);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -118,6 +119,7 @@ export const TradingOverview = (verseagent: any) => {
                 <th className="py-2 px-4 text-left">Trade Type</th>
                 <th className="py-2 px-4 text-left">Amount</th>
                 <th className="py-2 px-4 text-left">P&L</th>
+                <th className="py-2 px-4 text-left">Date</th>
               </tr>
             </thead>
             <tbody>
@@ -127,7 +129,7 @@ export const TradingOverview = (verseagent: any) => {
                     <td className="py-2 px-4">
                       <p>{trade.token}</p>
                       <p
-                        className="flex items-center gap-2 cursor-pointer text-gray-500 hover:text-white"
+                        className="flex items-center gap-2 cursor-pointer text-gray-500 hover:text-gray-200"
                         onClick={() => copyToClipboard(trade.tokenAddress)}
                       >
                         <span>
@@ -171,6 +173,14 @@ export const TradingOverview = (verseagent: any) => {
                           ? `$ ${formatDecimal(trade.pnl)}`
                           : "-"
                         : "-"}
+                    </td>
+                    <td className="py-2 px-4 text-left">
+                      <div className="flex">
+                        {trade.createdAt.split("T")[0]}
+                      </div>
+                      <span className="text-xs flex text-gray-500">
+                        {trade.createdAt.split("T")[1].split(".")[0]}
+                      </span>
                     </td>
                   </tr>
                 ))

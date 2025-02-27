@@ -7,7 +7,7 @@ export function formatDecimal(number: number): string {
 
   const isNegative = number < 0;
   const absNum = Math.abs(number);
-  const numStr = absNum.toFixed(20); // Hindari notasi ilmiah dengan banyak desimal
+  const numStr = absNum.toFixed(15); // Hindari notasi ilmiah dengan banyak desimal
   const match = numStr.match(/^0\.(0+)(\d+)/);
 
   if (!match) return `${number}`;
