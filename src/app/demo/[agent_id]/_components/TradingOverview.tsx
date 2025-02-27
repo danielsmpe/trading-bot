@@ -29,7 +29,6 @@ export const TradingOverview = (verseagent: any) => {
   const balance = agent.balance || agentdb?.balance;
   const totalPnl = agent.totalPnl || agentdb?.totalPnlsol;
   const pnlPercentage = agent.pnlPercentage || agentdb?.pnlPercentage;
-  console.log(HistoryTrade);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);

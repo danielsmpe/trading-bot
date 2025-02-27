@@ -276,14 +276,14 @@
         "agentName": "trending24h-verseAI",
         "isActive": true,
         "isStopped": false,
-        "balance": 2.5,
+        "balance": 2.1473560000000003,
         "takeProfit": 10,
         "stopLoss": 10,
         "trailingTakeProfit": false,
         "trailingTakeProfitValue": 0,
         "trailingStopLoss": false,
         "trailingStopLossValue": 0,
-        "pnlPercentage": 0,
+        "pnlPercentage": 2.9471011812649124,
         "invested": 2.5,
         "currentWorth": 2.5,
         "alerts": [],
@@ -330,10 +330,36 @@
             "status": "holding",
             "tradeType": "buy",
             "createdAt": "2025-02-26T09:24:24.696Z"
+          },
+          {
+            "id": "e566dd9d-8bd1-4617-844e-c4b5c933fe74",
+            "token": "Booga",
+            "tokenAddress": "6HD8P471NfBxL4U7hHVYaMGpKZwFk8WzC71SUzjvpump",
+            "entryPrice": 0.000171424206,
+            "amount": 0.5,
+            "stopLoss": 0.000154,
+            "takeProfit": 0.000189,
+            "status": "holding",
+            "tradeType": "buy",
+            "createdAt": "2025-02-27T08:13:46.376Z"
+          },
+          {
+            "id": "e566dd9d-8bd1-4617-844e-c4b5c933fe74",
+            "token": "Booga",
+            "tokenAddress": "6HD8P471NfBxL4U7hHVYaMGpKZwFk8WzC71SUzjvpump",
+            "entryPrice": 0.000171424206,
+            "amount": 0.573678,
+            "stopLoss": 0.000154,
+            "takeProfit": 0.000189,
+            "status": "closed",
+            "tradeType": "sell",
+            "createdAt": "2025-02-27T08:15:48.149Z",
+            "exitPrice": 0.00019668443,
+            "pnl": 13.261955315692106
           }
         ],
         "minLiquidity": 100,
-        "totalPnlsol": 0,
+        "totalPnlsol": 13.261955315692106,
         "made": 0
       }
     ]
